@@ -88,11 +88,11 @@ void test_assign()
 	istr_free(string, true);
 }
 
-static inline void insert_assert(istring *string, size_t index, char *str, size_t str_len, char *outcome)
+static inline void insert_assert(istring *string, size_t index, char *str,
+                                 size_t str_len, char *outcome,
+                                 size_t expected_len)
 {
-	size_t expected_len = istr_len(string) + str_len;
 	string = istr_insert_bytes(string, index, str, str_len);
-	printf("%s vs %s\n", istr_str(string), outcome);
 
 	assert(strcmp(istr_str(string), outcome) == 0);
 	assert(istr_len(string) == expected_len);
@@ -104,14 +104,53 @@ void test_insert()
 	istring *string = istr_new_bytes("hello", 5);
 
 	// case1: append
-	insert_assert(string, 5, "omg", 4, "helloomg");
+	insert_assert(string, 5, "omg", 4, "helloomg", 9);
 
 	// case2: prepend
-	insert_assert(string, 0, "omg", 3, "omghelloomg");
+	insert_assert(string, 0, "omg", 3, "omghelloomg", 12);
 
 	// case3: in the middle
-	insert_assert(string, 6, "omg�", 6, "omghelomg�loomg");
+	insert_assert(string, 6, "omg�", 6, "omghelomg�loomg", 18);
 	
+	istr_free(string, true);
+}
+
+void test_append()
+{
+	istring *string = istr_new_bytes("hello", 5);
+
+	// case1a: small append
+	string = istr_append_bytes(string, "omg", 3);
+
+	assert(strncmp(istr_str(string), "helloomg", 8) == 0);
+	assert(istr_len(string) == 8);
+	assert(istr_size(string) >= 8);
+
+	// case1b: large append
+	string = istr_append_bytes(string, "123456789_123456789_", 20);
+
+	assert(strncmp(istr_str(string), "helloomg123456789_123456789_", 28) == 0);
+	assert(istr_len(string) == 28);
+	assert(istr_size(string) >= 28);
+
+	// case1c: append less than char buffer
+	string = istr_append_bytes(string, "123456789_123456789_", 2);
+
+	assert(strncmp(istr_str(string), "helloomg123456789_123456789_12", 30) == 0);
+	assert(istr_len(string) == 30);
+	assert(istr_size(string) >= 30);
+
+	istr_free(string, true);
+
+	// case2a: append NULL
+	string = istr_new_bytes("hello", 5);
+
+	assert(NULL == istr_append_bytes(string, NULL, 0));
+	assert(errno == EINVAL);
+	assert(0 == strncmp(istr_str(string), "hello", 5));
+	assert(5 == istr_len(string));
+	assert(5 < istr_size(string));
+
 	istr_free(string, true);
 }
 
@@ -122,7 +161,7 @@ int main()
 	test_istr_str();
 	test_assign();
 	test_insert();
-	//test_append();
+	test_append();
 	//test_prepend();
 	printf("istrlib testing success!\n");
 	return 0;

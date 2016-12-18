@@ -1,3 +1,4 @@
+/* See LICENSE file for copyright and license details */
 #include <stdlib.h>
 #include <stdbool.h>
 #include <errno.h>
@@ -8,11 +9,11 @@
 #include "istrlib.h"
 
 /* safe_add
- * desc: Safely adds together two size_t values while preventing 
+ * (desc): Safely adds together two size_t values while preventing 
  *   integer overflow. If integer overflow would occur, instead
  *   the maximum possible size is returned instead and errno is 
  *   set to ERANGE.
- * return -> size_t
+ * (return -> size_t):
  *   success: Sum of the two arguments
  *   range error: SIZE_MAX and errno = ERANGE
  */
@@ -27,9 +28,9 @@ static inline size_t safe_add(size_t a, size_t b)
 }
 
 /* smax
- * desc: simple inline function that returns the largest
+ * (desc): simple inline function that returns the largest
  *   input. Used instead of a macro for safety
- * return -> size_t
+ * (return -> size_t):
  *   success: largest value between a and b
  */
 static inline size_t smax(size_t a, size_t b)
@@ -38,9 +39,9 @@ static inline size_t smax(size_t a, size_t b)
 }
 
 /* smin
- * desc: simple inline function that returns the smallest
+ * (desc): simple inline function that returns the smallest
  *   input. Used instead of a macro for type safety.
- * return -> size_t
+ * (return -> size_t):
  *   success: smallest value between a and b
  */
 static inline size_t smin(size_t a, size_t b)
@@ -49,10 +50,10 @@ static inline size_t smin(size_t a, size_t b)
 }
 
 /* nearest_pow
- * desc: Find the nearest power of two to the value of num.
+ * (desc): Find the nearest power of two to the value of num.
  *   if the next power of two would overflow, then
  *   SIZE_MAX is returned instead with errno set appropriately.
- * return -> size_t
+ * (return -> size_t):
  *   success: The closest power of two larger than num
  *   range error: SIZE_MAX and errno = ERANGE
  */
@@ -72,10 +73,10 @@ static inline size_t nearest_pow(size_t base, size_t num)
 }
 
 /* istr_ensure_size
- * desc: A Helper function that guarentees to the caller 
+ * (desc): A Helper function that guarentees to the caller 
  *   that, if memory can be allocated successfully, that @string's
  *   char buffer will be able to hold at least @len bytes
- * return -> istring*
+ * (return -> istring*):
  *   success: The original string object
  *   bad args: NULL and errno = EINVAL
  *   memory error: NULL and errno = ENOMEM
@@ -101,9 +102,9 @@ static istring* istr_ensure_size(istring *string, size_t len)
 }
 
 /* istr_init
- * desc: A Helper function that allocates memory for an istring
+ * (desc): A Helper function that allocates memory for an istring
  *   and initializes all of it's fields.
- * return -> istring*
+ * (return -> istring*):
  *   success: The pointer to a newly allocated istring
  *   failure: NULL and errno = ENOMEM
  */
@@ -128,6 +129,8 @@ static istring* istr_init(size_t init_size)
 
 	return string;
 }
+
+// PUBLIC LIBRARY FUNCTIONS BELOW
 
 istring* istr_new(const istring *src) 
 {
@@ -261,6 +264,55 @@ int istr_eq(const istring *s1, const istring *s2)
 	return 0;
 }
 
+istring* istr_truncate_bytes(istring *string, size_t len)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	string->len = smin(string->len, len);
+	return string;
+}
+
+/*
+//TODO truncates @len utf8 characters
+istring* istr_truncate_utf8(istring *string, size_t count)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	string->len = smin(string->len, count);
+	return string;
+}
+*/
+ 
+char istr_pop_byte(istring *string)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	string->len -= 1;
+	return string->buf[string->len + 1];
+}
+
+/*
+//TODO pops the next utf8 character sequence
+char* istr_pop_utf8(istring *string)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	return string->buf;
+}
+*/
+
 istring* istr_write(istring *string, size_t index, const istring *ext)
 {
 	return istr_write_bytes(string, index, ext->buf, ext->len);
@@ -290,6 +342,14 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 	return string;
 }
 
+/*
+//TODO opposite of insert
+istring* istr_remove_bytes(istring *string, size_t index, size_t len)
+{
+	return string;
+}
+*/
+
 istring* istr_prepend(istring *dest, const istring *src)
 {
 	if (NULL == dest || NULL == src) {
@@ -315,10 +375,13 @@ istring* istr_append(istring *dest, const istring *src)
 	return istr_append_bytes(dest, src->buf, src->len);
 }
 
+/*
+//TODO
 istring* istr_append_utf8(istring *string, const char *utf8_str, size_t count)
 {
 	return string;
 }
+*/
 
 istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len)
 {
@@ -340,6 +403,7 @@ istring* istr_insert(istring *dest, size_t index, const istring *src)
 	return istr_insert_bytes(dest, index, src->buf, src->len);
 }
 
+/*
 //TODO
 istring* istr_insert_utf8(istring *string, size_t index, const char *utf8_str, size_t count)
 {
@@ -348,6 +412,7 @@ istring* istr_insert_utf8(istring *string, size_t index, const char *utf8_str, s
 		return NULL;
 	}
 }
+*/
 
 istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
 {
@@ -379,56 +444,4 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	string->len = total_len;
 
 	return string;
-}
-
-//TODO opposite of insert
-istring* istr_remove_bytes(istring *string, size_t index, size_t len)
-{
-	return string;
-}
-
-istring* istr_truncate_bytes(istring *string, size_t len)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	string->len = smin(string->len, len);
-	return string;
-}
-
-//TODO truncates @len utf8 characters
-istring* istr_truncate_utf8(istring *string, size_t count)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	string->len = smin(string->len, count);
-	return string;
-}
- 
-//TODO pops the next byte
-char istr_pop_byte(istring *string)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return -1;
-	}
-
-	string->len -= 1;
-	return string->buf[string->len + 1];
-}
-
-//TODO pops the next utf8 character sequence
-char* istr_pop_utf8(istring *string)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	return string->buf;
 }

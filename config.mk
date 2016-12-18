@@ -12,7 +12,7 @@ CFLAGS=-g -std=c99 -pedantic -Wall -Wextra -static
 #-Wfloat-equal -Wundef -Wstrict-prototypes -Wpointer-arith -Wstrict-overflow=5 -Waggregate-return -Wswitch-default -Wconversion -Wswitch-enum -Wunreachable-code
 
 # Linking flags
-LDFLAGS=
+LDFLAGS=-g
 
 # Compiler and linker
-CC=gcc
+CC=cc
