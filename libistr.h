@@ -1,6 +1,6 @@
 /* See LICENSE file for copyright and license details */
-#ifndef istr_H_INCLUDED
-#define istr_H_INCLUDED
+#ifndef LIBISTR_H_INCLUDED
+#define LIBISTR_H_INCLUDED
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -45,7 +45,9 @@ istring* istr_new_cstr(const char *cstr);
 
 /* istr_free
  * (desc): Free all memory allocated to an istring structure.
- *   please use this instead of manually freeing.
+ *   please use this instead of manually freeing. If true
+ *   specified, then free the char buffer, otherwise return
+ *   the internal char buffer to the caller
  * (return -> char*):
  *   success: the string object's char buffer
  *   bad args: errno = EINVAL and NULL;

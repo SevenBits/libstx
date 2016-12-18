@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <errno.h>
 
-#include "istrlib.h"
+#include "libistr.h"
 
 #define TEST(name) void name ## () \
 {
@@ -156,13 +156,13 @@ void test_append()
 
 int main()
 {
-	printf("Testing istrlib...\n");
+	printf("Testing libistr...\n");
 	test_new_and_free();
 	test_istr_str();
 	test_assign();
 	test_insert();
 	test_append();
 	//test_prepend();
-	printf("istrlib testing success!\n");
+	printf("libistr testing success!\n");
 	return 0;
 }

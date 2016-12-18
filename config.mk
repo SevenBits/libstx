@@ -1,5 +1,5 @@
 # tshell version
-VERSION="0.1"
+VERSION=0.1
 
 # Paths
 PREFIX=/usr/local

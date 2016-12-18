@@ -1,13 +1,13 @@
-.TH istrlib 3 istrlib\-VERSION
+.TH libistr 3 libistr\-VERSION
 .SH NAME
-istrlib \- Improved String Library
+libistr \- Improved String Library
 .SH SYNOPSIS
-.B #include <istrlib.h>
+.B #include <libistr.h>
 .PP
 .B typedef struct 
 .I istring istring;
 .SH DESCRIPTION
-The istring library (hereafter referred to as istrlib) is an efficient and 
+The istring library (hereafter referred to as libistr) is an efficient and 
 simple dynamic string library for C. It provides the istring structure and 
 functions that operate on them. istrings are fully compatible with the 
 standard ANSI C <string.h> functions with access to their character buffers.
@@ -16,16 +16,16 @@ none of the library functions require a terminating null-byte unless
 specifically required (For interoperability with existing C strings).
 As a bonus because of this, istrings can be used to hold arbitrary data
 inside of them with no worries of the library modifying the data in unexpected
-ways (istrlib will NEVER automatically insert a null-byte for you).
+ways (libistr will NEVER automatically insert a null-byte for you).
 .PP
-istrlib includes utf8 helper functions that let unicode characters be
+libistr includes utf8 helper functions that let unicode characters be
 manipulated by the number of unicode characters rather than the size in bytes.
 .PP
 Memory allocation for istrings is also efficient, as the scheme for increasing
 an istring's size is to keep it as a power of two e.g. 32, 64, 512.
 .PP
 .SH FUNCTIONS
-.I For more detailed documentation please look at istrlib.h
+.I For more detailed documentation please look at libistr.h
 .TP
 .B istr_new
 Copy or initialize a new istring.
@@ -37,7 +37,8 @@ Initialize a new istring with arbitrary bytes.
 Initialize a new istring with a string with terminating null-byte.
 .TP
 .B istr_free
-Free all memory allocated to an istring structure.
+Free all memory allocated to an istring structure and return the internal 
+character buffer if flagged to not be freed.
 .TP
 .B istr_str
 Get a pointer to the char buffer in the given istring.
@@ -88,7 +89,7 @@ Inserts an istring into an istring at an index without overwriting.
 Inserts arbitrary bytes into an istring at an index without overwriting.
 .SH CONFORMING TO
 The
-.I istrlib
+.I libistr
 library is guaranteed to conform with C99 or later
 .SH AUTHOR
 Written by Todd O. Gaunt

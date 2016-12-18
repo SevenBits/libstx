@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "istrlib.h"
+#include "libistr.h"
 
 /* safe_add
  * (desc): Safely adds together two size_t values while preventing 
