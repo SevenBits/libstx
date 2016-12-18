@@ -74,8 +74,8 @@ static inline size_t nearest_pow(size_t base, size_t num)
 
 /* istr_ensure_size
  * (desc): A Helper function that guarentees to the caller 
- *   that, if memory can be allocated successfully, that @string's
- *   char buffer will be able to hold at least @len bytes
+ *   that, if memory can be allocated successfully, that string's
+ *   char buffer will be able to hold at least len bytes
  * (return -> istring*):
  *   success: The original string object
  *   bad args: NULL and errno = EINVAL
@@ -276,7 +276,7 @@ istring* istr_truncate_bytes(istring *string, size_t len)
 }
 
 /*
-//TODO truncates @len utf8 characters
+//TODO truncates len utf8 characters
 istring* istr_truncate_utf8(istring *string, size_t count)
 {
 	if (NULL == string) {
