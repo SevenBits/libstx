@@ -13,7 +13,6 @@ file.
 
 ``` C
 #include <istrlib.h>
-typedef struct istring istring;
 ```
 
 #### INSTALLATION
@@ -32,6 +31,30 @@ make clean install DESTDIR="my/dir/" PREFIX="/my/prefix/"
 ```
 where "my/dir/" is the path to the installation destination (default is "")
 and "/my/prefix" is the prefix to install to (default is "/usr/local")
+
+#### EXAMPLES
+
+``` C
+#include <istrlib.h>
+
+int main()
+{
+	// Creates a new empty istring object
+	istring *string = new_istr(NULL);
+
+	// Assigns up until the Null terminating byte
+	istr_assign_cstr(string, "Hello, how are you?");
+
+	// Access to the internals of an istring are done through functions
+	printf("str: %s\n", istr_str(string));
+
+	// Create a new istring from an existing one
+	istring *other_string = new_istr(string);
+	
+	// The rest of the functions are detailed in istrlib.3 and istrlib.h
+	return 0;
+}
+```
 
 #### LICENSE
 
