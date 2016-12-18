@@ -11,7 +11,7 @@ file.
 
 #### USAGE
 
-\#include <istrlib.h>
+\#include `<istrlib.h>`
 typedef struct istring istring;
 
 #### INSTALLATION

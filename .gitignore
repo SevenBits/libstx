@@ -1,0 +1,8 @@
+# Compiled objects
+*.o
+*.a
+*.so
+
+# Packages
+*.gz
+*.tar
