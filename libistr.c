@@ -89,14 +89,30 @@ static istring* istr_ensure_size(istring *string, size_t len)
 	}
 
 	// The +1 is not for a '\0', but to allow linking together of malloc'd memory
-	if (string->size < len + 1) {
-		string->size = nearest_pow(2, len);
-		string->buf = realloc(string->buf, sizeof(string->buf) * (string->size));
-		if (NULL == string->buf) {
-			free(string);
-			errno = ENOMEM;
-			return NULL;
+	if (string->size < len) {
+		size_t next_size = nearest_pow(2, len);
+		// Use realloc to try to prevent defragmentation if sizes are close
+		if (string->size*7 < string->len*8) {
+			string->buf = realloc(string->buf, sizeof(string->buf) * (next_size));
+			if (NULL == string->buf) {
+				free(string);
+				errno = ENOMEM;
+				return NULL;
+			}
+		} else {
+			// Manually realloc, only copying the useful bytes in the buffer
+			char *garbage = string->buf;
+			string->buf = malloc(sizeof(string->buf) * (next_size));
+			if (NULL == string->buf) {
+				free(garbage);
+				free(string);
+				errno = ENOMEM;
+				return NULL;
+			}
+			memcpy(string->buf, garbage, string->len);
+			free(garbage);
 		}
+		string->size = next_size;
 	}
 
 	return string;
