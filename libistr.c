@@ -88,7 +88,8 @@ static istring* istr_ensure_size(istring *string, size_t len)
 		return NULL;
 	}
 
-	if (string->size < len) {
+	// The +1 is not for a '\0', but to allow linking together of malloc'd memory
+	if (string->size < len + 1) {
 		string->size = nearest_pow(2, len);
 		string->buf = realloc(string->buf, sizeof(string->buf) * (string->size));
 		if (NULL == string->buf) {
@@ -236,7 +237,7 @@ int istr_eq(const istring *s1, const istring *s2)
 
 istring* istr_slice(istring *dest, const istring *src, size_t begin, size_t end)
 {
-	if (NULL == dest || NULL == src || end < begin) {
+	if (NULL == dest || NULL == src || begin > end) {
 		errno = EINVAL;
 		return NULL;
 	}
@@ -337,17 +338,18 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 
 	size_t potential_len = safe_add(index, bytes_len);
 
-	if (string->len < potential_len) {
-		string->len = potential_len;
+	if (string->len > potential_len) {
+		potential_len = string->len;
 	}
 
-	string = istr_ensure_size(string, string->len);
+	string = istr_ensure_size(string, potential_len);
 	if (NULL == string) {
 		errno = ENOMEM;
 		return NULL;
 	}
 
 	memcpy(string->buf + index, bytes, bytes_len);
+	string->len = potential_len;
 
 	return string;
 }

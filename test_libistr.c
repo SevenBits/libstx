@@ -115,6 +115,17 @@ void test_insert()
 	istr_free(string, true);
 }
 
+void test_insert_bounds()
+{
+	istring *string = istr_new(NULL);
+	for(int i=0; i<10000; i++) {
+		string = istr_insert_bytes(string, 0, "123456789", 9);
+	}
+	istr_str(string)[istr_len(string)] = '\0';
+	printf("%s\n", istr_str(string) + (istr_len(string)-100));
+	istr_free(string, false);
+}
+
 void test_append()
 {
 	istring *string = istr_new_bytes("hello", 5);
@@ -154,6 +165,16 @@ void test_append()
 	istr_free(string, true);
 }
 
+void test_slice()
+{
+	istring *string = istr_new_cstr("Hello");
+	istring *slice = istr_new(NULL);
+	slice = istr_slice(slice, string, 2, 6);
+	printf("string: %s; slice: %s\n", istr_str(string), istr_str(slice));
+	istr_free(slice, true);
+	istr_free(string, true);
+}
+
 int main()
 {
 	printf("Testing libistr...\n");
@@ -161,7 +182,9 @@ int main()
 	test_istr_str();
 	test_assign();
 	test_insert();
+	//test_insert_bounds();
 	test_append();
+	test_slice();
 	//test_prepend();
 	printf("libistr testing success!\n");
 	return 0;
