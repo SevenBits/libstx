@@ -35,6 +35,8 @@ and "/my/prefix" is the prefix to install to (default is "/usr/local")
 #### EXAMPLES
 
 ``` C
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 #include "libistr.h"

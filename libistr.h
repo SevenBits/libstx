@@ -86,6 +86,28 @@ size_t istr_len(const istring *string);
  */
 size_t istr_size(const istring *string);
 
+/* istr_eq
+ * (desc): Check if two istring objects are equivalent
+ * (return -> int):
+ *   success: 0 if equal, 1 if not equal
+ *   bad args: -1 and errno = EINVAL
+ */
+int istr_eq(const istring *s1, const istring *s2);
+
+/* istr_slice
+ * (desc): Copy a slice of characters from one string to another
+ * (args): 
+ *   dest: must be an initialized istring
+ *   src: must be an initialized istring
+ *   begin: must be less than end
+ *   end: must be greater than begin
+ * (return -> istring*):
+ *   success: The slice istring
+ *   bad args: NULL and errno = EINVAL
+ *   memory error: NULL & errno = ENOMEM
+ */
+istring* istr_slice(istring *slice, const istring *src, size_t begin, size_t end);
+
 /* istr_assign_bytes
  * (desc): Reassign an istring's contents to arbitrary bytes, overwriting any
  *   old contents.
@@ -105,15 +127,6 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
  *   memory error: NULL & errno = ENOMEM
  */
 istring* istr_assign_cstr(istring *string, const char *cstr);
-
-
-/* istr_eq
- * (desc): Check if two istring objects are equivalent
- * (return -> int):
- *   success: 0 if equal, 1 if not equal
- *   bad args: -1 and errno = EINVAL
- */
-int istr_eq(const istring *s1, const istring *s2);
 
 /* istr_truncate_bytes
  * (desc): Shorten's the istring to a specified length.

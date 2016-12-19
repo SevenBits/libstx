@@ -218,6 +218,32 @@ size_t istr_size(const istring *string)
 	return string->size;
 }
 
+int istr_eq(const istring *s1, const istring *s2)
+{
+	if (NULL == s1 || NULL == s2) {
+		errno = EINVAL;
+		return -1;
+	}
+	
+	if (s1->len != s2->len) return 1;
+
+	for (size_t i=0; i<s1->len; i++) {
+		if (s1->buf[i] != s2->buf[i]) return 1;
+	}
+
+	return 0;
+}
+
+istring* istr_slice(istring *dest, const istring *src, size_t begin, size_t end)
+{
+	if (NULL == dest || NULL == src || end < begin) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	return istr_assign_bytes(dest, src->buf + begin, end - begin);
+}
+
 istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
@@ -246,22 +272,6 @@ istring* istr_assign_cstr(istring *string, const char *cstr)
 	}
 
 	return istr_assign_bytes(string, cstr, strlen(cstr)+1);
-}
-
-int istr_eq(const istring *s1, const istring *s2)
-{
-	if (NULL == s1 || NULL == s2) {
-		errno = EINVAL;
-		return -1;
-	}
-	
-	if (s1->len != s2->len) return 1;
-
-	for (size_t i=0; i<s1->len; i++) {
-		if (s1->buf[i] != s2->buf[i]) return 1;
-	}
-
-	return 0;
 }
 
 istring* istr_truncate_bytes(istring *string, size_t len)
