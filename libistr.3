@@ -10,7 +10,7 @@ libistr \- Improved String Library
 The istring library (hereafter referred to as libistr) is an efficient and 
 simple dynamic string library for C. It provides the istring structure and 
 functions that operate on them. istrings are fully compatible with the 
-standard ANSI C <string.h> functions with access to their character buffers.
+standard ANSI C <string.h> functions with access to their character buffers,
 however, an istring is not required to contain a terminating null-byte and
 none of the library functions require a terminating null-byte unless 
 specifically required (For interoperability with existing C strings).
@@ -28,17 +28,16 @@ an istring's size is to keep it as a power of two e.g. 32, 64, 512.
 .I For more detailed documentation please look at libistr.h
 .TP
 .B istr_new
-Copy or initialize a new istring.
+Initialize a new istring from an existing istring.
 .TP
 .B istr_new_bytes
-Initialize a new istring with arbitrary bytes.
+Initialize a new istring from arbitrary bytes.
 .TP
 .B istr_new_cstr
-Initialize a new istring with a string with terminating null-byte.
+Initialize a new istring from a string with a terminating null-byte.
 .TP
 .B istr_free
-Free all memory allocated to an istring structure and return the internal 
-character buffer if flagged to not be freed.
+Free all memory allocated by any istring initialization function.
 .TP
 .B istr_str
 Get a pointer to the char buffer in the given istring.
@@ -49,44 +48,47 @@ Get the amount of bytes contained by the given istring.
 .B istr_size
 Get the size allocated to the given istring's character buffer.
 .TP
+.B istr_eq
+Check if two istings contain the same contents.
+.TP
+.B istr_slice
+Copy a slice of characters from one string to another.
+.TP
 .B istr_assign_bytes
 Reassign an istring's contents to arbitrary bytes, rewriting any old contents.
 .TP
 .B istr_assign_cstr
 Reassign an istring's contents to a string with a terminating null-byte.
 .TP
-.B istr_eq
-Check if two istings contain the same contents.
-.TP
 .B istr_truncate_bytes
-Shorten's the istring to a specified length.
+Shorten the istring to a specified length.
 .TP
 .B istr_pop_byte
-Removes the last byte in an istring and returns it.
+Remove the last byte in an istring and returns it.
 .TP
 .B istr_write
-Overwrites an istring at an index with another istring.
+Overwrite an istring at an index with another istring.
 .TP
 .B istr_write_bytes
-Overwrites an istring at an index with arbitrary bytes.
+Overwrite an istring at an index with arbitrary bytes.
 .TP
 .B istr_prepend
-Prepends a copy of an istring to another istring.
+Prepend a copy of an istring to another istring.
 .TP
 .B istr_prepend_bytes
-Prepends arbitrary bytes onto an istring.
+Prepend arbitrary bytes onto an istring.
 .TP
 .B istr_append
-Appends a copy of an istring to another istring.
+Append a copy of an istring to another istring.
 .TP
 .B istr_append_bytes
-Appends arbitrary bytes onto an istring.
+Append arbitrary bytes onto an istring.
 .TP
 .B istr_insert
-Inserts an istring into an istring at an index without overwriting.
+Insert an istring into an istring at an index without overwriting.
 .TP
 .B istr_insert_bytes
-Inserts arbitrary bytes into an istring at an index without overwriting.
+Insert arbitrary bytes into an istring at an index without overwriting.
 .SH CONFORMING TO
 The
 .I libistr

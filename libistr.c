@@ -8,15 +8,15 @@
 
 #include "libistr.h"
 
-/* safe_add
- * (desc): Safely adds together two size_t values while preventing 
- *   integer overflow. If integer overflow would occur, instead
- *   the maximum possible size is returned instead and errno is 
- *   set to ERANGE.
- * (return -> size_t):
- *   success: Sum of the two arguments
- *   range error: SIZE_MAX and errno = ERANGE
- */
+/* 
+safe_add:
+	Safely adds together two size_t values while flagging an error
+	if integer overflow would happen.
+
+return -> size_t:
+	success: Sum of the two arguments
+	range error: SIZE_MAX and errno = ERANGE
+*/
 static inline size_t safe_add(size_t a, size_t b)
 {
 	if (a > SIZE_MAX - b) {
@@ -27,35 +27,38 @@ static inline size_t safe_add(size_t a, size_t b)
 	}
 }
 
-/* smax
- * (desc): simple inline function that returns the largest
- *   input. Used instead of a macro for safety
- * (return -> size_t):
- *   success: largest value between a and b
- */
+/*
+smax:
+	simple inline function that returns the largest input. Used instead of a 
+	macro for type safety
+
+return -> size_t:
+	success: largest value between a and b
+*/
 static inline size_t smax(size_t a, size_t b)
 {
 	return (a > b) ? a : b;
 }
 
-/* smin
- * (desc): simple inline function that returns the smallest
- *   input. Used instead of a macro for type safety.
- * (return -> size_t):
- *   success: smallest value between a and b
- */
+/* 
+smin:
+	simple inline function that returns the smallest input. Used instead of a 
+	macro for type safety
+
+return -> size_t:
+	success: smallest value between a and b
+*/
 static inline size_t smin(size_t a, size_t b)
 {
 	return (a < b) ? a : b;
 }
 
-/* nearest_pow
- * (desc): Find the nearest power of two to the value of num.
- *   if the next power of two would overflow, then
- *   SIZE_MAX is returned instead with errno set appropriately.
- * (return -> size_t):
- *   success: The closest power of two larger than num
- *   range error: SIZE_MAX and errno = ERANGE
+/* 
+nearest_pow:
+	Find the nearest power of two that can contain the given value.
+return -> size_t:
+	success: The closest power of two larger than num
+	range error: SIZE_MAX and errno = ERANGE
  */
 static inline size_t nearest_pow(size_t base, size_t num)
 {
@@ -72,14 +75,15 @@ static inline size_t nearest_pow(size_t base, size_t num)
 	return base;
 }
 
-/* istr_ensure_size
- * (desc): A Helper function that guarentees to the caller 
- *   that, if memory can be allocated successfully, that string's
- *   char buffer will be able to hold at least len bytes
- * (return -> istring*):
- *   success: The original string object
- *   bad args: NULL and errno = EINVAL
- *   memory error: NULL and errno = ENOMEM
+/* 
+istr_ensure_size:
+	A Helper function that guarentees to the caller 
+	that, if memory can be allocated successfully, the given istring's
+	char buffer will be able to hold at least the amount of requested bytes
+return -> istring*):
+	success: The original string object
+	bad args: NULL and errno = EINVAL
+	memory error: NULL and errno = ENOMEM
  */
 static istring* istr_ensure_size(istring *string, size_t len)
 {
@@ -93,7 +97,7 @@ static istring* istr_ensure_size(istring *string, size_t len)
 		size_t next_size = nearest_pow(2, len);
 		// Use realloc to try to prevent defragmentation if sizes are close
 		if (string->size*7 < string->len*8) {
-			string->buf = realloc(string->buf, sizeof(string->buf) * (next_size));
+			string->buf = realloc(string->buf, sizeof(*(string->buf)) * (next_size));
 			if (NULL == string->buf) {
 				free(string);
 				errno = ENOMEM;
@@ -102,7 +106,7 @@ static istring* istr_ensure_size(istring *string, size_t len)
 		} else {
 			// Manually realloc, only copying the useful bytes in the buffer
 			char *garbage = string->buf;
-			string->buf = malloc(sizeof(string->buf) * (next_size));
+			string->buf = malloc(sizeof(*(string->buf)) * (next_size));
 			if (NULL == string->buf) {
 				free(garbage);
 				free(string);
@@ -118,12 +122,13 @@ static istring* istr_ensure_size(istring *string, size_t len)
 	return string;
 }
 
-/* istr_init
- * (desc): A Helper function that allocates memory for an istring
- *   and initializes all of it's fields.
- * (return -> istring*):
- *   success: The pointer to a newly allocated istring
- *   failure: NULL and errno = ENOMEM
+/* 
+istr_init:
+	A Helper function that allocates memory for an istring
+	and initializes all of it's fields.
+return -> istring*:
+	success: The pointer to a newly allocated istring
+	failure: NULL and errno = ENOMEM
  */
 static istring* istr_init(size_t init_size)
 {
@@ -137,10 +142,9 @@ static istring* istr_init(size_t init_size)
 	string->size = 0;
 	string->len = 0;
 
-	// This allocates the char buffer in powers of two.
-	string = istr_ensure_size(string, smax(init_size, 2));
-	if (NULL == string) {
+	if (NULL == istr_ensure_size(string, init_size)) {
 		errno = ENOMEM;
+		free(string);
 		return NULL;
 	}
 
@@ -268,8 +272,7 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 		return NULL;
 	}
 
-	string = istr_ensure_size(string, bytes_len);
-	if (NULL == string) {
+	if (NULL == istr_ensure_size(string, bytes_len)) {
 		errno = ENOMEM;
 		return NULL;
 	}
@@ -358,8 +361,7 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 		potential_len = string->len;
 	}
 
-	string = istr_ensure_size(string, potential_len);
-	if (NULL == string) {
+	if (NULL == istr_ensure_size(string, potential_len)) {
 		errno = ENOMEM;
 		return NULL;
 	}
@@ -452,8 +454,7 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	// Overflow check
 	size_t total_len = safe_add(string->len, bytes_len);
 
-	string = istr_ensure_size(string, total_len);
-	if (NULL == string) {
+	if (NULL == istr_ensure_size(string, total_len)) {
 		errno = ENOMEM;
 		return NULL;
 	}
