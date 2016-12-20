@@ -6,12 +6,9 @@ HEADER=libistr.h
 SRC=libistr.c
 OBJ=${SRC:.c=.o}
 
-TEST_SRC=test_libistr.c
-TESTS=test_libistr
-
 MANPAGE=libistr.3
 
-all: settings libistr.a
+all: settings run_tests libistr.a
 
 settings:
 	@echo libistr build settings:
@@ -27,6 +24,27 @@ ${OBJ}: config.mk
 ${ARCHIVE}: ${OBJ}
 	@echo creating library archive
 	@ar -cq $@ ${OBJ}
+
+# Tests below
+
+TEST_SRC=test_libistr.c
+TESTS=test_libistr
+
+tests: ${TESTS}
+
+test_libistr: test_libistr.c ${OBJ}
+	${CC} -o test_libistr test_libistr.c ${OBJ}
+
+run_tests: tests
+	@echo running all tests
+	$(foreach test,${TESTS},./${test})
+
+clean:
+	@echo "cleaning..."
+	rm -f ${ARCHIVE} 
+	rm -f ${OBJ}
+	rm -f ${TESTS}
+	rm -f libistr-${VERSION}.tar.gz
 
 dist: clean
 	@echo creating dist tarball
@@ -48,24 +66,12 @@ install: all
 	@sed "s/VERSION/${VERSION}/g" < ${MANPAGE} > ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
 	@chmod 644 ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
 
-clean:
-	@echo "cleaning..."
-	rm -f ${ARCHIVE} 
-	rm -f ${OBJ}
-	rm -f ${TESTS}
-	rm -f libistr-${VERSION}.tar.gz
-
-#
-# TESTING SECTION BELOW
-#
-
-tests: ${TESTS}
-
-run_tests: tests
-	@echo running all tests
-	$(foreach test,${TESTS},./${test})
-
-test_libistr: test_libistr.c ${OBJ}
-	${CC} -o test_libistr test_libistr.c ${OBJ}
+uninstall:
+	@echo removing library archive from ${DESTDIR}${PREFIX}/lib/
+	@rm -f ${DESTDIR}${PREFIX}/lib/${ARCHIVE}
+	@echo removing library header from ${DESTDIR}${PREFIX}/include/
+	@rm -f ${DESTDIR}${PREFIX}/include/${HEADER}
+	@echo removing manual page from ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
+	@rm -f ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
 
 .PHONY: all settings clean run_tests
