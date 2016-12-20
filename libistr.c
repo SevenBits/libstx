@@ -323,7 +323,7 @@ char istr_pop_byte(istring *string)
 {
 	if (NULL == string) {
 		errno = EINVAL;
-		return -1;
+		return '\0';
 	}
 
 	string->len -= 1;
