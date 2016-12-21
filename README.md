@@ -9,13 +9,7 @@ handling, verifying input, thread concurrency, and preventing overflows
 wherever possible. All library documentation is in the man page and header
 file.
 
-#### USAGE
-
-``` C
-#include <libistr.h>
-```
-
-#### INSTALLATION
+## Installation
 
 The installation process is very similar to any suckless.org tools. 
 Edit config.mk to match your local setup
@@ -32,9 +26,9 @@ make clean install DESTDIR="my/dir/" PREFIX="/my/prefix/"
 where "my/dir/" is the path to the installation destination (default is "")
 and "/my/prefix" is the prefix to install to (default is "/usr/local")
 
-## EXAMPLES
+## Usage
 
-#### Basic usage
+#### Basic Example
 ``` C
 #include <stdio.h>
 #include <stdlib.h>
@@ -89,6 +83,6 @@ To compile a project with this library, simply link it with the -l flag like so:
 cc -o project project.c -listr
 ```
 
-#### LICENSE
+## LICENSE
 
 See LICENSE file included in the repository for copyright and license details
