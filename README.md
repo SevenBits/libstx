@@ -34,6 +34,7 @@ and "/my/prefix" is the prefix to install to (default is "/usr/local")
 
 #### EXAMPLES
 
+## Basic usage
 ``` C
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,9 +64,29 @@ int main()
 }
 ```
 
-To compile a project with this library, simply link it after with the -l flag like so:
+## Keep references alive
+This is useful if you need to keep references to a particular istring's
+character buffer rather than references to the istring itself. Avoid using it
+unless you really need to because it can be a little confusing with all the
+dereferencing, but it is guaranteed to work.
+``` C
+	// With this assignment the string buffer is 8 bytes long
+	istring *string = istr_new_cstr("string");
+
+	// Grab a reference to the istring's buffer
+	char **ptr = istr_strptr(string);
+
+	// Assign the string (which causes a realloc to 32 bytes)
+	string = istr_assign_cstr("This string will realloc");
+
+	// And the reference is guaranteed to work
+	printf("%s\n", *ptr);
+```
+
+## How to link
+To compile a project with this library, simply link it with the -l flag like so:
 ```sh
-gcc -o project project.c -listr
+cc -o project project.c -listr
 ```
 
 #### LICENSE
