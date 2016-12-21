@@ -32,9 +32,9 @@ make clean install DESTDIR="my/dir/" PREFIX="/my/prefix/"
 where "my/dir/" is the path to the installation destination (default is "")
 and "/my/prefix" is the prefix to install to (default is "/usr/local")
 
-#### EXAMPLES
+## EXAMPLES
 
-## Basic usage
+#### Basic usage
 ``` C
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,7 +64,7 @@ int main()
 }
 ```
 
-## Keep references alive
+#### Keep references alive
 This is useful if you need to keep references to a particular istring's
 character buffer rather than references to the istring itself. Avoid using it
 unless you really need to because it can be a little confusing with all the
@@ -83,7 +83,7 @@ dereferencing, but it is guaranteed to work.
 	printf("%s\n", *ptr);
 ```
 
-## How to link
+#### How to link
 To compile a project with this library, simply link it with the -l flag like so:
 ```sh
 cc -o project project.c -listr
