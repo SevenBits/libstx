@@ -46,20 +46,12 @@ void test_new_and_free()
 	istr_free(str, true);
 }
 
-void test_istr_str()
+void test_istr_strptr()
 {
 	istring *n = istr_new_cstr("hello");
-	char *tmp;
-
-	tmp = istr_str(n);
-	tmp[2] = 'Z';
-	tmp[3] = 'Z';
-
-	n = istr_assign_cstr(n, "Wow bigger string will resize buffer, now that old pointer is dead...");
-
-	tmp = istr_str(n);
-	tmp[2] = 'Z';
-	tmp[3] = 'Z';
+	char **tmp = istr_strptr(n);
+	n = istr_assign_cstr(n, "This string is longer, so it will realloc");
+	printf("Pointer pointer: %s\n", *tmp);
 
 	istr_free(n, true);
 }
@@ -179,7 +171,7 @@ int main()
 {
 	printf("Testing libistr...\n");
 	test_new_and_free();
-	test_istr_str();
+	test_istr_strptr();
 	test_assign();
 	test_insert();
 	//test_insert_bounds();

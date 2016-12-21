@@ -76,7 +76,7 @@ char* istr_free(istring *string, bool free_buf);
 
 /* 
 istr_str:
-	Get a pointer to the istr char buffer.
+	Get a the istr char buffer.
 	Use this for interoperability with <string.h> functions.
 	Please be careful, the buffer might be realloc'd by
 	any of the non-const istr_funcs and you'll have to call
@@ -91,6 +91,18 @@ return -> char*:
 	bad args: errno = EINVAL and return NULL.
  */
 char* istr_str(const istring *string);
+
+/* 
+istr_str:
+	Get a pointer to the istring char buffer if you need a reference to
+	the char buffer that won't be invalid upon automatic string reallocation
+	from any of the other functions in this library.
+
+return -> char**:
+	success: A pointer to the string object's char buffer
+	bad args: errno = EINVAL and return NULL.
+ */
+char** istr_strptr(istring *string);
 
 /*
 istr_len:

@@ -130,7 +130,7 @@ return -> istring*:
 	success: The pointer to a newly allocated istring
 	failure: NULL and errno = ENOMEM
  */
-static istring* istr_init(size_t init_size)
+static istring* istr_init()
 {
 	istring *string = malloc(sizeof(*string));
 	if (NULL == string) {
@@ -142,12 +142,6 @@ static istring* istr_init(size_t init_size)
 	string->size = 0;
 	string->len = 0;
 
-	if (NULL == istr_ensure_size(string, init_size)) {
-		errno = ENOMEM;
-		free(string);
-		return NULL;
-	}
-
 	return string;
 }
 
@@ -155,9 +149,9 @@ static istring* istr_init(size_t init_size)
 
 istring* istr_new(const istring *src) 
 {
-	if (NULL == src) return istr_init(0);
+	if (NULL == src) return istr_init();
 
-	istring *string = istr_init(src->len);
+	istring *string = istr_init();
 
 	if (NULL == string) {
 		return NULL;
@@ -168,9 +162,9 @@ istring* istr_new(const istring *src)
 
 istring* istr_new_bytes(const char *str, size_t bytes_len) 
 {
-	if (NULL == str) return istr_init(0);
+	if (NULL == str) return istr_init();
 
-	istring *string = istr_init(bytes_len);
+	istring *string = istr_init();
 
 	if (NULL == string) {
 		return NULL;
@@ -181,11 +175,11 @@ istring* istr_new_bytes(const char *str, size_t bytes_len)
 
 istring* istr_new_cstr(const char *cstr) 
 {
-	if (NULL == cstr) return istr_init(0);
+	if (NULL == cstr) return istr_init();
 
 	size_t bytes_len = strlen(cstr) + 1;
 
-	istring *string = istr_init(bytes_len);
+	istring *string = istr_init();
 
 	if (NULL == string) {
 		return NULL;
@@ -196,18 +190,32 @@ istring* istr_new_cstr(const char *cstr)
 
 char* istr_free(istring *string, bool free_buf)
 {
-	if (string->buf) {
-		if (!free_buf) {
-			char *tmp = string->buf;
-			free(string);
-			return tmp;
-		}
-		free(string->buf);
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
 	}
 
-	if (string) free(string);
+	if (string->buf && !free_buf) {
+		char *tmp = string->buf;
+		free(string);
+		return tmp;
+	}
+
+	free(string->buf);
+	string->buf = NULL;
+	free(string);
 
 	return NULL;
+}
+
+char** istr_strptr(istring *string)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	return &(string->buf);
 }
 
 char* istr_str(const istring *string)
@@ -255,14 +263,14 @@ int istr_eq(const istring *s1, const istring *s2)
 	return 0;
 }
 
-istring* istr_slice(istring *dest, const istring *src, size_t begin, size_t end)
+istring* istr_slice(istring *slice, const istring *src, size_t begin, size_t end)
 {
-	if (NULL == dest || NULL == src || begin > end) {
+	if (NULL == slice || NULL == src || begin > end) {
 		errno = EINVAL;
 		return NULL;
 	}
 
-	return istr_assign_bytes(dest, src->buf + begin, end - begin);
+	return istr_assign_bytes(slice, src->buf + begin, end - begin);
 }
 
 istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
@@ -305,20 +313,6 @@ istring* istr_truncate_bytes(istring *string, size_t len)
 	return string;
 }
 
-/*
-//TODO truncates len utf8 characters
-istring* istr_truncate_utf8(istring *string, size_t count)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	string->len = smin(string->len, count);
-	return string;
-}
-*/
- 
 char istr_pop_byte(istring *string)
 {
 	if (NULL == string) {
@@ -375,6 +369,14 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 /*
 //TODO opposite of insert
 istring* istr_remove_bytes(istring *string, size_t index, size_t len)
+{
+	return string;
+}
+*/
+
+/*
+//TODO
+istring* istr_prepend_utf8(istring *string, const char *utf8_str, size_t count)
 {
 	return string;
 }
