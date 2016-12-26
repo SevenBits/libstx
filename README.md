@@ -5,16 +5,17 @@ libistr - Improved String Library
 
 libistr is a minimal and simple dynamically-sized string handling library that
 conforms to the C99 standards. The main goals of the library are proper error
-handling, verifying input, thread concurrency, and preventing overflows
-wherever possible. All library documentation is in the man page and header
-file.
+handling, verifying input, thread concurrency, and preventing integer and 
+buffer overflows. All library documentation is in the man page and header
+file. All strings are guarenteed to be NULL terminated at all times 
+as well with this library, making it safe to use C string functions on them.
 
 ## Installation
 
 The installation process is very similar to any suckless.org tools. 
-Edit config.mk to match your local setup
+First, Edit config.mk to match your local setup.
 
-Afterwards run the following command:
+Second, run the following command:
 ```sh
 make clean install
 ```
@@ -44,8 +45,8 @@ int main()
 	// Assigns up until the Null terminating byte
 	istr_assign_cstr(string, "Hello, how are you?");
 
-	// Access to the internals of an istring are done through functions
-	printf("str: %s\n", istr_str(string));
+	// The internals of an istring are defined as part of the API, and safe to use.
+	printf("str: %s\n", string->buf);
 
 	// Create a new istring from an existing one
 	istring *other_string = new_istr(string);
@@ -56,25 +57,6 @@ int main()
 	// The rest of the functions are detailed in libistr.3 and libistr.h
 	return 0;
 }
-```
-
-#### Keep references alive
-This is useful if you need to keep references to a particular istring's
-character buffer rather than references to the istring itself. Avoid using it
-unless you really need to because it can be a little confusing with all the
-dereferencing, but it is guaranteed to work.
-``` C
-	// With this assignment the string buffer is 8 bytes long
-	istring *string = istr_new_cstr("string");
-
-	// Grab a reference to the istring's buffer
-	char **ptr = istr_strptr(string);
-
-	// Assign the string (which causes a realloc to 32 bytes)
-	string = istr_assign_cstr("This string will realloc");
-
-	// And the reference is guaranteed to work
-	printf("%s\n", *ptr);
 ```
 
 #### How to link

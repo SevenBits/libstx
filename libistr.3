@@ -10,13 +10,9 @@ libistr \- Improved String Library
 The istring library (hereafter referred to as libistr) is an efficient and 
 simple dynamic string library for C. It provides the istring structure and 
 functions that operate on them. istrings are fully compatible with the 
-standard ANSI C <string.h> functions with access to their character buffers,
-however, an istring is not required to contain a terminating null-byte and
-none of the library functions require a terminating null-byte unless 
-specifically required (For interoperability with existing C strings).
-As a bonus because of this, istrings can be used to hold arbitrary data
-inside of them with no worries of the library modifying the data in unexpected
-ways (libistr will NEVER automatically insert a null-byte for you).
+standard ANSI C <string.h> style functions, as libistr will always make sure 
+an istring ends with a NULL byte at the end of the data it contains.
+As a bonus, istrings can be used to hold arbitrary values, including 0.
 .PP
 libistr includes utf8 helper functions that let unicode characters be
 manipulated by the number of unicode characters rather than the size in bytes.
@@ -38,15 +34,6 @@ Initialize a new istring from a string with a terminating null-byte.
 .TP
 .B istr_free
 Free all memory allocated by any istring initialization function.
-.TP
-.B istr_str
-Get a pointer to the char buffer in the given istring.
-.TP
-.B istr_len
-Get the amount of bytes contained by the given istring.
-.TP
-.B istr_size
-Get the size allocated to the given istring's character buffer.
 .TP
 .B istr_eq
 Check if two istings contain the same contents.
@@ -83,6 +70,9 @@ Append a copy of an istring to another istring.
 .TP
 .B istr_append_bytes
 Append arbitrary bytes onto an istring.
+.TP
+.B istr_append_cstr
+Append a c-style string with a terminating null-byte to an istring.
 .TP
 .B istr_insert
 Insert an istring into an istring at an index without overwriting.
