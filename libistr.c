@@ -123,14 +123,14 @@ static istring* istr_ensure_size(istring *string, size_t len)
 }
 
 /* 
-istr_init:
+istr_alloc:
 	A Helper function that allocates memory for an istring
 	and initializes all of it's fields.
 return -> istring*:
 	success: The pointer to a newly allocated istring
 	failure: NULL and errno = ENOMEM
  */
-static istring* istr_init()
+static istring* istr_alloc()
 {
 	istring *string = malloc(sizeof(*string));
 	if (NULL == string) {
@@ -146,44 +146,43 @@ static istring* istr_init()
 }
 
 // PUBLIC LIBRARY FUNCTIONS BELOW
-
 istring* istr_new(const istring *src) 
 {
-	if (NULL == src) return istr_init();
-
-	istring *string = istr_init();
-
+	istring *string = istr_alloc();
 	if (NULL == string) {
+		errno = ENOMEM;
 		return NULL;
 	}
+
+	if (NULL == src) return string;
 
 	return istr_assign_bytes(string, src->buf, src->len);
 }
 
-istring* istr_new_bytes(const char *str, size_t bytes_len) 
+istring* istr_new_bytes(const char *bytes, size_t bytes_len) 
 {
-	if (NULL == str) return istr_init();
-
-	istring *string = istr_init();
-
+	istring *string = istr_alloc();
 	if (NULL == string) {
+		errno = ENOMEM;
 		return NULL;
 	}
 
-	return istr_assign_bytes(string, str, bytes_len);
+	if (NULL == bytes) return string;
+
+	return istr_assign_bytes(string, bytes, bytes_len);
 }
 
 istring* istr_new_cstr(const char *cstr) 
 {
-	if (NULL == cstr) return istr_init();
-
-	size_t bytes_len = strlen(cstr) + 1;
-
-	istring *string = istr_init();
-
+	istring *string = istr_alloc();
 	if (NULL == string) {
+		errno = ENOMEM;
 		return NULL;
 	}
+
+	if (NULL == cstr) return string;
+
+	size_t bytes_len = strlen(cstr) + 1;
 
 	return istr_assign_bytes(string, cstr, bytes_len);
 }
@@ -208,45 +207,6 @@ char* istr_free(istring *string, bool free_buf)
 	return NULL;
 }
 
-char** istr_strptr(istring *string)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	return &(string->buf);
-}
-
-char* istr_str(const istring *string)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	return string->buf;
-}
-
-size_t istr_len(const istring *string)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return 0;
-	}
-	return string->len;
-}
-
-size_t istr_size(const istring *string)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return 0;
-	}
-
-	return string->size;
-}
-
 int istr_eq(const istring *s1, const istring *s2)
 {
 	if (NULL == s1 || NULL == s2) {
@@ -261,6 +221,21 @@ int istr_eq(const istring *s1, const istring *s2)
 	}
 
 	return 0;
+}
+
+char istr_index(const istring *string, size_t index)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return '\0';
+	}
+
+	if (index > string->len) {
+		errno = ERANGE;
+		return '\0';
+	}
+
+	return string->buf[index];
 }
 
 istring* istr_slice(istring *slice, const istring *src, size_t begin, size_t end)
@@ -317,6 +292,11 @@ char istr_pop_byte(istring *string)
 {
 	if (NULL == string) {
 		errno = EINVAL;
+		return '\0';
+	}
+
+	if (string->len <= 0) {
+		errno = ERANGE;
 		return '\0';
 	}
 

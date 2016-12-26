@@ -5,15 +5,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-/* 
-WARNING: Do not access these fields directly outside of test code
-this API is designed to not require the internals to be messed with
-as they could potentially change in the future.
-*/
+// Fields of this struct are public
 typedef struct istring {
 	char *buf;     // Character buffer.
-	size_t size;   // Size of char buffer.
 	size_t len; // Amount of bytes in the buffer.
+	size_t size;   // Size of char buffer.
 } istring;
 
 /*
@@ -75,56 +71,6 @@ return -> char*:
 char* istr_free(istring *string, bool free_buf);
 
 /* 
-istr_str:
-	Get a the istr char buffer.
-	Use this for interoperability with <string.h> functions.
-	Please be careful, the buffer might be realloc'd by
-	any of the non-const istr_funcs and you'll have to call
-	this function again to avoid pointing to
-	memory you shouldn't be pointing to.
-
-	TL;DR - Use the pointer returned by this functions
-	as soon as possible before calling other istr_funcs on it
-
-return -> char*:
-	success: The string object's char buffer
-	bad args: errno = EINVAL and return NULL.
- */
-char* istr_str(const istring *string);
-
-/* 
-istr_str:
-	Get a pointer to the istring char buffer if you need a reference to
-	the char buffer that won't be invalid upon automatic string reallocation
-	from any of the other functions in this library.
-
-return -> char**:
-	success: A pointer to the string object's char buffer
-	bad args: errno = EINVAL and return NULL.
- */
-char** istr_strptr(istring *string);
-
-/*
-istr_len:
-	Get the amount of bytes contained by the given istring.
-
-return -> size_t:
-	success: the amount of bytes in @string's char buffer
-	bad args: 0 and errno = EINVAL
- */
-size_t istr_len(const istring *string);
-
-/* 
-istr_size:
-	Get the size allocated to the given istring's character buffer.
-
-return -> size_t:
-	success: the size of the char buffer
-	bad args: 0 and errno = EINVAL
- */
-size_t istr_size(const istring *string);
-
-/* 
 istr_eq:
 	Check if two istings contain the same contents.
 
@@ -133,6 +79,17 @@ return -> int:
 	bad args: -1 and errno = EINVAL
  */
 int istr_eq(const istring *s1, const istring *s2);
+
+/*
+istr_index:
+	Get the char at given index from the string
+
+return -> size_t:
+	success: the char at the given index
+	bad args: '\0' and errno = EINVAL
+	out of range index: '\0' and errno = ERANGE
+*/
+char istr_index(const istring *string, size_t index);
 
 /* 
 istr_slice:
