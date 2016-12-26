@@ -208,6 +208,17 @@ istring* istr_append(istring *dest, const istring *src);
 
 /* 
 istr_append_bytes:
+	Appends a single char onto the end of an istring
+
+return -> istring*:
+	success: original string object
+	bad args: NULL & errno = EINVAL
+	memory error: NULL & errno = ENOMEM
+ */
+istring* istr_append_char(istring *string, const char ch);
+
+/* 
+istr_append_bytes:
 	Appends arbitrary bytes onto an istring.
 
 return -> istring*:

@@ -395,6 +395,11 @@ istring* istr_append_utf8(istring *string, const char *utf8_str, size_t count)
 }
 */
 
+istring* istr_append_char(istring *string, const char ch)
+{
+	return istr_append_bytes(string, &ch, 1);
+}
+
 istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
