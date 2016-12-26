@@ -255,13 +255,14 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 		return NULL;
 	}
 
-	if (NULL == istr_ensure_size(string, bytes_len)) {
+	if (NULL == istr_ensure_size(string, bytes_len + 1)) {
 		errno = ENOMEM;
 		return NULL;
 	}
 
 	// Don't bother memsetting the buffer, just shorten the logical length
 	memcpy(string->buf, bytes, bytes_len);
+	string->buf[bytes_len] = '\0';
 	string->len = bytes_len;
 
 	return string;
@@ -335,12 +336,13 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 		potential_len = string->len;
 	}
 
-	if (NULL == istr_ensure_size(string, potential_len)) {
+	if (NULL == istr_ensure_size(string, potential_len + 1)) {
 		errno = ENOMEM;
 		return NULL;
 	}
 
 	memcpy(string->buf + index, bytes, bytes_len);
+	string->buf[potential_len] = '\0';
 	string->len = potential_len;
 
 	return string;
@@ -441,7 +443,7 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	// Overflow check
 	size_t total_len = safe_add(string->len, bytes_len);
 
-	if (NULL == istr_ensure_size(string, total_len)) {
+	if (NULL == istr_ensure_size(string, total_len + 1)) {
 		errno = ENOMEM;
 		return NULL;
 	}
@@ -457,6 +459,7 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	}
 
 	memcpy(string->buf + index, bytes, bytes_len);
+	string->buf[total_len] = '\0';
 	string->len = total_len;
 
 	return string;

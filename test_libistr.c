@@ -125,7 +125,7 @@ void test_append()
 	// case1a: small append
 	string = istr_append_bytes(string, "omg", 3);
 
-	assert(strncmp(string->buf, "helloomg", 8) == 0);
+	assert(strcmp(string->buf, "helloomg") == 0);
 	assert(string->len == 8);
 	assert(string->size >= 8);
 
