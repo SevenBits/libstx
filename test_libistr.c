@@ -20,13 +20,13 @@ void test_new_and_free()
 
 	two = istr_new_cstr("hi");
 	assert(strcmp(two->buf, "hi") == 0);
-	assert(two->len == 3);
-	assert(two->size >= 3);
+	assert(two->len == 2);
+	assert(two->size >= 2);
 
 	str = istr_new(two);
 	assert(strcmp(str->buf, "hi") == 0);
-	assert(str->len == 3);
-	assert(str->size >= 3);
+	assert(str->len == 2);
+	assert(str->size >= 2);
 
 	istr_free(two, true);
 	istr_free(str, true);
@@ -58,7 +58,7 @@ void test_istr_strptr()
 
 static inline void assign_assert(istring *string, char *str)
 {
-	size_t str_len = strlen(str) + 1;
+	size_t str_len = strlen(str);
 	string = istr_assign_cstr(string, str);
 
 	assert(strcmp(string->buf, str) == 0);
@@ -120,10 +120,11 @@ void test_insert_bounds()
 
 void test_append()
 {
-	istring *string = istr_new_bytes("hello", 5);
+	istring *string = istr_new_cstr("hello");
+	assert(string->len == 5);
 
 	// case1a: small append
-	string = istr_append_bytes(string, "omg", 3);
+	string = istr_append_cstr(string, "omg");
 
 	assert(strcmp(string->buf, "helloomg") == 0);
 	assert(string->len == 8);

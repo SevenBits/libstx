@@ -165,6 +165,17 @@ istring* istr_write(istring *dest, size_t index, const istring *src);
 
 /* 
 istr_write_bytes:
+	Overwrites an istring at an index with the contents of a C-style string
+	not including the NULL terminator.
+return -> istring*:
+	success: the original string object
+	bad args: NULL & errno=EINVAL 
+	memory error: NULL & errno = ENOMEM
+ */
+istring* istr_write_cstr(istring *string, size_t index, const char *cstr);
+
+/* 
+istr_write_bytes:
 	Overwrites an istring at an index with arbitrary bytes
 return -> istring*:
 	success: the original string object
@@ -183,6 +194,18 @@ return -> istring*:
 	memory error: NULL & errno = ENOMEM
  */
 istring* istr_prepend(istring *dest, const istring *src);
+
+/* 
+istr_prepend_bytes:
+	Prepends a C-style string to an istring's buffer, not including
+	it's NULL terminator.
+
+return -> istring*:
+	success: original string object
+	bad args: NULL & errno = EINVAL
+	memory error: NULL & errno = ENOMEM
+ */
+istring* istr_prepend_cstr(istring *string, const char *cstr);
 
 /* 
 istr_prepend_bytes:
@@ -207,15 +230,16 @@ return -> istring*:
 istring* istr_append(istring *dest, const istring *src);
 
 /* 
-istr_append_bytes:
-	Appends a single char onto the end of an istring
+istr_append_cstr:
+	Appends a C-style string not including its NULL terminator
+	(A Null byte is inserted at the end automatically).
 
 return -> istring*:
 	success: original string object
 	bad args: NULL & errno = EINVAL
 	memory error: NULL & errno = ENOMEM
  */
-istring* istr_append_char(istring *string, const char ch);
+istring* istr_append_cstr(istring *string, const char *cstr);
 
 /* 
 istr_append_bytes:
@@ -237,6 +261,17 @@ return -> istring*:
 	memory error: NULL & errno = ENOMEM
  */
 istring* istr_insert(istring *dest, size_t index, const istring *src);
+
+/* 
+istr_insert_bytes:
+	Inserts a C-style string (not including the NULL terminator) into an istring.
+
+return -> istring*:
+	success: the original string object
+	bad args: NULL & errno=EINVAL 
+	memory error: NULL & errno = ENOMEM
+ */
+istring* istr_insert_cstr(istring *string, size_t index, const char *cstr);
 
 /* 
 istr_insert_bytes:

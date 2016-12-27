@@ -182,7 +182,7 @@ istring* istr_new_cstr(const char *cstr)
 
 	if (NULL == cstr) return string;
 
-	size_t bytes_len = strlen(cstr) + 1;
+	size_t bytes_len = strlen(cstr);
 
 	return istr_assign_bytes(string, cstr, bytes_len);
 }
@@ -262,8 +262,8 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 
 	// Don't bother memsetting the buffer, just shorten the logical length
 	memcpy(string->buf, bytes, bytes_len);
-	string->buf[bytes_len] = '\0';
 	string->len = bytes_len;
+	string->buf[string->len] = '\0';
 
 	return string;
 }
@@ -275,7 +275,7 @@ istring* istr_assign_cstr(istring *string, const char *cstr)
 		return NULL;
 	}
 
-	return istr_assign_bytes(string, cstr, strlen(cstr)+1);
+	return istr_assign_bytes(string, cstr, strlen(cstr));
 }
 
 istring* istr_truncate_bytes(istring *string, size_t len)
@@ -305,22 +305,24 @@ char istr_pop_byte(istring *string)
 	return string->buf[string->len + 1];
 }
 
-/*
-//TODO pops the next utf8 character sequence
-char* istr_pop_utf8(istring *string)
+istring* istr_write(istring *string, size_t index, const istring *ext)
 {
-	if (NULL == string) {
+	if (NULL == ext) {
 		errno = EINVAL;
 		return NULL;
 	}
 
-	return string->buf;
-}
-*/
-
-istring* istr_write(istring *string, size_t index, const istring *ext)
-{
 	return istr_write_bytes(string, index, ext->buf, ext->len);
+}
+
+istring* istr_write_cstr(istring *string, size_t index, const char *cstr)
+{
+	if (NULL == cstr) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	return istr_write_bytes(string, index, cstr, strlen(cstr));
 }
 
 istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
@@ -342,24 +344,32 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 	}
 
 	memcpy(string->buf + index, bytes, bytes_len);
-	string->buf[potential_len] = '\0';
 	string->len = potential_len;
+	string->buf[string->len] = '\0';
 
 	return string;
 }
 
-/*
-//TODO opposite of insert
+/*TODO
 istring* istr_remove_bytes(istring *string, size_t index, size_t len)
 {
-	return string;
-}
-*/
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
+	}
 
-/*
-//TODO
-istring* istr_prepend_utf8(istring *string, const char *utf8_str, size_t count)
-{
+	if (index > string->len) {
+		return string;
+	}
+
+	size_t rm_len = smin(string->len, safe_add(index, rm_len));
+	
+	memmove(string->buf + index, \
+			string->buf + rm_len, \
+			string->len - index - rm_len);
+	
+	string->len -= rm_len;
+
 	return string;
 }
 */
@@ -372,6 +382,16 @@ istring* istr_prepend(istring *dest, const istring *src)
 	}
 	
 	return istr_prepend_bytes(dest, src->buf, src->len);
+}
+
+istring* istr_prepend_cstr(istring *string, const char *cstr)
+{
+	if (NULL == cstr) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	return istr_prepend_bytes(string, cstr, strlen(cstr));
 }
 
 istring* istr_prepend_bytes(istring *string, const char *bytes, size_t bytes_len)
@@ -389,17 +409,14 @@ istring* istr_append(istring *dest, const istring *src)
 	return istr_append_bytes(dest, src->buf, src->len);
 }
 
-/*
-//TODO
-istring* istr_append_utf8(istring *string, const char *utf8_str, size_t count)
+istring* istr_append_cstr(istring *string, const char *cstr)
 {
-	return string;
-}
-*/
+	if (NULL == cstr) {
+		errno = EINVAL;
+		return NULL;
+	}
 
-istring* istr_append_char(istring *string, const char ch)
-{
-	return istr_append_bytes(string, &ch, 1);
+	return istr_append_bytes(string, cstr, strlen(cstr));
 }
 
 istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len)
@@ -422,16 +439,15 @@ istring* istr_insert(istring *dest, size_t index, const istring *src)
 	return istr_insert_bytes(dest, index, src->buf, src->len);
 }
 
-/*
-//TODO
-istring* istr_insert_utf8(istring *string, size_t index, const char *utf8_str, size_t count)
+istring* istr_insert_cstr(istring *string, size_t index, const char *cstr)
 {
-	if (NULL == string || NULL == utf8_str) {
+	if (NULL == cstr) {
 		errno = EINVAL;
 		return NULL;
 	}
+
+	return istr_insert_bytes(string, index, cstr, strlen(cstr));
 }
-*/
 
 istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
 {
@@ -459,8 +475,8 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	}
 
 	memcpy(string->buf + index, bytes, bytes_len);
-	string->buf[total_len] = '\0';
 	string->len = total_len;
+	string->buf[string->len] = '\0';
 
 	return string;
 }
