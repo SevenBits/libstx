@@ -51,18 +51,23 @@ int main()
 	// Creates a new empty istring object
 	istring *string = istr_new(NULL);
 
-	// Assigns up until the Null terminating byte
+	// Assigns up until a '\0' is reached, then appends a '\0' to the end
 	istr_assign_cstr(string, "Hello, how are you?");
 
-	// The internals of an istring are defined as part of the API, and safe to use.
+	// The internals of an istring are defined as part of the API, and safe to use
 	printf("str: %s\n", string->buf);
 
 	// Create a new istring from an existing one
-	istring *other_string = new_istr(string);
+	istring *other_string = istr_new(string);
 
 	// Don't forget to clean up!
 	istr_free(string, true);
-	istr_free(other_string, true);
+
+	// You can also transfer ownership of the string buffer back to a char* upon freeing
+	char *tmp = istr_free(other_string, false);
+
+	// Just remember to free it
+	free(tmp);
 	
 	// The rest of the functions are detailed in libistr.3 and libistr.h
 	return 0;
