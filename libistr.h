@@ -185,6 +185,16 @@ return -> istring*:
 istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len);
 
 /* 
+istr_remove_bytes:
+	Removes up to len bytes from an istring's buffer at a given index.
+return -> istring*:
+	success: the original string object
+	bad args: NULL & errno=EINVAL 
+	memory error: NULL & errno = ENOMEM
+ */
+istring* istr_remove_bytes(istring *string, size_t index, size_t len);
+
+/* 
 istr_prepend:
 	Prepends a copy of an istring to another istring.
 

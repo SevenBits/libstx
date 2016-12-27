@@ -36,8 +36,13 @@ test_libistr: test_libistr.c ${OBJ}
 	${CC} -o test_libistr test_libistr.c ${OBJ}
 
 run_tests: tests
-	@echo running all tests
+	@echo "---------------------+"
+	@echo "  running all tests! |"
+	@echo "---------------------+"
 	$(foreach test,${TESTS},./${test})
+	@echo "---------------------+"
+	@echo "  all tests have run |"
+	@echo "---------------------+"
 
 clean:
 	@echo "cleaning..."

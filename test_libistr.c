@@ -7,186 +7,200 @@
 
 #include "libistr.h"
 
-#define TEST(name) void name ## () \
-{
-
 void test_new_and_free() 
 {
-	istring *str;
-	istring *two;
+	istring *is1;
+	istring *is2;
 
-	str = istr_new(NULL);
-	istr_free(str, true);
+	is1 = istr_new(NULL);
 
-	two = istr_new_cstr("hi");
-	assert(strcmp(two->buf, "hi") == 0);
-	assert(two->len == 2);
-	assert(two->size >= 2);
+	assert(0 == is1->len);
+	assert(2 <= is1->size);
+	assert('\0' == is1->buf[0]);
 
-	str = istr_new(two);
-	assert(strcmp(str->buf, "hi") == 0);
-	assert(str->len == 2);
-	assert(str->size >= 2);
+	is2 = istr_new(is1);
+	istr_free(is1, true);
 
-	istr_free(two, true);
-	istr_free(str, true);
+	assert(0 == is2->len);
+	assert(2 <= is2->size);
+	assert('\0' == is2->buf[0]);
 
-	str = istr_new_bytes(NULL, 0);
-	assert(str->len == 0);
-	assert(str->size >= 0);
-	istr_free(str, true);
+	istr_free(is2, true);
+	is1 = istr_new_bytes("hello", 5);
 
-	str = istr_new_bytes("hello", 6);
-	istr_free(str, true);
+	assert(5 == is1->len);
+	assert(5 <= is1->size);
+	assert('\0' == is1->buf[5]);
+	assert(0 == strcmp(is1->buf, "hello"));
 
-	str = istr_new_cstr(NULL);
-	istr_free(str, true);
+	is2 = istr_new(is1);
+	istr_free(is1, true);
 
-	str = istr_new_cstr("hello");
-	istr_free(str, true);
-}
+	assert(5 == is2->len);
+	assert(5 <= is2->size);
+	assert('\0' == is2->buf[5]);
+	assert(0 == strcmp(is2->buf, "hello"));
 
-void test_istr_strptr()
-{
-	istring *n = istr_new_cstr("hello");
-	char **tmp = &n->buf;
-	n = istr_assign_cstr(n, "This string is longer, so it will realloc");
-	printf("Pointer pointer: %s\n", *tmp);
+	istr_free(is2, true);
+	is1 = istr_new_cstr("world");
 
-	istr_free(n, true);
-}
+	assert(5 == is1->len);
+	assert(5 <= is1->size);
+	assert('\0' == is1->buf[5]);
+	assert(0 == strcmp(is1->buf, "world"));
 
-static inline void assign_assert(istring *string, char *str)
-{
-	size_t str_len = strlen(str);
-	string = istr_assign_cstr(string, str);
-
-	assert(strcmp(string->buf, str) == 0);
-	assert(string->len == str_len);
-	assert(string->size >= str_len);
-}
-
-void test_assign()
-{
-	istring *string = istr_new(NULL);
-
-	// case1: assign a cstr to a NULL initialized istring
-	assign_assert(string, "hello");
-	// case2: assign a cstr to an already assigned istring
-	assign_assert(string, "OH");
-	// case3: assign a larger cstr to an istring to expand the size
-	assign_assert(string, "WOWOWOWOWOWOWOWOWOW BIG STRING IS BIG");
-
-	istr_free(string, true);
-}
-
-static inline void insert_assert(istring *string, size_t index, char *str,
-                                 size_t str_len, char *outcome,
-                                 size_t expected_len)
-{
-	string = istr_insert_bytes(string, index, str, str_len);
-
-	assert(strcmp(string->buf, outcome) == 0);
-	assert(string->len == expected_len);
-	assert(string->size >= expected_len);
-}
-
-void test_insert()
-{
-	istring *string = istr_new_bytes("hello", 5);
-
-	// case1: append
-	insert_assert(string, 5, "omg", 4, "helloomg", 9);
-
-	// case2: prepend
-	insert_assert(string, 0, "omg", 3, "omghelloomg", 12);
-
-	// case3: in the middle
-	insert_assert(string, 6, "omg�", 6, "omghelomg�loomg", 18);
+	istr_free(is1, true);
 	
-	istr_free(string, true);
+	printf("test_new_and_free success!\n");
 }
 
-void test_insert_bounds()
+void test_free_release()
 {
-	istring *string = istr_new(NULL);
-	for(int i=0; i<10000; i++) {
-		string = istr_insert_bytes(string, 0, "123456789", 9);
-	}
-	string->buf[string->len] = '\0';
-	printf("%s\n", string->buf + (string->len - 100));
-	istr_free(string, false);
-}
+	istring *is1 = istr_new_cstr("hello");
+	char *buf = istr_free(is1, false);
 
-void test_append()
-{
-	istring *string = istr_new_cstr("hello");
-	assert(string->len == 5);
+	assert('\0' == buf[5]);
+	assert(5 == strlen(buf));
+	assert(0 == strcmp(buf, "hello"));
 
-	// case1a: small append
-	string = istr_append_cstr(string, "omg");
+	free(buf);
 
-	assert(strcmp(string->buf, "helloomg") == 0);
-	assert(string->len == 8);
-	assert(string->size >= 8);
-
-	// case1b: large append
-	string = istr_append_bytes(string, "123456789_123456789_", 20);
-
-	assert(strncmp(string->buf, "helloomg123456789_123456789_", 28) == 0);
-	assert(string->len == 28);
-	assert(string->size >= 28);
-
-	// case1c: append less than char buffer
-	string = istr_append_bytes(string, "123456789_123456789_", 2);
-
-	assert(strncmp(string->buf, "helloomg123456789_123456789_12", 30) == 0);
-	assert(string->len == 30);
-	assert(string->size >= 30);
-
-	istr_free(string, true);
-
-	// case2a: append NULL
-	string = istr_new_bytes("hello", 5);
-
-	assert(NULL == istr_append_bytes(string, NULL, 0));
-	assert(errno == EINVAL);
-	assert(0 == strncmp(string->buf, "hello", 5));
-	assert(5 == string->len);
-	assert(5 < string->size);
-
-	istr_free(string, true);
-}
-
-void test_index()
-{
-	istring *string = istr_new_cstr("Hello");
-	assert('H' == istr_index(string, 0));
-	assert('o' == istr_index(string, 4));
+	printf("test_free_release success!\n");
 }
 
 void test_slice()
 {
-	istring *string = istr_new_cstr("Hello");
+	istring *is1 = istr_new_cstr("test string zebra");
 	istring *slice = istr_new(NULL);
-	slice = istr_slice(slice, string, 2, 6);
-	printf("string: %s; slice: %s\n", string->buf, slice->buf);
+
+	slice = istr_slice(slice, is1, 2, 7);
+	istr_free(is1, true);
+
+	assert(5 == slice->len);
+	assert(5 <= slice->size);
+	assert(0 == strcmp(slice->buf, "st st"));
+
 	istr_free(slice, true);
-	istr_free(string, true);
+
+	printf("test_slice success!\n");
+}
+
+void test_truncate()
+{
+	istring *is1;
+
+	is1 = istr_new_cstr("hello world");
+	assert(11 == is1->len);
+	assert(11 <= is1->size);
+
+	is1 = istr_truncate_bytes(is1, 5);
+	assert(5 == is1->len);
+	assert(5 <= is1->size);
+	assert(0 == strcmp(is1->buf, "hello"));
+
+	is1 = istr_assign_cstr(is1, "test");
+	is1 = istr_truncate_bytes(is1, 0);
+
+	assert(0 == is1->len);
+	assert(0 <= is1->size);
+	assert('\0' == is1->buf[0]);
+
+	is1 = istr_assign_cstr(is1, "test");
+	is1 = istr_truncate_bytes(is1, 100);
+
+	assert(4 == is1->len);
+	assert(4 <= is1->size);
+	assert(0 == strcmp(is1->buf, "test"));
+
+	istr_free(is1, true);
+}
+
+void test_write()
+{
+	istring *is1;
+
+	is1 = istr_new_cstr("hel00000rld");
+	assert(11 == is1->len);
+	assert(11 <= is1->size);
+
+	is1 = istr_write_cstr(is1, 3, "lo wo");
+	assert(11 == is1->len);
+	assert(11 <= is1->size);
+	assert(0 == strcmp(is1->buf, "hello world"));
+
+	istr_free(is1, true);
+}
+
+void test_remove()
+{
+	istring *is1;
+
+	is1 = istr_new_cstr("hello_________ world");
+	assert(20 == is1->len);
+	assert(20 <= is1->size);
+
+	is1 = istr_remove_bytes(is1, 5, 9);
+	assert(11 == is1->len);
+	assert(20 <= is1->size);
+	assert(0 == strcmp(is1->buf, "hello world"));
+
+	assert(NULL == istr_remove_bytes(is1, 12, 0));
+	assert(ERANGE == errno);
+
+	assert(11 == is1->len);
+	assert(20 <= is1->size);
+	assert(0 == strcmp(is1->buf, "hello world"));
+
+	istr_free(is1, true);
+}
+
+void test_insert()
+{
+	istring *is1;
+	istring *is2;
+		
+	is1 = istr_new_cstr("test string");
+	istr_insert_cstr(is1, 5, "my ");
+
+	assert(14 == is1->len);
+	assert(14 <= is1->size);
+	assert(0 == strcmp(is1->buf, "test my string"));
+
+	is2 = istr_new(is1);
+	istr_free(is1, true);
+
+	istr_insert_bytes(is2, is2->len, " pleaseTHISISJUNK", 7);
+	assert(21 == is2->len);
+	assert(21 <= is2->size);
+	assert(0 == strcmp(is2->buf, "test my string please"));
+	assert('\0' == is2->buf[is2->len]);
+
+	istr_free(is2, true);
 }
 
 int main()
 {
 	printf("Testing libistr...\n");
 	test_new_and_free();
-	test_istr_strptr();
-	test_assign();
-	test_insert();
-	//test_insert_bounds();
-	test_append();
-	test_insert();
+
+	test_free_release();
+
 	test_slice();
-	//test_prepend();
+
+	test_truncate();
+
+	test_write();
+
+	test_remove();
+
+	test_insert();
+
+	/*
+	test_append();
+	test_prepend();
+
+	*/
+
 	printf("libistr testing success!\n");
 	return 0;
 }
