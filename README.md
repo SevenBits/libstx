@@ -3,16 +3,25 @@ libistr - Improved String Library
 
 ### A dynamic string library for C
 
-libistr is a minimal and simple dynamically-sized string handling library that
-conforms to the C99 standards. The main goals of the library are proper error
-handling, verifying input, thread concurrency, and preventing integer and 
-buffer overflows. All library documentation is in the man page and header
-file. All strings are guarenteed to be NULL terminated at all times 
-as well with this library, making it safe to use C string functions on them.
+libistr is a simple dynamic string handling library for C that conforms with C99.
+The main goals of the library are strict error handling, function clarity, and
+preventing integer and buffer overflows, or resolving them if they would occur. 
+To allow for easy interoperability with other string libraries that use strings
+terminated by '\0', such as `<string.h>`, all istrings are guaranteed by all
+libistr functions to be NULL terminated. Each operation that might overwrite
+the terminating '\0' byte, such as string concatenation, will guarantee that
+another one is written at the end of the newly concatenated string for example.
+
+This library is heavily modeled after the public interface of the Glib GString
+library, although with a clearer naming convention and different considerations
+made when designing the library. As a result of not being part of Glib, there
+are no obfuscating 'g'-prefixed types here, only standard types one would find 
+in standard C to allow for this library to be used easily anywhere outside 
+of a Glib project.
 
 ## Installation
 
-The installation process is very similar to any suckless.org tools. 
+The installation process is very similar to any of the suckless.org tools. 
 First, Edit config.mk to match your local setup.
 
 Second, run the following command:
@@ -52,7 +61,8 @@ int main()
 	istring *other_string = new_istr(string);
 
 	// Don't forget to clean up!
-	istr_free(istring, true)
+	istr_free(string, true);
+	istr_free(other_string, true);
 	
 	// The rest of the functions are detailed in libistr.3 and libistr.h
 	return 0;
