@@ -12,72 +12,14 @@ typedef struct istring {
 	size_t size;   // Size of char buffer.
 } istring;
 
-/*
-istr_new:
-	Initialize a new istring from an existing istring.
-
-args:
-	@src: existing istring or NULL
-
-return -> istring*:
-	success: istring initialized with @src, or an empty initialized 
-		string object if @src is NULL.
-	memory error: NULL and errno = ENOMEM
-*/
 istring* istr_new(const istring *src);
 
-/*
-istr_new_bytes:
-	Initialize a new istring with a string with arbitrary bytes.
-
-args:
-	@bytes: bytes to initialize the new istring with or NULL
-	@bytes_len: length of @bytes
-
-return -> istring*:
-	success: istring initialized with @bytes, or an empty initialized 
-		string object if @bytes is NULL.
-	memory error: NULL and errno = ENOMEM
-*/
 istring* istr_new_bytes(const char *bytes, size_t bytes_len);
 
-/*
-istr_new_cstr:
-	Initialize a new istring with a null-terminated string.
-
-args:
-	@cstr: null-terminated string to initialize the new istring with or NULL
-
-return -> istring*:
-	success: istring initialized with @cstr or an empty initialized 
-		string object if @cstr is NULL.
-	memory error: NULL and errno = ENOMEM'
-*/
 istring* istr_new_cstr(const char *cstr);
 
-/*
-istr_free:
-	Free all memory allocated to an istring structure. please use this 
-	instead of manually freeing.
-
-args:
-	@string: the istring to be freed
-	@free_buf: if true, free the internal buffer. if false, return the buffer
-
-return -> char*:
-	success: NULL or the char buffer
-	bad args: NULL and errno = EINVAL
-*/
 char* istr_free(istring *string, bool free_buf);
 
-/* 
-istr_eq:
-	Check if two istings contain the same contents.
-
-return -> int:
-	success: 0 if equal, 1 if not equal
-	bad args: -1 and errno = EINVAL
- */
 int istr_eq(const istring *s1, const istring *s2);
 
 /*

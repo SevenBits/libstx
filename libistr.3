@@ -21,22 +21,56 @@ Memory allocation for istrings is also efficient, as the scheme for increasing
 an istring's size is to keep it as a power of two e.g. 32, 64, 512.
 .PP
 .SH FUNCTIONS
-.I For more detailed documentation please look at libistr.h
 .TP
-.B istr_new
-Initialize a new istring from an existing istring.
+.B istring* istr_new(const istring *src)
+Initialize a new istring. If
+.I src
+is NULL return an empty istring. Otherwise copy the contents of
+.I src
+to initialize and return an istring. If allocation failed
+errno =
+.I ENOMEM
+and return NULL.
 .TP
-.B istr_new_bytes
-Initialize a new istring from arbitrary bytes.
+.B istring* istr_new_bytes(const char *bytes, size_t bytes_len)
+Initialize a new istring. If
+.I bytes
+is NULL and
+.I bytes_len
+is 0, return an empty istring. Otherwise copy 
+.I bytes_len
+of
+.I bytes
+to initialize and return an istring. If allocation failed,
+errno =
+.I ENOMEM
+and return NULL.
 .TP
-.B istr_new_cstr
-Initialize a new istring from a string with a terminating null-byte.
+.B istring* istr_new_cstr(const char *cstr)
+Initialize a new istring. If
+.I cstr
+is NULL return an empty istring. Otherwise copy the contents of
+.I cstr
+until the first '\0' character and return an istring. If allocation failed,
+errno =
+.I ENOMEM
+and return NULL.
 .TP
-.B istr_free
-Free all memory allocated by any istring initialization function.
+.B char* istr_free(istring *string, bool free_buf)
+Free all memory used by an istring. If
+.I free_buf
+is true, then free the string buffer inside the istring and return NULL. 
+Otherwise return the buffer. If 
+.I string
+is NULL errno =
+.I EINVAL
+and return NULL.
 .TP
-.B istr_eq
-Check if two istings contain the same contents.
+.B int istr_eq(const istring *s1, const istring *s2)
+Check for equality between two istrings. 
+If equal return 0. If not equal return 1. If either argument is NULL, errno =
+.I EINVAL
+and return -1.
 .TP
 .B istr_slice
 Copy a slice of characters from one string to another.
