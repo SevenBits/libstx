@@ -4,15 +4,14 @@ libistr \- Improved String Library
 .SH SYNOPSIS
 .B #include <libistr.h>
 .PP
-.B typedef struct 
-.I istring istring;
+.BI typedef\ struct\  istring\ istring ;
 .SH DESCRIPTION
 The istring library (hereafter referred to as libistr) is an efficient and 
 simple dynamic string library for C. It provides the istring structure and 
 functions that operate on them. istrings are fully compatible with the 
 standard ANSI C <string.h> style functions, as libistr will always make sure 
 an istring ends with a NULL byte at the end of the data it contains.
-As a bonus, istrings can be used to hold arbitrary values, including 0.
+As a bonus, istrings can be used to hold arbitrary values, including \0.
 .PP
 libistr includes utf8 helper functions that let unicode characters be
 manipulated by the number of unicode characters rather than the size in bytes.
@@ -22,97 +21,296 @@ an istring's size is to keep it as a power of two e.g. 32, 64, 512.
 .PP
 .SH FUNCTIONS
 .TP
-.B istring* istr_new(const istring *src)
+.BI istring*\ istr_new(const\ istring\ * src )
 Initialize a new istring. If
 .I src
-is NULL return an empty istring. Otherwise copy the contents of
+is NULL, then return an empty istring. Otherwise copy the contents of
 .I src
-to initialize and return an istring. If allocation failed
-errno =
-.I ENOMEM
+to initialize and return an istring. If allocation fails
+errno = ENOMEM
 and return NULL.
 .TP
-.B istring* istr_new_bytes(const char *bytes, size_t bytes_len)
+.BI istring*\ istr_new_bytes(const\ char\ * bytes ,\ size_t\  bytes_len )
 Initialize a new istring. If
 .I bytes
 is NULL and
 .I bytes_len
-is 0, return an empty istring. Otherwise copy 
+is \0, return an empty istring. Otherwise copy 
 .I bytes_len
 of
 .I bytes
-to initialize and return an istring. If allocation failed,
-errno =
-.I ENOMEM
+to initialize and return an istring. If allocation fails,
+errno = ENOMEM
 and return NULL.
 .TP
-.B istring* istr_new_cstr(const char *cstr)
+.BI istring*\ istr_new_cstr(const\ char\ * cstr )
 Initialize a new istring. If
 .I cstr
-is NULL return an empty istring. Otherwise copy the contents of
+is NULL, then return an empty istring. Otherwise copy the contents of
 .I cstr
-until the first '\0' character and return an istring. If allocation failed,
-errno =
-.I ENOMEM
+until the first '\\0' character and return an istring. If allocation fails,
+errno = ENOMEM
 and return NULL.
 .TP
-.B char* istr_free(istring *string, bool free_buf)
+.BI char*\ istr_free(istring\ * string ,\ bool\  free_buf )
 Free all memory used by an istring. If
 .I free_buf
 is true, then free the string buffer inside the istring and return NULL. 
 Otherwise return the buffer. If 
 .I string
-is NULL errno =
-.I EINVAL
-and return NULL.
+is NULL, then errno = EINVAL and return NULL.
 .TP
-.B int istr_eq(const istring *s1, const istring *s2)
+.BI int\ istr_eq(const\ istring\ * s1 ,\ const\ istring\ * s2 )
 Check for equality between two istrings. 
-If equal return 0. If not equal return 1. If either argument is NULL, errno =
-.I EINVAL
+If equal return \0. If not equal return 1. If either argument is NULL, then errno = EINVAL
 and return -1.
 .TP
-.B istr_slice
-Copy a slice of characters from one string to another.
+.BI char\ istr_index(const\ istring\ * string, size_t\  index )
+Index the istring with index-overflow protection. If 
+.I string
+is NULL, then errno = ENIVAL and return '\\0'. If
+.I index
+is greater than
+.I string's
+length errno = ERANGE and return '\\0'
 .TP
-.B istr_assign_bytes
-Reassign an istring's contents to arbitrary bytes, rewriting any old contents.
+.BI istring*\ istr_slice(istring\ * slice ,\ const\ istring\ * src ,\ size_t\  begin ,\ size_t\  end )
+Copy a range of characters from 
+.I src
+to
+.I slice
+starting at
+.I begin
+index and ending at
+.I end
+index. If
+.I slice
+or
+.I str
+are NULL, or
+.I begin
+>
+.IR end ,
+then errno = EINVAL and return NULL. If allocation fails errno = ENOMEM and return NULL.
 .TP
-.B istr_assign_cstr
-Reassign an istring's contents to a string with a terminating null-byte.
+.BI istring*\ istr_assign_bytes(istring\ * string ,\ const\ char\ * bytes ,\ size_t\  bytes_len )
+Reassign an istring's contents. Overwrite any old contents of
+.I string
+with
+.I bytes_len
+amount of
+.I bytes
+and sets the length accordingly. If
+.I string
+or
+.I bytes
+are NULL, then errno = EINVAl and return NULL. 
+If allocation fails errno = ENOMEM and return NULL.
 .TP
-.B istr_truncate
-Shorten the istring to a specified length.
+.BI istring*\ istr_assign_cstr(istring\ * string ,\ const\ char\ * cstr )
+Reassign an istring's contents. Overwrite any old contents of
+.I string
+with 
+.I cstr
+until the first '\\0' character is reached. If
+.I string
+or
+.I cstr
+are NULL, then errno = EINVAl and return NULL. 
+If allocation fails errno = ENOMEM and return NULL.
 .TP
-.B istr_pop_byte
-Remove the last byte in an istring and returns it.
+.BI istring*\ istr_truncate(istring\ * string ,\ size_t\  len )
+Shorten's 
+.I string
+to the specified
+.I len
+of bytes. If
+.I len
+> the length of
+.IR string ,
+then the entire string is truncated. If
+.I string
+is NULL, then errno = EINVAL and return NULL.
 .TP
-.B istr_write
-Overwrite an istring at an index with another istring.
+.BI char\ istr_pop_byte(istring\ * string )
+Remove the last byte from
+.I string
+and return it. If
+.I string
+is NULL, then errno = EINVAL and return '\\0'.
 .TP
-.B istr_write_bytes
-Overwrite an istring at an index with arbitrary bytes.
+.BI istring*\ istr_write(istring\ * dest ,\ size_t\  index ,\ const\ istring\ * src )
+Overwrite the contents of
+.I dest
+with the contents of
+.I src
+at position
+.IR index .
+If 
+.I index 
+is outside the range of
+.IR string ,
+then
+.I string's
+buffer is expanded to fit the new contents.
+If allocation fails, then errno = ENOMEM and return NULL. If
+.I dest
+or
+.I src
+are NULL, then errno = EINVAL and return NULL.
 .TP
-.B istr_prepend
-Prepend a copy of an istring to another istring.
+.BI istring*\ istr_write_cstr(istring\ * string ,\ size_t\  index ,\ const\ char\ * cstr )
+Overwrite the contents of
+.I string
+with the contents of
+.I cstr
+at position
+.I index
+until the first '\\0' character is reached. If 
+.I index 
+is outside the range of
+.IR string ,
+then
+.I string's
+buffer is expanded to fit the new contents.
+If allocation fails, then errno = ENOMEM and return NULL. If
+.I string
+or
+.I cstr
+are NULL, then errno = EINVAL and return NULL.
 .TP
-.B istr_prepend_bytes
-Prepend arbitrary bytes onto an istring.
+.BI istring*\ istr_write_bytes(istring\ * string, \ size_t\  index, \ const\ char\ * bytes ,\ size_t\  bytes_len )
+Overwrite the contents of
+.I string
+with
+.I bytes_len 
+of
+.I bytes
+at position
+.IR index .
+If
+.I index 
+is outside the range of
+.IR string ,
+then
+.I string's
+buffer is expanded to fit the new contents. 
+If allocation fails, then errno = ENOMEM and return NULL. If
+.I string
+or
+.I cstr
+are NULL, then errno = EINVAL and return NULL.
 .TP
-.B istr_append
-Append a copy of an istring to another istring.
+.BI istring*\ istr_remove_bytes(istring\ * string ,\ size_t\  index ,\ size_t\  len )
+Removes up to 
+.I len 
+bytes from 
+.I string
+at the
+.I index
+given. If
+.I string
+is NULL, then errno = EINVAL and return NULL. If
+.I index
+>
+.I string->len
+errno = ERANGE and return NULL.
 .TP
-.B istr_append_bytes
-Append arbitrary bytes onto an istring.
+.BI istring*\ istr_prepend(istring\ * dest ,\ const\ istring\ * src )
+Prepend a copy of
+.I src
+to
+.IR dest .
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR src\  or\  dest
+are NULL, then errno = EINVAL and return NULL.
 .TP
-.B istr_append_cstr
-Append a c-style string with a terminating null-byte to an istring.
+.BI istring*\ istr_prepend_cstr(istring\ * string ,\ const\ char\ * cstr )
+Prepend a copy of
+.I cstr
+to
+.I string
+until the first '\\0' character is reached. 
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR string\  or\  cstr
+are NULL, then errno = EINVAL and return NULL.
 .TP
-.B istr_insert
-Insert an istring into an istring at an index without overwriting.
+.BI istring*\ istr_prepend_bytes(istring\ * string ,\ const\ char\ * bytes ,\ size_t\  bytes_len )
+Prepend a copy of
+.I bytes_len 
+of
+.I bytes
+to
+.IR string .
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR string\  or\  bytes
+are NULL, then errno = EINVAL and return NULL.
 .TP
-.B istr_insert_bytes
-Insert arbitrary bytes into an istring at an index without overwriting.
+.BI istring*\ istr_append(istring\ * dest ,\ const\ istring\ * src )
+Append a copy of
+.I src
+to
+.IR dest .
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR src\  or\  dest
+are NULL, then errno = EINVAL and return NULL.
+.TP
+.BI istring*\ istr_append_cstr(istring\ * string ,\ const\ char\ * cstr )
+Append a copy of
+.I cstr
+to
+.IR string
+until the first '\\0' character is reached. 
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR string\  or\  cstr
+are NULL, then errno = EINVAL and return NULL.
+.TP
+.BI istring*\ istr_append_bytes(istring\ * string ,\ const\ char\ * bytes ,\ size_t\ bytes_len);
+Append a copy of
+.I bytes_len 
+of
+.I bytes
+to
+.IR string .
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR string\  or\  bytes
+are NULL, then errno = EINVAL and return NULL.
+.TP
+.BI istring*\ istr_insert(istring\ * dest ,\ size_t\  index ,\ const\ istring\ * src )
+Insert a copy of
+.I src
+into
+.I dest
+at
+.IR index .
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR dest\  or\  src
+are NULL, then errno = EINVAL and return NULL.
+.TP
+.BI istring*\ istr_insert_cstr(istring\ * string ,\ size_t\  index ,\ const\ char\ * cstr )
+Insert a copy of
+.I cstr
+into
+.I string
+at
+.IR index
+until the first '\\0' character is reached.
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR string\  or\  cstr
+are NULL, then errno = EINVAL and return NULL.
+.TP
+.BI istring*\ istr_insert_bytes(istring\ * string ,\ size_t\  index ,\ const\ char\ * bytes ,\ size_t\  bytes_len )
+Insert a copy
+.I bytes_len 
+of
+.I bytes
+into
+.I string
+at
+.IR index .
+If allocation fails, then errno = ENOMEM and return NULL. If
+.IR string\  or\  cstr
+are NULL, then errno = EINVAL and return NULL.
 .SH CONFORMING TO
 The
 .I libistr
