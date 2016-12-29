@@ -278,7 +278,7 @@ istring* istr_assign_cstr(istring *string, const char *cstr)
 	return istr_assign_bytes(string, cstr, strlen(cstr));
 }
 
-istring* istr_truncate_bytes(istring *string, size_t len)
+istring* istr_truncate(istring *string, size_t len)
 {
 	if (NULL == string) {
 		errno = EINVAL;
@@ -287,6 +287,23 @@ istring* istr_truncate_bytes(istring *string, size_t len)
 
 	string->len = smin(string->len, len);
 	string->buf[string->len] = '\0';
+	return string;
+}
+
+istring* istr_resize(istring *string, size_t len)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	if (len < string->len) {
+		return istr_truncate(string, len);
+	}
+
+	istr_ensure_size(string, len+1);
+	string->buf[len] = '\0';
+
 	return string;
 }
 
@@ -366,7 +383,7 @@ istring* istr_remove_bytes(istring *string, size_t index, size_t len)
 	// Special case, if bytes would be removed up until the end of the string,
 	// then simply truncate the string rather than trying to memmove.
 	if (len >= string->len - index) {
-		return istr_truncate_bytes(string, string->len - len);
+		return istr_truncate(string, string->len - len);
 	}
 
 	size_t rm_len = safe_add(index, len);
@@ -456,6 +473,19 @@ istring* istr_insert_cstr(istring *string, size_t index, const char *cstr)
 	return istr_insert_bytes(string, index, cstr, strlen(cstr));
 }
 
+/*TODO: read the utf-8 spec
+istring* istr_insert_unichar(istring *string, size_t index, int32_t unichar)
+{
+	size_t unilen;
+	if (unichar < 0x80) {
+		unilen = 1;
+	} else if (unichar < 0x800) {
+		unilen = 2;
+	} else if (unichar < 0x8000) {
+	}
+}
+*/
+
 istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
@@ -476,9 +506,6 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 		memmove(string->buf + index + bytes_len, \
 		        string->buf + index, \
 		        string->len - index);
-	} else if (index > string->len) {
-		// Initialize the space between original data and newly inserted string
-		memset(string->buf + string->len, '\0', index - string->len);
 	}
 
 	memcpy(string->buf + index, bytes, bytes_len);

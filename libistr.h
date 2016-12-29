@@ -140,7 +140,7 @@ return -> istring*:
 	success: the original istring object with truncated length
 	bad args: NULL and errno = EINVAL
  */
-istring* istr_truncate_bytes(istring *string, size_t len);
+istring* istr_truncate(istring *string, size_t len);
 
 /* 
 istr_pop_byte:

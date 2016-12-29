@@ -93,20 +93,20 @@ void test_truncate()
 	assert(11 == is1->len);
 	assert(11 <= is1->size);
 
-	is1 = istr_truncate_bytes(is1, 5);
+	is1 = istr_truncate(is1, 5);
 	assert(5 == is1->len);
 	assert(5 <= is1->size);
 	assert(0 == strcmp(is1->buf, "hello"));
 
 	is1 = istr_assign_cstr(is1, "test");
-	is1 = istr_truncate_bytes(is1, 0);
+	is1 = istr_truncate(is1, 0);
 
 	assert(0 == is1->len);
 	assert(0 <= is1->size);
 	assert('\0' == is1->buf[0]);
 
 	is1 = istr_assign_cstr(is1, "test");
-	is1 = istr_truncate_bytes(is1, 100);
+	is1 = istr_truncate(is1, 100);
 
 	assert(4 == is1->len);
 	assert(4 <= is1->size);
@@ -212,7 +212,7 @@ void test_istr_eq()
 
 	assert(0 != istr_eq(is1, is2));
 
-	is1 = istr_truncate_bytes(is1, 5);
+	is1 = istr_truncate(is1, 5);
 
 	assert(0 == istr_eq(is1, is2));
 
