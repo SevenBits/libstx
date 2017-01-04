@@ -85,7 +85,7 @@ void test_slice()
 	printf("test_slice success!\n");
 }
 
-void test_trunc()
+void test_truncate()
 {
 	istring *is1;
 
@@ -93,20 +93,20 @@ void test_trunc()
 	assert(11 == is1->len);
 	assert(11 <= is1->size);
 
-	is1 = istr_trunc(is1, 5);
+	is1 = istr_truncate(is1, 5);
 	assert(5 == is1->len);
 	assert(5 <= is1->size);
 	assert(0 == strcmp(is1->buf, "hello"));
 
 	is1 = istr_assign_cstr(is1, "test");
-	is1 = istr_trunc(is1, 0);
+	is1 = istr_truncate(is1, 0);
 
 	assert(0 == is1->len);
 	assert(0 <= is1->size);
 	assert('\0' == is1->buf[0]);
 
 	is1 = istr_assign_cstr(is1, "test");
-	is1 = istr_trunc(is1, 100);
+	is1 = istr_truncate(is1, 100);
 
 	assert(4 == is1->len);
 	assert(4 <= is1->size);
@@ -178,6 +178,30 @@ void test_insert()
 	istr_free(is2, true);
 }
 
+void test_append()
+{
+	istring *is1;
+	istring *is2;
+		
+	is1 = istr_new_cstr("hello ");
+	is2 = istr_append_bytes(is2, "wo", 2);
+	is2 = istr_append_cstr(is2, "rld");
+
+	assert(11 == is1->len);
+	assert(11 <= is1->size);
+	assert(0 == strcmp(is1->buf, "hello world"));
+
+	is2 = istr_new(NULL);
+	is2 = istr_append(is2, is1);
+
+	assert(11 == is2->len);
+	assert(11 <= is2->size);
+	assert(0 == strcmp(is2->buf, "hello world"));
+
+	istr_free(is1, true);
+	istr_free(is2, true);
+}
+
 void test_istr_eq()
 {
 	istring *is1;
@@ -188,7 +212,7 @@ void test_istr_eq()
 
 	assert(0 != istr_eq(is1, is2));
 
-	is1 = istr_trunc(is1, 5);
+	is1 = istr_truncate(is1, 5);
 
 	assert(0 == istr_eq(is1, is2));
 
@@ -205,13 +229,15 @@ int main()
 
 	test_slice();
 
-	test_trunc();
+	test_truncate();
 
 	test_write();
 
 	test_remove();
 
 	test_insert();
+
+	test_append();
 
 	test_istr_eq();
 
