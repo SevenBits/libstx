@@ -356,7 +356,7 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 		potential_len = string->len;
 	}
 
-	if (NULL == istr_ensure_size(string, potential_len + 1)) {
+	if (NULL == istr_ensure_size(string, safe_add(potential_len, 1))) {
 		errno = ENOMEM;
 		return NULL;
 	}
@@ -471,7 +471,7 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	// Overflow check
 	size_t total_len = safe_add(string->len, bytes_len);
 
-	if (NULL == istr_ensure_size(string, total_len + 1)) {
+	if (NULL == istr_ensure_size(string, safe_add(total_len, 1))) {
 		errno = ENOMEM;
 		return NULL;
 	}
