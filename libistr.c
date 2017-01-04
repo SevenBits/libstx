@@ -175,14 +175,14 @@ istring* istr_new_cstr(const char *cstr)
 {
 	if (NULL == cstr) return istr_alloc(0);
 
-	size_t cstr_len = strlen(cstr);
+	size_t n = strlen(cstr);
 
-	istring *string = istr_alloc(cstr_len);
+	istring *string = istr_alloc(n);
 	if (NULL == string) {
 		return NULL;
 	}
 
-	return istr_assign_bytes(string, cstr, cstr_len);
+	return istr_assign_bytes(string, cstr, n);
 }
 
 char* istr_free(istring *string, bool free_buf)
@@ -278,7 +278,7 @@ istring* istr_assign_cstr(istring *string, const char *cstr)
 	return istr_assign_bytes(string, cstr, strlen(cstr));
 }
 
-istring* istr_truncate(istring *string, size_t len)
+istring* istr_trunc(istring *string, size_t len)
 {
 	if (NULL == string) {
 		errno = EINVAL;
@@ -298,7 +298,7 @@ istring* istr_resize(istring *string, size_t len)
 	}
 
 	if (len < string->len) {
-		return istr_truncate(string, len);
+		return istr_trunc(string, len);
 	}
 
 	istr_ensure_size(string, len+1);
@@ -356,7 +356,7 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 		potential_len = string->len;
 	}
 
-	if (NULL == istr_ensure_size(string, potential_len + 1)) {
+	if (NULL == istr_ensure_size(string, safe_add(potential_len, 1))) {
 		errno = ENOMEM;
 		return NULL;
 	}
@@ -383,7 +383,7 @@ istring* istr_remove_bytes(istring *string, size_t index, size_t len)
 	// Special case, if bytes would be removed up until the end of the string,
 	// then simply truncate the string rather than trying to memmove.
 	if (len >= string->len - index) {
-		return istr_truncate(string, string->len - len);
+		return istr_trunc(string, string->len - len);
 	}
 
 	size_t rm_len = safe_add(index, len);
@@ -396,61 +396,6 @@ istring* istr_remove_bytes(istring *string, size_t index, size_t len)
 	string->buf[string->len] = '\0';
 
 	return string;
-}
-
-istring* istr_prepend(istring *dest, const istring *src)
-{
-	if (NULL == dest || NULL == src) {
-		errno = EINVAL;
-		return NULL;
-	}
-	
-	return istr_prepend_bytes(dest, src->buf, src->len);
-}
-
-istring* istr_prepend_cstr(istring *string, const char *cstr)
-{
-	if (NULL == cstr) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	return istr_prepend_bytes(string, cstr, strlen(cstr));
-}
-
-istring* istr_prepend_bytes(istring *string, const char *bytes, size_t bytes_len)
-{
-	return istr_insert_bytes(string, 0, bytes, bytes_len);
-}
-
-istring* istr_append(istring *dest, const istring *src)
-{
-	if (NULL == src) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	return istr_append_bytes(dest, src->buf, src->len);
-}
-
-istring* istr_append_cstr(istring *string, const char *cstr)
-{
-	if (NULL == cstr) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	return istr_append_bytes(string, cstr, strlen(cstr));
-}
-
-istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len)
-{
-	if (NULL == string || NULL == bytes) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	return istr_insert_bytes(string, string->len, bytes, bytes_len);
 }
 
 istring* istr_insert(istring *dest, size_t index, const istring *src)
@@ -493,10 +438,10 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 		return NULL;
 	}
 
-	// Overflow check
+	// Prevents overflows
 	size_t total_len = safe_add(string->len, bytes_len);
 
-	if (NULL == istr_ensure_size(string, total_len + 1)) {
+	if (NULL == istr_ensure_size(string, safe_add(total_len, 1))) {
 		errno = ENOMEM;
 		return NULL;
 	}

@@ -32,7 +32,7 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 
 istring* istr_assign_cstr(istring *string, const char *cstr);
 
-istring* istr_truncate(istring *string, size_t len);
+istring* istr_trunc(istring *string, size_t len);
 
 char istr_pop_byte(istring *string);
 
@@ -43,18 +43,6 @@ istring* istr_write_cstr(istring *string, size_t index, const char *cstr);
 istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len);
 
 istring* istr_remove_bytes(istring *string, size_t index, size_t len);
-
-istring* istr_prepend(istring *dest, const istring *src);
-
-istring* istr_prepend_cstr(istring *string, const char *cstr);
-
-istring* istr_prepend_bytes(istring *string, const char *bytes, size_t bytes_len);
-
-istring* istr_append(istring *dest, const istring *src);
-
-istring* istr_append_cstr(istring *string, const char *cstr);
-
-istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len);
 
 istring* istr_insert(istring *dest, size_t index, const istring *src);
 
