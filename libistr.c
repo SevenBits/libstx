@@ -95,24 +95,24 @@ static istring* istr_ensure_size(istring *string, size_t len)
 	// The +1 is not for a '\0', but to allow linking together of malloc'd memory
 	if (string->size < len) {
 		size_t next_size = nearest_pow(2, len);
+		char *rbuf = NULL;
 		// Use realloc to try to prevent defragmentation if sizes are close
 		if (string->size*7 < string->len*8) {
-			string->buf = realloc(string->buf, sizeof(*(string->buf)) * (next_size));
-			if (NULL == string->buf) {
-				free(string);
+			rbuf = realloc(string->buf, sizeof(*(string->buf)) * (next_size));
+			if (NULL == rbuf) {
 				errno = ENOMEM;
 				return NULL;
 			}
+			string->buf = rbuf;
 		} else {
 			// Manually realloc, only copying the useful bytes in the buffer
 			char *garbage = string->buf;
-			string->buf = malloc(sizeof(*(string->buf)) * (next_size));
-			if (NULL == string->buf) {
-				free(garbage);
-				free(string);
+			rbuf = malloc(sizeof(*(string->buf)) * (next_size));
+			if (NULL == rbuf) {
 				errno = ENOMEM;
 				return NULL;
 			}
+			string->buf = rbuf;
 			memcpy(string->buf, garbage, string->len);
 			free(garbage);
 		}
@@ -183,6 +183,44 @@ istring* istr_new_cstr(const char *cstr)
 	}
 
 	return istr_assign_bytes(string, cstr, cstr_len);
+}
+
+istring* istr_grow(istring *string, size_t len)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	if (len < string->len) {
+		return string;
+	}
+
+	istr_ensure_size(string, len+1);
+	string->buf[len] = '\0';
+
+	return string;
+}
+
+istring* istr_shrink(istring *string, size_t len)
+{
+	if (NULL == string) {
+		errno = EINVAL;
+		return NULL;
+	}
+
+	if (len > string->len) {
+		return string;
+	}
+
+	char *rbuf = realloc(string->buf, sizeof(*(string->buf)) * (len));
+	if (NULL == rbuf) {
+		errno = ENOMEM;
+		return NULL;
+	}
+	string->buf = rbuf;
+
+	return string;
 }
 
 char* istr_free(istring *string, bool free_buf)
@@ -287,23 +325,6 @@ istring* istr_truncate(istring *string, size_t len)
 
 	string->len = smin(string->len, len);
 	string->buf[string->len] = '\0';
-	return string;
-}
-
-istring* istr_resize(istring *string, size_t len)
-{
-	if (NULL == string) {
-		errno = EINVAL;
-		return NULL;
-	}
-
-	if (len < string->len) {
-		return istr_truncate(string, len);
-	}
-
-	istr_ensure_size(string, len+1);
-	string->buf[len] = '\0';
-
 	return string;
 }
 

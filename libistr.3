@@ -52,6 +52,25 @@ until the first '\\0' character and return an istring. If allocation fails,
 errno = ENOMEM
 and return NULL.
 .TP
+.BI istring*\ istr_grow(istring\ * string ,\ size_t\  len )
+If
+.I len
+is greater than the size of
+.IR string 's
+buffer, then grow the buffer to the size of
+.I len
+and return the
+.IR string .
+If allocation fails, then errno = ENOMEM and return NULL.
+.TP
+.BI istring*\ istr_shrink(istring\ * string ,\ size_t\  len )
+If
+.I len
+is greater than the size of
+.IR string 's
+buffer, then grow the buffer to the size of
+.IR len .
+.TP
 .BI char*\ istr_free(istring\ * string ,\ bool\  free_buf )
 Free all memory used by an istring. If
 .I free_buf
@@ -215,36 +234,6 @@ is NULL, then errno = EINVAL and return NULL. If
 >
 .I string->len
 errno = ERANGE and return NULL.
-.TP
-.BI istring*\ istr_prepend(istring\ * dest ,\ const\ istring\ * src )
-Prepend a copy of
-.I src
-to
-.IR dest .
-If allocation fails, then errno = ENOMEM and return NULL. If
-.IR src\  or\  dest
-are NULL, then errno = EINVAL and return NULL.
-.TP
-.BI istring*\ istr_prepend_cstr(istring\ * string ,\ const\ char\ * cstr )
-Prepend a copy of
-.I cstr
-to
-.I string
-until the first '\\0' character is reached. 
-If allocation fails, then errno = ENOMEM and return NULL. If
-.IR string\  or\  cstr
-are NULL, then errno = EINVAL and return NULL.
-.TP
-.BI istring*\ istr_prepend_bytes(istring\ * string ,\ const\ char\ * bytes ,\ size_t\  bytes_len )
-Prepend a copy of
-.I bytes_len 
-of
-.I bytes
-to
-.IR string .
-If allocation fails, then errno = ENOMEM and return NULL. If
-.IR string\  or\  bytes
-are NULL, then errno = EINVAL and return NULL.
 .TP
 .BI istring*\ istr_append(istring\ * dest ,\ const\ istring\ * src )
 Append a copy of
