@@ -7,6 +7,32 @@
 
 #include "libistr.h"
 
+void test_stack_allocated()
+{
+	istring is1;
+	istr_init(&is1, 0);
+
+	assert(0 == is1.len);
+	assert(0 < is1.size);
+	assert(NULL != is1.buf);
+
+	istr_assign_cstr(&is1, "hello");
+
+	assert(5 == is1.len);
+	assert(5 <= is1.size);
+	assert(NULL != is1.buf);
+	assert(0 == strcmp(is1.buf, "hello"));
+
+	istr_append_cstr(&is1, " world");
+
+	assert(11 == is1.len);
+	assert(11 <= is1.size);
+	assert(NULL != is1.buf);
+	assert(0 == strcmp(is1.buf, "hello world"));
+
+	istr_free(&is1, false);
+}
+
 void test_new_and_free() 
 {
 	istring *is1;
@@ -50,22 +76,6 @@ void test_new_and_free()
 	assert(0 == strcmp(is1->buf, "world"));
 
 	istr_free(is1, true);
-	
-	printf("test_new_and_free success!\n");
-}
-
-void test_free_release()
-{
-	istring *is1 = istr_new_cstr("hello");
-	char *buf = istr_free(is1, false);
-
-	assert('\0' == buf[5]);
-	assert(5 == strlen(buf));
-	assert(0 == strcmp(buf, "hello"));
-
-	free(buf);
-
-	printf("test_free_release success!\n");
 }
 
 void test_slice()
@@ -81,8 +91,6 @@ void test_slice()
 	assert(0 == strcmp(slice->buf, "st st"));
 
 	istr_free(slice, true);
-
-	printf("test_slice success!\n");
 }
 
 void test_truncate()
@@ -184,15 +192,15 @@ void test_append()
 	istring *is2;
 		
 	is1 = istr_new_cstr("hello ");
-	is2 = istr_append_bytes(is2, "wo", 2);
-	is2 = istr_append_cstr(is2, "rld");
+	assert(NULL != istr_append_bytes(is1, "wo", 2));
+	assert(NULL != istr_append_cstr(is1, "rld"));
 
 	assert(11 == is1->len);
 	assert(11 <= is1->size);
 	assert(0 == strcmp(is1->buf, "hello world"));
 
 	is2 = istr_new(NULL);
-	is2 = istr_append(is2, is1);
+	istr_append(is2, is1);
 
 	assert(11 == is2->len);
 	assert(11 <= is2->size);
@@ -212,7 +220,7 @@ void test_istr_eq()
 
 	assert(0 != istr_eq(is1, is2));
 
-	is1 = istr_truncate(is1, 5);
+	istr_truncate(is1, 5);
 
 	assert(0 == istr_eq(is1, is2));
 
@@ -223,9 +231,10 @@ void test_istr_eq()
 int main()
 {
 	printf("Testing libistr...\n");
-	test_new_and_free();
 
-	test_free_release();
+	test_stack_allocated();
+
+	test_new_and_free();
 
 	test_slice();
 

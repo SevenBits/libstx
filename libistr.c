@@ -8,6 +8,7 @@
 
 #include "libistr.h"
 
+
 /* 
 safe_add:
 	Safely adds together two size_t values while flagging an error
@@ -138,15 +139,20 @@ static istring* istr_alloc(size_t init_size)
 		return NULL;
 	}
 
-	string->size = smax(2, init_size);
-	string->buf = malloc(sizeof(*(string->buf) * string->size));
-	string->buf[0] = '\0';
-	string->len = 0;
-
+	istr_init(string, init_size);
 	return string;
 }
 
 // PUBLIC LIBRARY FUNCTIONS BELOW
+size_t istr_init(istring *string, size_t init_size)
+{
+	string->size = smax(2, init_size);
+	string->buf = malloc(sizeof(*(string->buf) * string->size));
+	string->buf[0] = '\0';
+	string->len = 0;
+	return string->size;
+}
+
 istring* istr_new(const istring *src) 
 {
 	if (NULL == src) return istr_alloc(0);
@@ -223,26 +229,20 @@ istring* istr_shrink(istring *string, size_t len)
 	return string;
 }
 
-char* istr_free(istring *string, bool free_buf)
+void istr_free(istring *string, bool allocated)
 {
 	if (NULL == string) {
 		errno = EINVAL;
-		return NULL;
-	}
-
-	if (string->buf && !free_buf) {
-		char *tmp = string->buf;
-		free(string);
-		return tmp;
+		return;
 	}
 
 	if (string->buf) {
 		free(string->buf);
 	}
 
-	free(string);
-
-	return NULL;
+	if (allocated) {
+		free(string);
+	}
 }
 
 int istr_eq(const istring *s1, const istring *s2)

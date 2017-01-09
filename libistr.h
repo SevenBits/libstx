@@ -13,6 +13,7 @@ typedef struct istring {
 } istring;
 
 // For documentation on functions, please see the man page 'man libistr'.
+size_t istr_init(istring *string, size_t init_size);
 
 istring* istr_new(const istring *src);
 
@@ -24,7 +25,7 @@ istring* istr_grow(istring *string, size_t len);
 
 istring* istr_shrink(istring *string, size_t len);
 
-char* istr_free(istring *string, bool free_buf);
+void istr_free(istring *string, bool allocated);
 
 int istr_eq(const istring *s1, const istring *s2);
 
