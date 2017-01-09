@@ -5,9 +5,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+// typedef the istring type for clarity, as its not usually a normal char*
 typedef char istring;
 
 // For documentation on functions, please see the man page 'man libistr'.
+size_t istr_size(const istring *string);
+
+size_t istr_len(const istring *string);
+
 istring* istr_new(const istring *src);
 
 istring* istr_new_bytes(const char *bytes, size_t bytes_len);
@@ -26,13 +31,15 @@ char istr_index(const istring *string, size_t index);
 
 istring* istr_slice(istring *slice, const istring *src, size_t begin, size_t end);
 
-istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len);
+istring* istr_assign(istring *string, const istring *cstr);
 
 istring* istr_assign_cstr(istring *string, const char *cstr);
 
+istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len);
+
 istring* istr_truncate(istring *string, size_t len);
 
-char istr_pop_byte(istring *string);
+char istr_pop(istring *string);
 
 istring* istr_write(istring *dest, size_t index, const istring *src);
 
