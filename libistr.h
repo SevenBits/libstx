@@ -5,12 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// Fields of this struct are public
-typedef struct istring {
-	char *buf;     // Character buffer.
-	size_t len; // Amount of bytes in the buffer.
-	size_t size;   // Size of char buffer.
-} istring;
+typedef char istring;
 
 // For documentation on functions, please see the man page 'man libistr'.
 istring* istr_new(const istring *src);
@@ -23,7 +18,7 @@ istring* istr_grow(istring *string, size_t len);
 
 istring* istr_shrink(istring *string, size_t len);
 
-char* istr_free(istring *string, bool free_buf);
+void istr_free(istring *string);
 
 int istr_eq(const istring *s1, const istring *s2);
 
