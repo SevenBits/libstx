@@ -7,32 +7,6 @@
 
 #include "libistr.h"
 
-void test_stack_allocated()
-{
-	istring is1;
-	istr_init(&is1, 0);
-
-	assert(0 == is1.len);
-	assert(0 < is1.size);
-	assert(NULL != is1.buf);
-
-	istr_assign_cstr(&is1, "hello");
-
-	assert(5 == is1.len);
-	assert(5 <= is1.size);
-	assert(NULL != is1.buf);
-	assert(0 == strcmp(is1.buf, "hello"));
-
-	istr_append_cstr(&is1, " world");
-
-	assert(11 == is1.len);
-	assert(11 <= is1.size);
-	assert(NULL != is1.buf);
-	assert(0 == strcmp(is1.buf, "hello world"));
-
-	istr_free(&is1, false);
-}
-
 void test_new_and_free() 
 {
 	istring *is1;
@@ -231,8 +205,6 @@ void test_istr_eq()
 int main()
 {
 	printf("Testing libistr...\n");
-
-	test_stack_allocated();
 
 	test_new_and_free();
 

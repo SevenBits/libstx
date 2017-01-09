@@ -139,20 +139,15 @@ static istring* istr_alloc(size_t init_size)
 		return NULL;
 	}
 
-	istr_init(string, init_size);
-	return string;
-}
-
-// PUBLIC LIBRARY FUNCTIONS BELOW
-size_t istr_init(istring *string, size_t init_size)
-{
 	string->size = smax(2, init_size);
 	string->buf = malloc(sizeof(*(string->buf) * string->size));
 	string->buf[0] = '\0';
 	string->len = 0;
-	return string->size;
+
+	return string;
 }
 
+// PUBLIC LIBRARY FUNCTIONS BELOW
 istring* istr_new(const istring *src) 
 {
 	if (NULL == src) return istr_alloc(0);
@@ -229,20 +224,23 @@ istring* istr_shrink(istring *string, size_t len)
 	return string;
 }
 
-void istr_free(istring *string, bool allocated)
+char* istr_free(istring *string, bool free_buf)
 {
 	if (NULL == string) {
 		errno = EINVAL;
-		return;
+		return NULL;
 	}
 
-	if (string->buf) {
-		free(string->buf);
-	}
-
-	if (allocated) {
+	if (string->buf && !free_buf) {
+		char *tmp = string->buf;
 		free(string);
+		return tmp;
 	}
+
+	free(string->buf);
+	free(string);
+
+	return NULL;
 }
 
 int istr_eq(const istring *s1, const istring *s2)
