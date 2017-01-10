@@ -20,6 +20,7 @@ use and less error prone.
 1. ALWAYS assign the return value of an 'istr\_' prefixed function that returns
 an istring * because the function may have to call a reallocation method on the istring
 which will change where your istring should reference.
+
 ##### DO:
 ``` C
 istring string = istr_new(NULL);
