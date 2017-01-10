@@ -99,11 +99,11 @@ static int test_assign()
 	istr_free(is2);
 }
 
-static int test_truncate()
+static int test_trunc()
 {
 	istring *is1 = istr_new_cstr("hello world");
 
-	is1 = istr_truncate(is1, 5);
+	is1 = istr_trunc(is1, 5);
 	assert(5 == istr_len(is1));
 	assert(11 <= istr_size(is1));
 	assert(0 == strcmp(is1, "hello"));
@@ -145,7 +145,7 @@ int main()
 	test_grow_and_shrink();
 	test_eq();
 	test_assign();
-	test_truncate();
+	test_trunc();
 	test_pop();
 	test_write();
 	//test_insert();

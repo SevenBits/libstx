@@ -37,7 +37,7 @@ istring* istr_assign_cstr(istring *string, const char *cstr);
 
 istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len);
 
-istring* istr_truncate(istring *string, size_t len);
+istring* istr_trunc(istring *string, size_t len);
 
 char istr_pop(istring *string);
 

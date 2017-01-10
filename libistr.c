@@ -306,7 +306,7 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 	return string;
 }
 
-istring* istr_truncate(istring *string, size_t len)
+istring* istr_trunc(istring *string, size_t len)
 {
 	if (NULL == string) {
 		return NULL;
@@ -375,6 +375,10 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 	return string;
 }
 
+istring* istr_remove_unichars()
+{
+}
+
 istring* istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 {
 	if (NULL == string) {
@@ -388,7 +392,7 @@ istring* istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 	// Special case, if bytes would be removed up until the end of the string,
 	// then simply truncate the string rather than trying to memmove.
 	if (remove_len >= istr_len(string) - index) {
-		return istr_truncate(string, istr_len(string) - remove_len);
+		return istr_trunc(string, istr_len(string) - remove_len);
 	}
 
 	size_t mvlen = safe_add(index, remove_len);
@@ -477,6 +481,7 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 
 	if (index < istr_len(string)) {
 		// Create some space for the str to be inserted
+		// if inserting in the middle or before a string
 		//TODO audit for overflow checks here, not fully done
 		memmove(string + index + bytes_len, \
 		        string + index, \
@@ -489,3 +494,35 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 
 	return string;
 }
+
+/*
+// Make sure this is unicode friendly!
+istring* istr_lower(istring *string)
+{
+}
+
+// Make sure this is unicode friendly!
+istring* istr_upper(istring *string)
+{
+}
+
+// strip characters from both left and right of string
+istring* istr_strip(istring *string, const char *chs)
+{
+}
+
+// strip characters from right of string
+istring* istr_rstrip(istring *string, const char *chs)
+{
+}
+
+// strip characters from left of string
+istring* istr_lstrip(istring *string, const char *chs)
+{
+}
+
+// Replace a substring
+istring* istr_replace(istring *string, const char *find, const char *replace)
+{
+}
+*/
