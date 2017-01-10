@@ -1,7 +1,6 @@
 /* See LICENSE file for copyright and license details */
 #include <stdlib.h>
 #include <stdbool.h>
-#include <errno.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -22,12 +21,11 @@ safe_add:
 
 return -> size_t:
 	success: Sum of the two arguments
-	range error: SIZE_MAX and errno = ERANGE
+	range error: SIZE_MAX
 */
 static inline size_t safe_add(size_t a, size_t b)
 {
 	if (a > SIZE_MAX - b) {
-		errno = ERANGE;
 		return SIZE_MAX;
 	} else {
 		return a + b;
@@ -65,7 +63,7 @@ nearest_pow:
 	Find the nearest power of two that can contain the given value.
 return -> size_t:
 	success: The closest power of two larger than num
-	range error: SIZE_MAX and errno = ERANGE
+	range error: SIZE_MAX
  */
 static size_t nearest_pow(size_t base, size_t num)
 {
@@ -74,7 +72,6 @@ static size_t nearest_pow(size_t base, size_t num)
 
 	// Check if the next pow will overflow
 	if (num > SIZE_MAX / 2) {
-		errno = ERANGE;
 		return SIZE_MAX;
 	}
 		
@@ -88,7 +85,7 @@ istr_alloc:
 	and initializes all of it's fields.
 return -> istring*:
 	success: The pointer to a newly allocated istring
-	failure: NULL and errno = ENOMEM
+	failure: NULL
  */
 static istring* istr_alloc(size_t init_size)
 {
@@ -97,7 +94,6 @@ static istring* istr_alloc(size_t init_size)
 	// The header for the string is two size_t values containing size and length
 	istring *string = malloc(HSIZE + sizeof(*string)*init_size);
 	if (NULL == string) {
-		errno = ENOMEM;
 		return NULL;
 	}
 	string += HSIZE;
@@ -111,21 +107,20 @@ static istring* istr_alloc(size_t init_size)
 
 /* 
 istr_realloc:
-	A Helper function that reallocates memory for an istring
+	A Helper function that reallocates memory for an istring,
+	automatically taking care of header space and setting the new size
 return -> istring*:
 	success: The pointer to a newly allocated istring
-	failure: NULL and errno = ENOMEM
+	failure: NULL
  */
 static istring* istr_realloc(istring *string, size_t target_size) 
 {
 	if (NULL == string) {
-		errno = EINVAL;
 		return NULL;
 	}
 
 	string = realloc(string - HSIZE, HSIZE + sizeof(*string) * target_size);
 	if (NULL == string) {
-		errno = ENOMEM;
 		return NULL;
 	}
 	string += HSIZE;
@@ -140,20 +135,18 @@ istr_ensure_size:
 	char buffer will be able to hold at least the amount of requested bytes
 return -> istring*):
 	success: The original string object
-	bad args: NULL and errno = EINVAL
-	memory error: NULL and errno = ENOMEM
+	bad args: NULL
+	memory error: NULL
  */
 static istring* istr_ensure_size(istring *string, size_t target_size)
 {
 	if (NULL == string) {
-		errno = EINVAL;
 		return NULL;
 	}
 
 	if (istr_size(string) < target_size) {
 		string = istr_realloc(string, nearest_pow(2, target_size));
 		if (NULL == string) {
-			errno = ENOMEM;
 			return NULL;
 		}
 	}
@@ -213,7 +206,6 @@ istring* istr_new_cstr(const char *cstr)
 istring* istr_grow(istring *string, size_t target_size)
 {
 	if (NULL == string) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -234,13 +226,11 @@ istring* istr_grow(istring *string, size_t target_size)
 istring* istr_shrink(istring *string, size_t target_size)
 {
 	if (NULL == string) {
-		errno = EINVAL;
 		return NULL;
 	}
 
 	string = istr_realloc(string, target_size);
 	if (NULL == string) {
-		errno = ENOMEM;
 		return NULL;
 	}
 	string[LINDEX] = smin(istr_len(string), target_size);
@@ -250,18 +240,12 @@ istring* istr_shrink(istring *string, size_t target_size)
 
 void istr_free(istring *string)
 {
-	if (NULL == string) {
-		errno = EINVAL;
-		return;
-	}
-
-	free(string-HSIZE);
+	if (string) free(string-HSIZE);
 }
 
 int istr_eq(const istring *s1, const istring *s2)
 {
 	if (NULL == s1 || NULL == s2) {
-		errno = EINVAL;
 		return -1;
 	}
 	
@@ -278,7 +262,6 @@ int istr_eq(const istring *s1, const istring *s2)
 istring* istr_slice(istring *slice, const istring *src, size_t begin, size_t end)
 {
 	if (NULL == slice || NULL == src || begin > end) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -289,7 +272,6 @@ istring* istr_slice(istring *slice, const istring *src, size_t begin, size_t end
 istring* istr_assign(istring *dest, const istring *src)
 {
 	if (NULL == src) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -299,7 +281,6 @@ istring* istr_assign(istring *dest, const istring *src)
 istring* istr_assign_cstr(istring *string, const char *cstr)
 {
 	if (NULL == cstr) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -309,7 +290,6 @@ istring* istr_assign_cstr(istring *string, const char *cstr)
 istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -329,7 +309,6 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 istring* istr_truncate(istring *string, size_t len)
 {
 	if (NULL == string) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -341,12 +320,10 @@ istring* istr_truncate(istring *string, size_t len)
 char istr_pop(istring *string)
 {
 	if (NULL == string) {
-		errno = EINVAL;
 		return '\0';
 	}
 
 	if (istr_len(string) <= 0) {
-		errno = ERANGE;
 		return '\0';
 	}
 
@@ -359,7 +336,6 @@ char istr_pop(istring *string)
 istring* istr_write(istring *dest, size_t index, const istring *src)
 {
 	if (NULL == src) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -369,7 +345,6 @@ istring* istr_write(istring *dest, size_t index, const istring *src)
 istring* istr_write_cstr(istring *string, size_t index, const char *cstr)
 {
 	if (NULL == cstr) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -379,7 +354,6 @@ istring* istr_write_cstr(istring *string, size_t index, const char *cstr)
 istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -404,12 +378,10 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 istring* istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 {
 	if (NULL == string) {
-		errno = EINVAL;
 		return NULL;
 	}
 
 	if (index > istr_len(string)) {
-		errno = ERANGE;
 		return NULL;
 	}
 
@@ -434,7 +406,6 @@ istring* istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 istring* istr_append(istring *dest, const istring *src)
 {
 	if (NULL == src) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -444,7 +415,6 @@ istring* istr_append(istring *dest, const istring *src)
 istring* istr_append_cstr(istring *string, const char *cstr)
 {
 	if (NULL == cstr) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -454,7 +424,6 @@ istring* istr_append_cstr(istring *string, const char *cstr)
 istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -464,7 +433,6 @@ istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len)
 istring* istr_insert(istring *dest, size_t index, const istring *src)
 {
 	if (NULL == dest || NULL == src) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -474,7 +442,6 @@ istring* istr_insert(istring *dest, size_t index, const istring *src)
 istring* istr_insert_cstr(istring *string, size_t index, const char *cstr)
 {
 	if (NULL == cstr) {
-		errno = EINVAL;
 		return NULL;
 	}
 
@@ -497,7 +464,6 @@ istring* istr_insert_unichar(istring *string, size_t index, int32_t unichar)
 istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
-		errno = EINVAL;
 		return NULL;
 	}
 

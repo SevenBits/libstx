@@ -2,11 +2,15 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <errno.h>
 
 #include "libistr.h"
 
-void test_new_and_free()
+// Currently unused macro
+#define istr_assert(a) ((a) ? :glb_test_fail++)
+
+static int glb_test_fail = 0;
+
+static int test_new_and_free()
 {
 	istring *is1 = istr_new(NULL);
 	assert(NULL != is1);
@@ -41,7 +45,7 @@ void test_new_and_free()
 	istr_free(is2);
 }
 
-void test_grow_and_shrink()
+static int test_grow_and_shrink()
 {
 	istring *is1 = istr_new(NULL);
 	is1 = istr_grow(is1, 64);
@@ -58,7 +62,7 @@ void test_grow_and_shrink()
 	istr_free(is1);
 }
 
-void test_eq()
+static int test_eq()
 {
 	istring *is1 = istr_new_cstr("hello");
 	istring *is2 = istr_new_cstr("hello");
@@ -67,17 +71,15 @@ void test_eq()
 	assert(1 == istr_eq(is1, is2));
 
 	assert(-1 == istr_eq(NULL, NULL));
-	assert(EINVAL == errno);
 
 	istr_free(is1);
 	istr_free(is2);
 }
 
-void test_assign()
+static int test_assign()
 {
 	istring *is1 = istr_new(NULL);
 	assert(NULL == istr_assign(is1, NULL));
-	assert(errno == EINVAL);
 
 	is1 = istr_assign_bytes(is1, "hello", 5);
 
@@ -97,7 +99,7 @@ void test_assign()
 	istr_free(is2);
 }
 
-void test_truncate()
+static int test_truncate()
 {
 	istring *is1 = istr_new_cstr("hello world");
 
@@ -109,7 +111,7 @@ void test_truncate()
 	istr_free(is1);
 }
 
-void test_pop()
+static int test_pop()
 {
 	istring *is1 = istr_new_cstr("hello");
 
@@ -121,32 +123,36 @@ void test_pop()
 	istr_free(is1);
 }
 
-void test_write()
+static int test_write()
 {
 	istring *is1 = istr_new_cstr("foobar 20");
 	is1 = istr_write_bytes(is1, 7, "2000 is aight.", 14);
+
 	assert('\0' == is1[istr_len(is1)]);
 	assert(21 == istr_len(is1));
 	assert(21 <= istr_size(is1));
 	assert(0 == strcmp(is1, "foobar 2000 is aight."));
 
 	istr_free(is1);
+
+	return 0;
 }
 
 int main()
 {
-	// Also tests istr_size and istr_len
+	printf("Starting tests\n");
 	test_new_and_free();
-
 	test_grow_and_shrink();
-
 	test_eq();
-
 	test_assign();
-
 	test_truncate();
-
 	test_pop();
-
 	test_write();
+	//test_insert();
+	//test_append();
+	//loop_test_0();
+	//printf("# of test failures: %d\n", glb_test_fail);
+	printf("Testing complete\n");
+
+	return 0;
 }
