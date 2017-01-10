@@ -3,21 +3,55 @@ libistr - Improved String Library
 
 ### A dynamic string library for C
 
-libistr is a simple dynamic string handling library for C that conforms with C99.
-The main goals of the library are strict error handling, function clarity, and
-preventing integer and buffer overflows, or resolving them if they would occur. 
-To allow for easy interoperability with other string libraries that use strings
-terminated by '\0', such as `<string.h>`, all istrings are guaranteed by all
-libistr functions to be NULL terminated. Each operation that might overwrite
-the terminating '\0' byte, such as string concatenation, will guarantee that
-another one is written at the end of the newly concatenated string for example.
+The istring library (hereafter referred to as libistr) is an efficient and 
+simple dynamic string library for C modeled after the SDS string library
+(Although libistr is a separate codebase). This idea for modeling
+strings, rather than define a new structure to contain a string's metadata, 
+allocates room for a header in front of a char array to store metadata about the string.
+This has a number of advantages detailed below.
 
-This library is heavily modeled after the public interface of the Glib GString
-library, although with a clearer naming convention and different considerations
-made when designing the library. As a result of not being part of Glib, there
-are no obfuscating 'g'-prefixed types here, only standard types one would find 
-in standard C to allow for this library to be used easily anywhere outside 
-of a Glib project.
+The reason for the reimplementation of the concept is to allow for a smaller, 
+cleaner codebase with very strict error handling and clear concise naming.
+Most design changes have been made to avoid ambiguity, like typedefing 
+the istring type to char instead of char \*, which makes the library easier to 
+use and less error prone.
+
+### Gotcha's
+1. ALWAYS assign the return value of an 'istr\_' prefixed function that returns
+an istring * because the function may have to call a reallocation method on the istring
+which will change where your istring should reference.
+##### DO:
+``` C
+istring string = istr_new(NULL);
+string = istr_append_cstr(string, "hello");
+// string still points towards your string, even if a realloc was called.
+printf("%s\n", string);
+```
+##### DONT:
+``` C
+istring string = istr_new(NULL);
+istr_append_cstr(string, "hello");
+// string may not point to your string anymore at this point.
+printf("%s\n", string);
+```
+
+2. Because of the above, keeping references to istring is hard and should
+be done with care, usually with a reference counter of some sort.
+
+### features
+The advantages here are nearly the same as the SDS string library.
+
+1. The istring model is ease of interoperability with read-only C string
+functions, as the istring can simply be passed as a parameter as if it
+were a normal char \*.
+
+2. Memory allocation in libistr is very efficient, following a rule to 
+keep an istring's size as a power of 2 that can at least hold the amount
+of contents specified. The keeps reallocations to a minimum.
+
+3. Cache locality. Since all the metadata of a string is always prefixed to the
+char \*,memory allocated to an istring is always contiguous in memory.
+This keeps memory fragmentation low and speed high when using istrings.
 
 ## Installation
 
@@ -43,8 +77,7 @@ and "/my/prefix" is the prefix to install to (default is "/usr/local")
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-#include "libistr.h"
+#include <libistr.h>
 
 int main()
 {
@@ -52,23 +85,17 @@ int main()
 	istring *string = istr_new(NULL);
 
 	// Assigns up until a '\0' is reached, then appends a '\0' to the end
-	istr_assign_cstr(string, "Hello, how are you?");
+	string = istr_assign_cstr(string, "Hello, how are you?");
 
-	// The internals of an istring are defined as part of the API, and safe to use
-	printf("str: %s\n", string->buf);
+	// Istrings are safe to use with read-only functions that accept char *.
+	printf("str: %s\n", string);
 
 	// Create a new istring from an existing one
 	istring *other_string = istr_new(string);
 
-	// Don't forget to clean up!
-	istr_free(string, true);
+	// Don't forget to clean up! Call this instead of free to make sure metadata is free'd too
+	istr_free(string);
 
-	// You can also transfer ownership of the string buffer back to a char* upon freeing
-	char *tmp = istr_free(other_string, false);
-
-	// Just remember to free it
-	free(tmp);
-	
 	// The rest of the functions are detailed in libistr.3 and libistr.h
 	return 0;
 }
