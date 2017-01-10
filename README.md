@@ -24,15 +24,15 @@ which will change where your istring should reference.
 ##### DO:
 ``` C
 istring string = istr_new(NULL);
-string = istr_append_cstr(string, "hello");
 // string still points towards your string, even if a realloc was called.
+string = istr_append_cstr(string, "hello");
 printf("%s\n", string);
 ```
 ##### DONT:
 ``` C
 istring string = istr_new(NULL);
-istr_append_cstr(string, "hello");
 // string may not point to your string anymore at this point.
+istr_append_cstr(string, "hello");
 printf("%s\n", string);
 ```
 
