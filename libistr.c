@@ -67,7 +67,7 @@ return -> size_t:
 	success: The closest power of two larger than num
 	range error: SIZE_MAX and errno = ERANGE
  */
-static inline size_t nearest_pow(size_t base, size_t num)
+static size_t nearest_pow(size_t base, size_t num)
 {
 	// Catch powers of 0, as they will break the loop below
 	if (base == 0) return 0;
@@ -116,7 +116,7 @@ return -> istring*:
 	success: The pointer to a newly allocated istring
 	failure: NULL and errno = ENOMEM
  */
-static inline istring* istr_realloc(istring *string, size_t target_size) 
+static istring* istr_realloc(istring *string, size_t target_size) 
 {
 	if (NULL == string) {
 		errno = EINVAL;
@@ -222,6 +222,10 @@ istring* istr_grow(istring *string, size_t target_size)
 	}
 
 	string = istr_ensure_size(string, safe_add(target_size, 1));
+	if (NULL == string) {
+		return NULL;
+	}
+
 	string[istr_len(string)] = '\0';
 
 	return string;
@@ -311,7 +315,6 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 
 	string = istr_ensure_size(string, safe_add(bytes_len, 1));
 	if (NULL == string) {
-		errno = ENOMEM;
 		return NULL;
 	}
 
@@ -348,8 +351,9 @@ char istr_pop(istring *string)
 	}
 
 	string[LINDEX] -= 1;
-	string[LINDEX] = '\0';
-	return string[istr_len(string) + 1];
+	char ch = string[istr_len(string)];
+	string[istr_len(string)] = '\0';
+	return ch;
 }
 
 istring* istr_write(istring *dest, size_t index, const istring *src)
@@ -385,8 +389,8 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 		potential_len = istr_len(string);
 	}
 
-	if (NULL == istr_ensure_size(string, safe_add(potential_len, 1))) {
-		errno = ENOMEM;
+	string = istr_ensure_size(string, safe_add(potential_len, 1));
+	if (NULL == string) {
 		return NULL;
 	}
 
@@ -396,34 +400,33 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 
 	return string;
 }
-/*
 
-istring* istr_remove_bytes(istring *string, size_t index, size_t len)
+istring* istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 {
 	if (NULL == string) {
 		errno = EINVAL;
 		return NULL;
 	}
 
-	if (index > ISTR_LEN(string)) {
+	if (index > istr_len(string)) {
 		errno = ERANGE;
 		return NULL;
 	}
 
 	// Special case, if bytes would be removed up until the end of the string,
 	// then simply truncate the string rather than trying to memmove.
-	if (len >= ISTR_LEN(string) - index) {
-		return istr_truncate(string, ISTR_LEN(string) - len);
+	if (remove_len >= istr_len(string) - index) {
+		return istr_truncate(string, istr_len(string) - remove_len);
 	}
 
-	size_t rm_len = safe_add(index, len);
+	size_t mvlen = safe_add(index, remove_len);
 
 	memmove(string + index, \
-			string + rm_len, \
-			ISTR_LEN(string) - rm_len);
+			string + mvlen, \
+			istr_len(string) - mvlen);
 	
-	ISTR_LEN(string) -= len;
-	string[ISTR_LEN(string)] = '\0';
+	string[LINDEX] -= remove_len;
+	string[istr_len(string)] = '\0';
 
 	return string;
 }
@@ -435,7 +438,7 @@ istring* istr_append(istring *dest, const istring *src)
 		return NULL;
 	}
 
-	return istr_append_bytes(dest, src->buf, src->len);
+	return istr_append_bytes(dest, src, istr_len(src));
 }
 
 istring* istr_append_cstr(istring *string, const char *cstr)
@@ -455,7 +458,7 @@ istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len)
 		return NULL;
 	}
 
-	return istr_insert_bytes(string, ISTR_LEN(string), bytes, bytes_len);
+	return istr_insert_bytes(string, istr_len(string), bytes, bytes_len);
 }
 
 istring* istr_insert(istring *dest, size_t index, const istring *src)
@@ -465,7 +468,7 @@ istring* istr_insert(istring *dest, size_t index, const istring *src)
 		return NULL;
 	}
 
-	return istr_insert_bytes(dest, index, src->buf, src->len);
+	return istr_insert_bytes(dest, index, src, istr_len(src));
 }
 
 istring* istr_insert_cstr(istring *string, size_t index, const char *cstr)
@@ -478,6 +481,7 @@ istring* istr_insert_cstr(istring *string, size_t index, const char *cstr)
 	return istr_insert_bytes(string, index, cstr, strlen(cstr));
 }
 
+/*
 istring* istr_insert_unichar(istring *string, size_t index, int32_t unichar)
 {
 	size_t unilen;
@@ -488,6 +492,7 @@ istring* istr_insert_unichar(istring *string, size_t index, int32_t unichar)
 	} else if (unichar < 0x8000) {
 	}
 }
+*/
 
 istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
 {
@@ -497,24 +502,24 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	}
 
 	// Overflow check
-	size_t total_len = safe_add(ISTR_LEN(string), bytes_len);
+	size_t total_len = safe_add(istr_len(string), bytes_len);
 
-	if (NULL == istr_ensure_size(string, safe_add(total_len, 1))) {
-		errno = ENOMEM;
+	string = istr_ensure_size(string, safe_add(total_len, 1));
+	if (NULL == string) {
 		return NULL;
 	}
 
-	if (index < ISTR_LEN(string)) {
+	if (index < istr_len(string)) {
 		// Create some space for the str to be inserted
+		//TODO audit for overflow checks here, not fully done
 		memmove(string + index + bytes_len, \
 		        string + index, \
-		        ISTR_LEN(string) - index);
+		        istr_len(string) - index);
 	}
 
 	memcpy(string + index, bytes, bytes_len);
-	ISTR_LEN(string) = total_len;
-	string-[ISTR_LEN(string)] = '\0';
+	string[LINDEX] = total_len;
+	string[istr_len(string)] = '\0';
 
 	return string;
 }
-*/

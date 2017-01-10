@@ -97,6 +97,42 @@ void test_assign()
 	istr_free(is2);
 }
 
+void test_truncate()
+{
+	istring *is1 = istr_new_cstr("hello world");
+
+	is1 = istr_truncate(is1, 5);
+	assert(5 == istr_len(is1));
+	assert(11 <= istr_size(is1));
+	assert(0 == strcmp(is1, "hello"));
+
+	istr_free(is1);
+}
+
+void test_pop()
+{
+	istring *is1 = istr_new_cstr("hello");
+
+	char test[] = "hello";
+	for (size_t i=0; i<=4; i++) {
+		assert(test[4-i] == istr_pop(is1));
+	}
+
+	istr_free(is1);
+}
+
+void test_write()
+{
+	istring *is1 = istr_new_cstr("foobar 20");
+	is1 = istr_write_bytes(is1, 7, "2000 is aight.", 14);
+	assert('\0' == is1[istr_len(is1)]);
+	assert(21 == istr_len(is1));
+	assert(21 <= istr_size(is1));
+	assert(0 == strcmp(is1, "foobar 2000 is aight."));
+
+	istr_free(is1);
+}
+
 int main()
 {
 	// Also tests istr_size and istr_len
@@ -108,11 +144,9 @@ int main()
 
 	test_assign();
 
-	/*
 	test_truncate();
 
 	test_pop();
 
 	test_write();
-	*/
 }
