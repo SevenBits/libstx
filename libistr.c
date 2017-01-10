@@ -67,14 +67,14 @@ return -> size_t:
  */
 static size_t nearest_pow(size_t base, size_t num)
 {
-	// Catch powers of 0, as they will break the loop below
+	// Catch bases of 0, as they will break the loop below
 	if (base == 0) return 0;
 
 	// Check if the next pow will overflow
-	if (num > SIZE_MAX / 2) {
+	if (num >= SIZE_MAX / 2) {
 		return SIZE_MAX;
 	}
-		
+
 	while (base < num) base <<= 1 ;
 	return base;
 }
@@ -92,7 +92,7 @@ static istring* istr_alloc(size_t init_size)
 	init_size = smax(2, init_size);
 
 	// The header for the string is two size_t values containing size and length
-	istring *string = malloc(HSIZE + sizeof(*string)*init_size);
+	istring *string = malloc(HSIZE + sizeof(*string) * nearest_pow(2, init_size));
 	if (NULL == string) {
 		return NULL;
 	}
