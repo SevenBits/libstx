@@ -26,7 +26,7 @@ return -> size_t:
 static inline size_t safe_add(size_t a, size_t b)
 {
 	if (a > SIZE_MAX - b) {
-		return SIZE_MAX;
+		return SIZE_MAX - 1;
 	} else {
 		return a + b;
 	}
@@ -123,6 +123,7 @@ static istring* istr_realloc(istring *string, size_t target_size)
 	if (NULL == string) {
 		return NULL;
 	}
+
 	string += HSIZE;
 	string[SINDEX] = target_size;
 	return string;
@@ -169,7 +170,8 @@ istring* istr_new(const istring *src)
 {
 	if (NULL == src) return istr_alloc(0);
 
-	istring *string = istr_alloc(istr_len(src));
+	// +1 for '\0'
+	istring *string = istr_alloc(istr_len(src) + 1);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -181,7 +183,8 @@ istring* istr_new_bytes(const char *bytes, size_t bytes_len)
 {
 	if (NULL == bytes) return istr_alloc(0);
 
-	istring *string = istr_alloc(bytes_len);
+	// +1 for '\0'
+	istring *string = istr_alloc(bytes_len + 1);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -195,7 +198,8 @@ istring* istr_new_cstr(const char *cstr)
 
 	size_t cstr_len = strlen(cstr);
 
-	istring *string = istr_alloc(cstr_len);
+	// +1 for '\0'
+	istring *string = istr_alloc(cstr_len + 1);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -218,8 +222,7 @@ istring* istr_grow(istring *string, size_t target_size)
 		return NULL;
 	}
 
-	string[istr_len(string)] = '\0';
-
+	string[target_size] = '\0';
 	return string;
 }
 
@@ -233,7 +236,9 @@ istring* istr_shrink(istring *string, size_t target_size)
 	if (NULL == string) {
 		return NULL;
 	}
+
 	string[LINDEX] = smin(istr_len(string), target_size);
+	string[istr_len(string)] = '\0';
 
 	return string;
 }
@@ -375,9 +380,11 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 	return string;
 }
 
+/*
 istring* istr_remove_unichars()
 {
 }
+*/
 
 istring* istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 {
