@@ -39,7 +39,7 @@ clean:
 	@echo "cleaning..."
 	rm -f ${ARCHIVE} 
 	rm -f ${OBJ}
-	rm -f ${TESTS}
+	rm -f ${TEST}
 	rm -f libustr-${VERSION}.tar.gz
 
 dist: clean

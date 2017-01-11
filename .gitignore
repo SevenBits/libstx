@@ -4,7 +4,7 @@
 *.so
 
 # Compiled tests
-*.test
+test*
 
 # Packages
 *.gz
