@@ -3,12 +3,16 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "libustr.h"
 
 // Offsets of header information
+// len offset
 #define L_OFFSET (sizeof(size_t) * 1)
+// size offset
 #define S_OFFSET (sizeof(size_t) * 2)
+// beginning of header offset
 #define H_OFFSET (sizeof(size_t) * 2)
 
 /* 
@@ -537,8 +541,35 @@ ustring* ustr_lstrip(ustring *string, const char *chs)
 {
 }
 
+*/
+// Find a substring withing the ustring
+char* ustr_find(ustring *string, const char *substr)
+{
+	if (NULL == string || NULL == substr) {
+		return NULL;
+	}
+	
+	while (*string) {
+		char *begin = string;
+		const char *token = substr;
+		while (*begin && *token && *begin == *token) {
+			begin++;
+			token++;
+		}
+		// If the token reached the end of the substr, it has been found.
+		if (!*token) {
+			return string;
+		}
+		string++;
+	}
+	// No substr could be found
+	return NULL;
+}
+
+/*
 // Replace a substring
 ustring* ustr_replace(ustring *string, const char *find, const char *replace)
 {
+	return NULL;
 }
 */

@@ -186,6 +186,20 @@ void test_append()
 	ustr_free(us1);
 }
 
+void test_find()
+{
+	ustring *us1 = ustr_new_cstr("hellosubworld!");
+	char *substr = ustr_find(us1, "sub");
+	assert(NULL != substr);
+	assert(0 == strncmp(substr, "sub", 3));
+
+	substr[1] = 'o';
+
+	assert(0 == strcmp(us1, "hellosobworld!"));
+
+	ustr_free(us1);
+}
+
 int main()
 {
 	printf("Starting tests\n");
@@ -198,7 +212,8 @@ int main()
 	test_write();
 	test_insert();
 	test_append();
-	//printf("# of test failures: %d\n", glb_test_fail);
+	test_find();
+	//test_replace();
 	printf("Testing complete\n");
 
 	return 0;

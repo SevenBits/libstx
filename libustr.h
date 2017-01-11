@@ -61,4 +61,6 @@ ustring* ustr_insert_cstr(ustring *string, size_t index, const char *cstr);
 
 ustring* ustr_insert_bytes(ustring *string, size_t index, const char *bytes, size_t bytes_len);
 
+char* ustr_find(ustring *string, const char *substr);
+
 #endif
