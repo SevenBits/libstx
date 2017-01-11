@@ -6,12 +6,10 @@
 
 #include "libustr.h"
 
-// Byte-length index
+// Offsets of header information
 #define L_OFFSET (sizeof(size_t) * 1)
-// Size index
 #define S_OFFSET (sizeof(size_t) * 2)
-// Header size
-#define H_SIZE (sizeof(size_t) * 2)
+#define H_OFFSET (sizeof(size_t) * 2)
 
 /* 
 safe_add:
@@ -91,32 +89,6 @@ static inline void ustr_setsize(ustring *string, size_t size)
 }
 
 /* 
-ustr_alloc:
-	A Helper function that allocates memory for an ustring
-	and initializes all of it's fields.
-return -> ustring*:
-	success: The pointer to a newly allocated ustring
-	failure: NULL
- */
-static ustring* ustr_alloc(size_t init_size)
-{
-	init_size = nearest_pow(2, smax(2, init_size));
-
-	// The header for the string is two size_t values containing size and length
-	ustring *string = malloc(H_SIZE + sizeof(*string) * init_size);
-	if (NULL == string) {
-		return NULL;
-	}
-	string += H_SIZE;
-
-	ustr_setlen(string, 0);
-	ustr_setsize(string, init_size);
-	string[0] = '\0';
-
-	return string;
-}
-
-/* 
 ustr_realloc:
 	A Helper function that reallocates memory for an ustring,
 	automatically taking care of header space and setting the new size
@@ -124,19 +96,45 @@ return -> ustring*:
 	success: The pointer to a newly allocated ustring
 	failure: NULL
  */
-static ustring* ustr_realloc(ustring *string, size_t target_size) 
+static ustring* ustr_realloc(ustring *string, size_t size) 
 {
 	if (NULL == string) {
-		return NULL;
+		string = realloc(NULL, H_OFFSET + sizeof(*string) * size);
+	} else {
+		string = realloc(string - H_OFFSET, H_OFFSET + sizeof(*string) * size);
 	}
 
-	string = realloc(string - H_SIZE, H_SIZE + sizeof(*string) * target_size);
 	if (NULL == string) {
 		return NULL;
 	}
 
-	string += H_SIZE;
-	ustr_setsize(string, target_size);
+	string += H_OFFSET;
+	ustr_setsize(string, size);
+
+	return string;
+}
+
+/* 
+ustr_alloc:
+	A Helper function that allocates memory for an ustring
+	and initializes all of it's fields.
+return -> ustring*:
+	success: The pointer to a newly allocated ustring
+	failure: NULL
+ */
+static ustring* ustr_init(size_t init_size)
+{
+	init_size = nearest_pow(2, smax(2, init_size));
+
+	// The header for the string is two size_t values containing size and length
+	ustring *string = ustr_realloc(NULL, init_size);
+	if (NULL == string) {
+		return NULL;
+	}
+
+	ustr_setlen(string, 0);
+	string[0] = '\0';
+
 	return string;
 }
 
@@ -179,10 +177,10 @@ size_t ustr_len(const ustring *string)
 
 ustring* ustr_new(const ustring *src) 
 {
-	if (NULL == src) return ustr_alloc(0);
+	if (NULL == src) return ustr_init(0);
 
 	// +1 for '\0'
-	ustring *string = ustr_alloc(ustr_len(src) + 1);
+	ustring *string = ustr_init(ustr_len(src) + 1);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -192,10 +190,10 @@ ustring* ustr_new(const ustring *src)
 
 ustring* ustr_new_bytes(const char *bytes, size_t bytes_len) 
 {
-	if (NULL == bytes) return ustr_alloc(0);
+	if (NULL == bytes) return ustr_init(0);
 
 	// +1 for '\0'
-	ustring *string = ustr_alloc(bytes_len + 1);
+	ustring *string = ustr_init(bytes_len + 1);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -205,12 +203,12 @@ ustring* ustr_new_bytes(const char *bytes, size_t bytes_len)
 
 ustring* ustr_new_cstr(const char *cstr) 
 {
-	if (NULL == cstr) return ustr_alloc(0);
+	if (NULL == cstr) return ustr_init(0);
 
 	size_t cstr_len = strlen(cstr);
 
 	// +1 for '\0'
-	ustring *string = ustr_alloc(cstr_len + 1);
+	ustring *string = ustr_init(cstr_len + 1);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -256,7 +254,7 @@ ustring* ustr_shrink(ustring *string, size_t target_size)
 
 void ustr_free(ustring *string)
 {
-	if (string) free(string-H_SIZE);
+	if (string) free(string-H_OFFSET);
 }
 
 int ustr_eq(const ustring *s1, const ustring *s2)
