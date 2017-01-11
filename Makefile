@@ -1,17 +1,17 @@
 include config.mk
 
-ARCHIVE=libistr.a
+ARCHIVE=libustr.a
 
-HEADER=libistr.h
-SRC=libistr.c
+HEADER=libustr.h
+SRC=libustr.c
 OBJ=${SRC:.c=.o}
 
-MANPAGE=libistr.3
+MANPAGE=libustr.3
 
-all: settings run_tests libistr.a
+all: settings run_test libustr.a
 
 settings:
-	@echo libistr build settings:
+	@echo libustr build settings:
 	@echo "CFLAGS   = ${CFLAGS}"
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
@@ -27,37 +27,28 @@ ${ARCHIVE}: ${OBJ}
 
 # Tests below
 
-TEST_SRC=test_libistr.c
-TESTS=test_libistr
+TEST=test
 
-tests: ${TESTS}
+${TEST}: ${TEST}.c ${OBJ}
+	${CC} -o ${TEST} ${TEST}.c ${OBJ}
 
-test_libistr: test_libistr.c ${OBJ}
-	${CC} -o test_libistr test_libistr.c ${OBJ}
-
-run_tests: tests
-	@echo "---------------------+"
-	@echo "  running all tests! |"
-	@echo "---------------------+"
-	$(foreach test,${TESTS},./${test})
-	@echo "---------------------+"
-	@echo "  all tests have run |"
-	@echo "---------------------+"
+run_test: ${TEST}
+	./${TEST}
 
 clean:
 	@echo "cleaning..."
 	rm -f ${ARCHIVE} 
 	rm -f ${OBJ}
 	rm -f ${TESTS}
-	rm -f libistr-${VERSION}.tar.gz
+	rm -f libustr-${VERSION}.tar.gz
 
 dist: clean
 	@echo creating dist tarball
-	@mkdir -p libistr-${VERSION}
-	@cp -r LICENSE README.md Makefile config.mk ${TEST_SRC} ${SRC} ${HEADER} ${MANPAGE} libistr-${VERSION}
-	tar -cvf libistr-${VERSION}.tar libistr-${VERSION}
-	@gzip libistr-${VERSION}.tar
-	@rm -rf libistr-${VERSION}
+	@mkdir -p libustr-${VERSION}
+	@cp -r LICENSE README.md Makefile config.mk ${TEST_SRC} ${SRC} ${HEADER} ${MANPAGE} libustr-${VERSION}
+	tar -cvf libustr-${VERSION}.tar libistr-${VERSION}
+	@gzip libustr-${VERSION}.tar
+	@rm -rf libustr-${VERSION}
 
 install: all
 	@echo installing library archive to ${DESTDIR}${PREFIX}/lib/
