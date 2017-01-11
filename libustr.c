@@ -7,13 +7,11 @@
 #include "libustr.h"
 
 // Byte-length index
-static const size_t LINDEX = -(sizeof(size_t) * 1);
+#define L_OFFSET (sizeof(size_t) * 1)
 // Size index
-static const size_t SINDEX = -(sizeof(size_t) * 2);
-// Unichar-length index
-// static const size_t UINDEX = -(sizeof(size_t) * 3);
+#define S_OFFSET (sizeof(size_t) * 2)
 // Header size
-static const size_t HSIZE = sizeof(size_t) * 2;
+#define H_SIZE (sizeof(size_t) * 2)
 
 /* 
 safe_add:
@@ -80,16 +78,16 @@ static size_t nearest_pow(size_t base, size_t num)
 	return base;
 }
 
+// These are used internally to avoid the mess of setting the header info
 static inline void ustr_setlen(ustring *string, size_t len)
 {
-	// Use a size_t pointer to appropriately set the information
-	*((size_t*)(string+LINDEX)) = len;
+	*((size_t*)(string-L_OFFSET)) = len;
 }
 
+// These are used internally to avoid the mess of setting the header info
 static inline void ustr_setsize(ustring *string, size_t size)
 {
-	// Use a size_t pointer to appropriately set the information
-	*((size_t*)(string+SINDEX)) = size;
+	*((size_t*)(string-S_OFFSET)) = size;
 }
 
 /* 
@@ -105,11 +103,11 @@ static ustring* ustr_alloc(size_t init_size)
 	init_size = nearest_pow(2, smax(2, init_size));
 
 	// The header for the string is two size_t values containing size and length
-	ustring *string = malloc(HSIZE + sizeof(*string) * init_size);
+	ustring *string = malloc(H_SIZE + sizeof(*string) * init_size);
 	if (NULL == string) {
 		return NULL;
 	}
-	string += HSIZE;
+	string += H_SIZE;
 
 	ustr_setlen(string, 0);
 	ustr_setsize(string, init_size);
@@ -132,12 +130,12 @@ static ustring* ustr_realloc(ustring *string, size_t target_size)
 		return NULL;
 	}
 
-	string = realloc(string - HSIZE, HSIZE + sizeof(*string) * target_size);
+	string = realloc(string - H_SIZE, H_SIZE + sizeof(*string) * target_size);
 	if (NULL == string) {
 		return NULL;
 	}
 
-	string += HSIZE;
+	string += H_SIZE;
 	ustr_setsize(string, target_size);
 	return string;
 }
@@ -171,12 +169,12 @@ static ustring* ustr_ensure_size(ustring *string, size_t target_size)
 // PUBLIC LIBRARY FUNCTIONS BELOW
 size_t ustr_size(const ustring *string)
 {
-	return *((size_t*)(string+SINDEX));
+	return *((size_t*)(string-S_OFFSET));
 }
 
 size_t ustr_len(const ustring *string)
 {
-	return *((size_t*)(string+LINDEX));
+	return *((size_t*)(string-L_OFFSET));
 }
 
 ustring* ustr_new(const ustring *src) 
@@ -258,7 +256,7 @@ ustring* ustr_shrink(ustring *string, size_t target_size)
 
 void ustr_free(ustring *string)
 {
-	if (string) free(string-HSIZE);
+	if (string) free(string-H_SIZE);
 }
 
 int ustr_eq(const ustring *s1, const ustring *s2)
