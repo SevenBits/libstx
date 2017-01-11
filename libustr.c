@@ -324,15 +324,14 @@ ustring* ustr_assign_bytes(ustring *string, const char *bytes, size_t bytes_len)
 	return string;
 }
 
-ustring* ustr_trunc(ustring *string, size_t len)
+void ustr_trunc(ustring *string, size_t len)
 {
 	if (NULL == string) {
-		return NULL;
+		return;
 	}
 
 	ustr_setlen(string, smin(ustr_len(string), len));
 	string[ustr_len(string)] = '\0';
-	return string;
 }
 
 char ustr_pop(ustring *string)
@@ -399,20 +398,21 @@ ustring* ustr_remove_unichars()
 }
 */
 
-ustring* ustr_remove_bytes(ustring *string, size_t index, size_t remove_len)
+void ustr_remove_bytes(ustring *string, size_t index, size_t remove_len)
 {
 	if (NULL == string) {
-		return NULL;
+		return;
 	}
 
 	if (index > ustr_len(string)) {
-		return NULL;
+		return;
 	}
 
 	// Special case, if bytes would be removed up until the end of the string,
 	// then simply truncate the string rather than trying to memmove.
 	if (remove_len >= ustr_len(string) - index) {
-		return ustr_trunc(string, ustr_len(string) - remove_len);
+		ustr_trunc(string, ustr_len(string) - remove_len);
+		return;
 	}
 
 	size_t mvlen = safe_add(index, remove_len);
@@ -423,8 +423,6 @@ ustring* ustr_remove_bytes(ustring *string, size_t index, size_t remove_len)
 	
 	ustr_setlen(string, ustr_len(string) - remove_len);
 	string[ustr_len(string)] = '\0';
-
-	return string;
 }
 
 ustring* ustr_append(ustring *dest, const ustring *src)
@@ -525,23 +523,66 @@ ustring* ustr_lower(ustring *string)
 ustring* ustr_upper(ustring *string)
 {
 }
-
-// strip characters from both left and right of string
-ustring* ustr_strip(ustring *string, const char *chs)
-{
-}
+*/
 
 // strip characters from right of string
-ustring* ustr_rstrip(ustring *string, const char *chs)
+void ustr_rstrip(ustring *string, const char *chs)
 {
+	size_t len = ustr_len(string);
+	char *right = string + len - 1;
+
+	while(right != string) {
+		const char *cptr = chs;
+		while (*cptr) {
+			if (*right == *cptr) {
+				len--;
+				break;
+			}
+			cptr++;
+		}
+		// No characters matched, stop
+		if ('\0' == *cptr) break;
+
+		right--;
+	}
+	ustr_setlen(string, len);
+	string[len] = '\0';
 }
 
 // strip characters from left of string
-ustring* ustr_lstrip(ustring *string, const char *chs)
+void ustr_lstrip(ustring *string, const char *chs)
 {
+	size_t len = ustr_len(string);
+	char *left = string;
+	char *right = string + len - 1;
+
+	while(left != right) {
+		const char *cptr = chs;
+		while ('\0' != *cptr) {
+			if (*left == *cptr) {
+				len--;
+				break;
+			}
+			cptr++;
+		}
+		// No characters matched, stop
+		if ('\0' == *cptr) break;
+
+		left++;
+	}
+	// If left characters were stripped, then move the string back
+	if (left != string) memmove(string, left, len);
+	ustr_setlen(string, len);
+	string[len] = '\0';
 }
 
-*/
+// strip characters from both left and right of string
+void ustr_strip(ustring *string, const char *chs)
+{
+	ustr_lstrip(string, chs);
+	ustr_rstrip(string, chs);
+}
+
 // Find a substring withing the ustring
 char* ustr_find(ustring *string, const char *substr)
 {

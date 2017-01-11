@@ -114,7 +114,7 @@ void test_trunc()
 {
 	ustring *is1 = ustr_new_cstr("hello world");
 
-	is1 = ustr_trunc(is1, 5);
+	ustr_trunc(is1, 5);
 	assert(5 == ustr_len(is1));
 	assert(11 <= ustr_size(is1));
 	assert(0 == strcmp(is1, "hello"));
@@ -200,6 +200,28 @@ void test_find()
 	ustr_free(us1);
 }
 
+void test_strip()
+{
+	ustring *us1 = ustr_new_cstr("zxcvMMnnhellonnMMzxcv");
+
+	ustr_lstrip(us1, "zxcv");
+	assert(17 == ustr_len(us1));
+	assert('\0' == us1[ustr_len(us1)]);
+	assert(0 == strcmp(us1, "MMnnhellonnMMzxcv"));
+
+	ustr_rstrip(us1, "zxcv");
+	assert(13 == ustr_len(us1));
+	assert('\0' == us1[ustr_len(us1)]);
+	assert(0 == strcmp(us1, "MMnnhellonnMM"));
+
+	ustr_strip(us1, "Mn");
+	assert(5 == ustr_len(us1));
+	assert('\0' == us1[ustr_len(us1)]);
+	assert(0 == strcmp(us1, "hello"));
+
+	ustr_free(us1);
+}
+
 int main()
 {
 	printf("Starting tests\n");
@@ -213,6 +235,7 @@ int main()
 	test_insert();
 	test_append();
 	test_find();
+	test_strip();
 	//test_replace();
 	printf("Testing complete\n");
 

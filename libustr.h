@@ -37,7 +37,7 @@ ustring* ustr_assign_cstr(ustring *string, const char *cstr);
 
 ustring* ustr_assign_bytes(ustring *string, const char *bytes, size_t bytes_len);
 
-ustring* ustr_trunc(ustring *string, size_t len);
+void ustr_trunc(ustring *string, size_t len);
 
 char ustr_pop(ustring *string);
 
@@ -47,7 +47,7 @@ ustring* ustr_write_cstr(ustring *string, size_t index, const char *cstr);
 
 ustring* ustr_write_bytes(ustring *string, size_t index, const char *bytes, size_t bytes_len);
 
-ustring* ustr_remove_bytes(ustring *string, size_t index, size_t len);
+void ustr_remove_bytes(ustring *string, size_t index, size_t len);
 
 ustring* ustr_append(ustring *dest, const ustring *src);
 
@@ -60,6 +60,12 @@ ustring* ustr_insert(ustring *dest, size_t index, const ustring *src);
 ustring* ustr_insert_cstr(ustring *string, size_t index, const char *cstr);
 
 ustring* ustr_insert_bytes(ustring *string, size_t index, const char *bytes, size_t bytes_len);
+
+void ustr_rstrip(ustring *string, const char *chs);
+
+void ustr_lstrip(ustring *string, const char *chs);
+
+void ustr_strip(ustring *string, const char *chs);
 
 char* ustr_find(ustring *string, const char *substr);
 
