@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdint.h>
 
 #include "libustr.h"
@@ -81,6 +80,18 @@ static size_t nearest_pow(size_t base, size_t num)
 	return base;
 }
 
+static inline void ustr_setlen(ustring *string, size_t len)
+{
+	// Use a size_t pointer to appropriately set the information
+	*((size_t*)(string+LINDEX)) = len;
+}
+
+static inline void ustr_setsize(ustring *string, size_t size)
+{
+	// Use a size_t pointer to appropriately set the information
+	*((size_t*)(string+SINDEX)) = size;
+}
+
 /* 
 ustr_alloc:
 	A Helper function that allocates memory for an ustring
@@ -100,8 +111,8 @@ static ustring* ustr_alloc(size_t init_size)
 	}
 	string += HSIZE;
 
-	string[LINDEX] = 0;
-	string[SINDEX] = init_size;
+	ustr_setlen(string, 0);
+	ustr_setsize(string, init_size);
 	string[0] = '\0';
 
 	return string;
@@ -127,7 +138,7 @@ static ustring* ustr_realloc(ustring *string, size_t target_size)
 	}
 
 	string += HSIZE;
-	string[SINDEX] = target_size;
+	ustr_setsize(string, target_size);
 	return string;
 }
 
@@ -160,12 +171,12 @@ static ustring* ustr_ensure_size(ustring *string, size_t target_size)
 // PUBLIC LIBRARY FUNCTIONS BELOW
 size_t ustr_size(const ustring *string)
 {
-	return (size_t)string[SINDEX];
+	return *((size_t*)(string+SINDEX));
 }
 
 size_t ustr_len(const ustring *string)
 {
-	return (size_t)string[LINDEX];
+	return *((size_t*)(string+LINDEX));
 }
 
 ustring* ustr_new(const ustring *src) 
@@ -239,7 +250,7 @@ ustring* ustr_shrink(ustring *string, size_t target_size)
 		return NULL;
 	}
 
-	string[LINDEX] = smin(ustr_len(string), target_size);
+	ustr_setlen(string, smin(ustr_len(string), target_size));
 	string[ustr_len(string)] = '\0';
 
 	return string;
@@ -307,7 +318,7 @@ ustring* ustr_assign_bytes(ustring *string, const char *bytes, size_t bytes_len)
 
 	// Don't bother memsetting the buffer, just shorten the logical length
 	memcpy(string, bytes, bytes_len);
-	string[LINDEX] = bytes_len;
+	ustr_setlen(string, bytes_len);
 	string[bytes_len] = '\0';
 
 	return string;
@@ -319,7 +330,7 @@ ustring* ustr_trunc(ustring *string, size_t len)
 		return NULL;
 	}
 
-	string[LINDEX] = smin(ustr_len(string), len);
+	ustr_setlen(string, smin(ustr_len(string), len));
 	string[ustr_len(string)] = '\0';
 	return string;
 }
@@ -334,7 +345,7 @@ char ustr_pop(ustring *string)
 		return '\0';
 	}
 
-	string[LINDEX] -= 1;
+	ustr_setlen(string, ustr_len(string)-1);
 	char ch = string[ustr_len(string)];
 	string[ustr_len(string)] = '\0';
 	return ch;
@@ -376,7 +387,7 @@ ustring* ustr_write_bytes(ustring *string, size_t index, const char *bytes, size
 	}
 
 	memcpy(string + index, bytes, bytes_len);
-	string[LINDEX] = potential_len;
+	ustr_setlen(string, potential_len);
 	string[ustr_len(string)] = '\0';
 
 	return string;
@@ -410,7 +421,7 @@ ustring* ustr_remove_bytes(ustring *string, size_t index, size_t remove_len)
 			string + mvlen, \
 			ustr_len(string) - mvlen);
 	
-	string[LINDEX] -= remove_len;
+	ustr_setlen(string, ustr_len(string) - remove_len);
 	string[ustr_len(string)] = '\0';
 
 	return string;
@@ -498,7 +509,7 @@ ustring* ustr_insert_bytes(ustring *string, size_t index, const char *bytes, siz
 	}
 
 	memcpy(string + index, bytes, bytes_len);
-	string[LINDEX] = total_len;
+	ustr_setlen(string, total_len);
 	string[ustr_len(string)] = '\0';
 
 	return string;

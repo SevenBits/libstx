@@ -46,7 +46,7 @@ dist: clean
 	@echo creating dist tarball
 	@mkdir -p libustr-${VERSION}
 	@cp -r LICENSE README.md Makefile config.mk ${TEST_SRC} ${SRC} ${HEADER} ${MANPAGE} libustr-${VERSION}
-	tar -cvf libustr-${VERSION}.tar libistr-${VERSION}
+	tar -cvf libustr-${VERSION}.tar libustr-${VERSION}
 	@gzip libustr-${VERSION}.tar
 	@rm -rf libustr-${VERSION}
 
