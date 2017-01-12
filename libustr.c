@@ -529,22 +529,14 @@ ustring* ustr_upper(ustring *string)
 void ustr_rstrip(ustring *string, const char *chs)
 {
 	size_t len = ustr_len(string);
-	char *right = string + len - 1;
+	char *begin = string + len - 1;
+	char *end = string;
 
-	while(right != string) {
-		const char *cptr = chs;
-		while (*cptr) {
-			if (*right == *cptr) {
-				len--;
-				break;
-			}
-			cptr++;
-		}
-		// No characters matched, stop
-		if ('\0' == *cptr) break;
-
-		right--;
+	while (begin != end && strchr(chs, *begin)) {
+		len--;
+		begin--;
 	}
+
 	ustr_setlen(string, len);
 	string[len] = '\0';
 }
@@ -553,25 +545,15 @@ void ustr_rstrip(ustring *string, const char *chs)
 void ustr_lstrip(ustring *string, const char *chs)
 {
 	size_t len = ustr_len(string);
-	char *left = string;
-	char *right = string + len - 1;
+	char *begin = string;
+	char *end = string + len - 1;
 
-	while(left != right) {
-		const char *cptr = chs;
-		while ('\0' != *cptr) {
-			if (*left == *cptr) {
-				len--;
-				break;
-			}
-			cptr++;
-		}
-		// No characters matched, stop
-		if ('\0' == *cptr) break;
-
-		left++;
+	while (begin != end && strchr(chs, *begin)) {
+		len--;
+		begin++;
 	}
-	// If left characters were stripped, then move the string back
-	if (left != string) memmove(string, left, len);
+
+	if (begin != end) memmove(string, begin, len);
 	ustr_setlen(string, len);
 	string[len] = '\0';
 }
