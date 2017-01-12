@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "libustr.h"
+#include "libistr.h"
 
 // Offsets of header information
 // len offset
@@ -81,26 +81,26 @@ static size_t nearest_pow(size_t base, size_t num)
 }
 
 // These are used internally to avoid the mess of setting the header info
-static inline void ustr_setlen(ustring *string, size_t len)
+static inline void istr_setlen(istring *string, size_t len)
 {
 	*((size_t*)(string-L_OFFSET)) = len;
 }
 
 // These are used internally to avoid the mess of setting the header info
-static inline void ustr_setsize(ustring *string, size_t size)
+static inline void istr_setsize(istring *string, size_t size)
 {
 	*((size_t*)(string-S_OFFSET)) = size;
 }
 
 /* 
-ustr_realloc:
-	A Helper function that reallocates memory for an ustring,
+istr_realloc:
+	A Helper function that reallocates memory for an istring,
 	automatically taking care of header space and setting the new size
-return -> ustring*:
-	success: The pointer to a newly allocated ustring
+return -> istring*:
+	success: The pointer to a newly allocated istring
 	failure: NULL
  */
-static ustring* ustr_realloc(ustring *string, size_t size) 
+static istring* istr_realloc(istring *string, size_t size) 
 {
 	if (NULL == string) {
 		string = realloc(NULL, H_OFFSET + sizeof(*string) * size);
@@ -113,53 +113,53 @@ static ustring* ustr_realloc(ustring *string, size_t size)
 	}
 
 	string += H_OFFSET;
-	ustr_setsize(string, size);
+	istr_setsize(string, size);
 
 	return string;
 }
 
 /* 
-ustr_alloc:
-	A Helper function that allocates memory for an ustring
+istr_alloc:
+	A Helper function that allocates memory for an istring
 	and initializes all of it's fields.
-return -> ustring*:
-	success: The pointer to a newly allocated ustring
+return -> istring*:
+	success: The pointer to a newly allocated istring
 	failure: NULL
  */
-static ustring* ustr_init(size_t init_size)
+static istring* istr_init(size_t init_size)
 {
 	init_size = nearest_pow(2, smax(2, init_size));
 
 	// The header for the string is two size_t values containing size and length
-	ustring *string = ustr_realloc(NULL, init_size);
+	istring *string = istr_realloc(NULL, init_size);
 	if (NULL == string) {
 		return NULL;
 	}
 
-	ustr_setlen(string, 0);
+	istr_setlen(string, 0);
 	string[0] = '\0';
 
 	return string;
 }
 
 /* 
-ustr_ensure_size:
+istr_ensure_size:
 	A Helper function that guarentees to the caller 
-	that, if memory can be allocated successfully, the given ustring's
+	that, if memory can be allocated successfully, the given istring's
 	char buffer will be able to hold at least the amount of requested bytes
-return -> ustring*):
+return -> istring*):
 	success: The original string object
 	bad args: NULL
 	memory error: NULL
  */
-static ustring* ustr_ensure_size(ustring *string, size_t target_size)
+static istring* istr_ensure_size(istring *string, size_t target_size)
 {
 	if (NULL == string) {
 		return NULL;
 	}
 
-	if (ustr_size(string) < target_size) {
-		string = ustr_realloc(string, nearest_pow(2, target_size));
+	if (istr_size(string) < target_size) {
+		string = istr_realloc(string, nearest_pow(2, target_size));
 		if (NULL == string) {
 			return NULL;
 		}
@@ -169,68 +169,68 @@ static ustring* ustr_ensure_size(ustring *string, size_t target_size)
 }
 
 // PUBLIC LIBRARY FUNCTIONS BELOW
-size_t ustr_size(const ustring *string)
+size_t istr_size(const istring *string)
 {
 	return *((size_t*)(string-S_OFFSET));
 }
 
-size_t ustr_len(const ustring *string)
+size_t istr_len(const istring *string)
 {
 	return *((size_t*)(string-L_OFFSET));
 }
 
-ustring* ustr_new(const ustring *src) 
+istring* istr_new(const istring *src) 
 {
-	if (NULL == src) return ustr_init(0);
+	if (NULL == src) return istr_init(0);
 
 	// +1 for '\0'
-	ustring *string = ustr_init(ustr_len(src) + 1);
+	istring *string = istr_init(istr_len(src) + 1);
 	if (NULL == string) {
 		return NULL;
 	}
 
-	return ustr_assign_bytes(string, src, ustr_len(src));
+	return istr_assign_bytes(string, src, istr_len(src));
 }
 
-ustring* ustr_new_bytes(const char *bytes, size_t bytes_len) 
+istring* istr_new_bytes(const char *bytes, size_t bytes_len) 
 {
-	if (NULL == bytes) return ustr_init(0);
+	if (NULL == bytes) return istr_init(0);
 
 	// +1 for '\0'
-	ustring *string = ustr_init(bytes_len + 1);
+	istring *string = istr_init(bytes_len + 1);
 	if (NULL == string) {
 		return NULL;
 	}
 
-	return ustr_assign_bytes(string, bytes, bytes_len);
+	return istr_assign_bytes(string, bytes, bytes_len);
 }
 
-ustring* ustr_new_cstr(const char *cstr) 
+istring* istr_new_cstr(const char *cstr) 
 {
-	if (NULL == cstr) return ustr_init(0);
+	if (NULL == cstr) return istr_init(0);
 
 	size_t cstr_len = strlen(cstr);
 
 	// +1 for '\0'
-	ustring *string = ustr_init(cstr_len + 1);
+	istring *string = istr_init(cstr_len + 1);
 	if (NULL == string) {
 		return NULL;
 	}
 
-	return ustr_assign_bytes(string, cstr, cstr_len);
+	return istr_assign_bytes(string, cstr, cstr_len);
 }
 
-ustring* ustr_grow(ustring *string, size_t target_size)
+istring* istr_grow(istring *string, size_t target_size)
 {
 	if (NULL == string) {
 		return NULL;
 	}
 
-	if (target_size < ustr_size(string)) {
+	if (target_size < istr_size(string)) {
 		return string;
 	}
 
-	string = ustr_ensure_size(string, safe_add(target_size, 1));
+	string = istr_ensure_size(string, safe_add(target_size, 1));
 	if (NULL == string) {
 		return NULL;
 	}
@@ -239,37 +239,37 @@ ustring* ustr_grow(ustring *string, size_t target_size)
 	return string;
 }
 
-ustring* ustr_shrink(ustring *string, size_t target_size)
+istring* istr_shrink(istring *string, size_t target_size)
 {
 	if (NULL == string) {
 		return NULL;
 	}
 
-	string = ustr_realloc(string, target_size);
+	string = istr_realloc(string, target_size);
 	if (NULL == string) {
 		return NULL;
 	}
 
-	ustr_setlen(string, smin(ustr_len(string), target_size));
-	string[ustr_len(string)] = '\0';
+	istr_setlen(string, smin(istr_len(string), target_size));
+	string[istr_len(string)] = '\0';
 
 	return string;
 }
 
-void ustr_free(ustring *string)
+void istr_free(istring *string)
 {
 	if (string) free(string-H_OFFSET);
 }
 
-int ustr_eq(const ustring *s1, const ustring *s2)
+int istr_eq(const istring *s1, const istring *s2)
 {
 	if (NULL == s1 || NULL == s2) {
 		return -1;
 	}
 	
-	if (ustr_len(s1) != ustr_len(s2)) return 1;
+	if (istr_len(s1) != istr_len(s2)) return 1;
 
-	for (size_t i=0; i<ustr_len(s1); i++) {
+	for (size_t i=0; i<istr_len(s1); i++) {
 		if (s1[i] != s2[i]) return 1;
 	}
 
@@ -277,99 +277,99 @@ int ustr_eq(const ustring *s1, const ustring *s2)
 }
 
 /*
-ustring* ustr_slice(ustring *slice, const ustring *src, size_t begin, size_t end)
+istring* istr_slice(istring *slice, const istring *src, size_t begin, size_t end)
 {
 	if (NULL == slice || NULL == src || begin > end) {
 		return NULL;
 	}
 
-	return ustr_assign_bytes(slice, src->buf + begin, end - begin);
+	return istr_assign_bytes(slice, src->buf + begin, end - begin);
 }
 */
 
-ustring* ustr_assign(ustring *dest, const ustring *src)
+istring* istr_assign(istring *dest, const istring *src)
 {
 	if (NULL == src) {
 		return NULL;
 	}
 
-	return ustr_assign_bytes(dest, src, ustr_len(src));
+	return istr_assign_bytes(dest, src, istr_len(src));
 }
 
-ustring* ustr_assign_cstr(ustring *string, const char *cstr)
+istring* istr_assign_cstr(istring *string, const char *cstr)
 {
 	if (NULL == cstr) {
 		return NULL;
 	}
 
-	return ustr_assign_bytes(string, cstr, strlen(cstr));
+	return istr_assign_bytes(string, cstr, strlen(cstr));
 }
 
-ustring* ustr_assign_bytes(ustring *string, const char *bytes, size_t bytes_len)
+istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
 		return NULL;
 	}
 
-	string = ustr_ensure_size(string, safe_add(bytes_len, 1));
+	string = istr_ensure_size(string, safe_add(bytes_len, 1));
 	if (NULL == string) {
 		return NULL;
 	}
 
 	// Don't bother memsetting the buffer, just shorten the logical length
 	memcpy(string, bytes, bytes_len);
-	ustr_setlen(string, bytes_len);
+	istr_setlen(string, bytes_len);
 	string[bytes_len] = '\0';
 
 	return string;
 }
 
-void ustr_trunc(ustring *string, size_t len)
+void istr_trunc(istring *string, size_t len)
 {
 	if (NULL == string) {
 		return;
 	}
 
-	ustr_setlen(string, smin(ustr_len(string), len));
-	string[ustr_len(string)] = '\0';
+	istr_setlen(string, smin(istr_len(string), len));
+	string[istr_len(string)] = '\0';
 }
 
-char ustr_pop(ustring *string)
+char istr_pop(istring *string)
 {
 	if (NULL == string) {
 		return '\0';
 	}
 
-	if (ustr_len(string) <= 0) {
+	if (istr_len(string) <= 0) {
 		return '\0';
 	}
 
-	ustr_setlen(string, ustr_len(string)-1);
-	char ch = string[ustr_len(string)];
-	string[ustr_len(string)] = '\0';
+	istr_setlen(string, istr_len(string)-1);
+	char ch = string[istr_len(string)];
+	string[istr_len(string)] = '\0';
 	return ch;
 }
 
-// The write_* functions overwrite characters in a ustring
-ustring* ustr_write(ustring *dest, size_t index, const ustring *src)
+// The write_* functions overwrite characters in a istring
+istring* istr_write(istring *dest, size_t index, const istring *src)
 {
 	if (NULL == src) {
 		return NULL;
 	}
 
-	return ustr_write_bytes(dest, index, src, ustr_len(src));
+	return istr_write_bytes(dest, index, src, istr_len(src));
 }
 
-ustring* ustr_write_cstr(ustring *string, size_t index, const char *cstr)
+istring* istr_write_cstr(istring *string, size_t index, const char *cstr)
 {
 	if (NULL == cstr) {
 		return NULL;
 	}
 
-	return ustr_write_bytes(string, index, cstr, strlen(cstr));
+	return istr_write_bytes(string, index, cstr, strlen(cstr));
 }
 
-ustring* ustr_write_bytes(ustring *string, size_t index, const char *bytes, size_t bytes_len)
+istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
 		return NULL;
@@ -377,42 +377,42 @@ ustring* ustr_write_bytes(ustring *string, size_t index, const char *bytes, size
 
 	size_t potential_len = safe_add(index, bytes_len);
 
-	if (ustr_len(string) > potential_len) {
-		potential_len = ustr_len(string);
+	if (istr_len(string) > potential_len) {
+		potential_len = istr_len(string);
 	}
 
-	string = ustr_ensure_size(string, safe_add(potential_len, 1));
+	string = istr_ensure_size(string, safe_add(potential_len, 1));
 	if (NULL == string) {
 		return NULL;
 	}
 
 	memcpy(string + index, bytes, bytes_len);
-	ustr_setlen(string, potential_len);
-	string[ustr_len(string)] = '\0';
+	istr_setlen(string, potential_len);
+	string[istr_len(string)] = '\0';
 
 	return string;
 }
 
 /*
-ustring* ustr_remove_unichars()
+istring* istr_remove_unichars()
 {
 }
 */
 
-void ustr_remove_bytes(ustring *string, size_t index, size_t remove_len)
+void istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 {
 	if (NULL == string) {
 		return;
 	}
 
-	if (index > ustr_len(string)) {
+	if (index > istr_len(string)) {
 		return;
 	}
 
 	// Special case, if bytes would be removed up until the end of the string,
 	// then simply truncate the string rather than trying to memmove.
-	if (remove_len >= ustr_len(string) - index) {
-		ustr_trunc(string, ustr_len(string) - remove_len);
+	if (remove_len >= istr_len(string) - index) {
+		istr_trunc(string, istr_len(string) - remove_len);
 		return;
 	}
 
@@ -420,90 +420,90 @@ void ustr_remove_bytes(ustring *string, size_t index, size_t remove_len)
 
 	memmove(string + index, \
 			string + mvlen, \
-			ustr_len(string) - mvlen);
+			istr_len(string) - mvlen);
 	
-	ustr_setlen(string, ustr_len(string) - remove_len);
-	string[ustr_len(string)] = '\0';
+	istr_setlen(string, istr_len(string) - remove_len);
+	string[istr_len(string)] = '\0';
 }
 
-ustring* ustr_append(ustring *dest, const ustring *src)
+istring* istr_append(istring *dest, const istring *src)
 {
 	if (NULL == src) {
 		return NULL;
 	}
 
-	return ustr_append_bytes(dest, src, ustr_len(src));
+	return istr_append_bytes(dest, src, istr_len(src));
 }
 
-ustring* ustr_append_cstr(ustring *string, const char *cstr)
+istring* istr_append_cstr(istring *string, const char *cstr)
 {
 	if (NULL == cstr) {
 		return NULL;
 	}
 
-	return ustr_append_bytes(string, cstr, strlen(cstr));
+	return istr_append_bytes(string, cstr, strlen(cstr));
 }
 
-ustring* ustr_append_bytes(ustring *string, const char *bytes, size_t bytes_len)
+istring* istr_append_bytes(istring *string, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
 		return NULL;
 	}
 
-	return ustr_insert_bytes(string, ustr_len(string), bytes, bytes_len);
+	return istr_insert_bytes(string, istr_len(string), bytes, bytes_len);
 }
 
 // The insert_* functions allow insertion of text without overwriting.
-ustring* ustr_insert(ustring *dest, size_t index, const ustring *src)
+istring* istr_insert(istring *dest, size_t index, const istring *src)
 {
 	if (NULL == dest || NULL == src) {
 		return NULL;
 	}
 
-	return ustr_insert_bytes(dest, index, src, ustr_len(src));
+	return istr_insert_bytes(dest, index, src, istr_len(src));
 }
 
-ustring* ustr_insert_cstr(ustring *string, size_t index, const char *cstr)
+istring* istr_insert_cstr(istring *string, size_t index, const char *cstr)
 {
 	if (NULL == cstr) {
 		return NULL;
 	}
 
-	return ustr_insert_bytes(string, index, cstr, strlen(cstr));
+	return istr_insert_bytes(string, index, cstr, strlen(cstr));
 }
 
-ustring* ustr_insert_bytes(ustring *string, size_t index, const char *bytes, size_t bytes_len)
+istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
 		return NULL;
 	}
 
 	// Overflow check
-	size_t total_len = safe_add(ustr_len(string), bytes_len);
+	size_t total_len = safe_add(istr_len(string), bytes_len);
 
-	string = ustr_ensure_size(string, safe_add(total_len, 1));
+	string = istr_ensure_size(string, safe_add(total_len, 1));
 	if (NULL == string) {
 		return NULL;
 	}
 
-	if (index < ustr_len(string)) {
+	if (index < istr_len(string)) {
 		// Create some space for the str to be inserted
 		// if inserting in the middle or before a string
 		//TODO audit for overflow checks here, not fully done
 		memmove(string + index + bytes_len, \
 		        string + index, \
-		        ustr_len(string) - index);
+		        istr_len(string) - index);
 	}
 
 	memcpy(string + index, bytes, bytes_len);
-	ustr_setlen(string, total_len);
-	string[ustr_len(string)] = '\0';
+	istr_setlen(string, total_len);
+	string[istr_len(string)] = '\0';
 
 	return string;
 }
 
 /*
-ustring* ustr_insert_unichar(ustring *string, size_t index, int32_t unichar)
+istring* istr_insert_unichar(istring *string, size_t index, int32_t unichar)
 {
 	size_t unilen;
 	if (unichar < 0x80) {
@@ -517,24 +517,24 @@ ustring* ustr_insert_unichar(ustring *string, size_t index, int32_t unichar)
 
 /*
 // Make sure this is unicode friendly!
-ustring* ustr_lower(ustring *string)
+istring* istr_lower(istring *string)
 {
 }
 
 // Make sure this is unicode friendly!
-ustring* ustr_upper(ustring *string)
+istring* istr_upper(istring *string)
 {
 }
 */
 
 // strip characters from right of string
-void ustr_rstrip(ustring *string, const char *chs)
+void istr_rstrip(istring *string, const char *chs)
 {
 	if (NULL == string || NULL == chs) {
 		return;
 	}
 
-	size_t len = ustr_len(string);
+	size_t len = istr_len(string);
 	char *begin = string + smax(1, len) - 1;
 	char *end = string;
 
@@ -544,18 +544,18 @@ void ustr_rstrip(ustring *string, const char *chs)
 		begin--;
 	}
 
-	ustr_setlen(string, len);
+	istr_setlen(string, len);
 	string[len] = '\0';
 }
 
 // strip characters from left of string
-void ustr_lstrip(ustring *string, const char *chs)
+void istr_lstrip(istring *string, const char *chs)
 {
 	if (NULL == string || NULL == chs) {
 		return;
 	}
 
-	size_t len = ustr_len(string);
+	size_t len = istr_len(string);
 	char *begin = string;
 	char *end = string + len;
 
@@ -565,19 +565,19 @@ void ustr_lstrip(ustring *string, const char *chs)
 	}
 
 	if (begin != end) memmove(string, begin, len);
-	ustr_setlen(string, len);
+	istr_setlen(string, len);
 	string[len] = '\0';
 }
 
 // strip characters from both left and right of string
-void ustr_strip(ustring *string, const char *chs)
+void istr_strip(istring *string, const char *chs)
 {
-	ustr_lstrip(string, chs);
-	ustr_rstrip(string, chs);
+	istr_lstrip(string, chs);
+	istr_rstrip(string, chs);
 }
 
 // Find the first substring within a string
-char* ustr_find(ustring *string, const char *substr)
+char* istr_find(istring *string, const char *substr)
 {
 	if (NULL == string || NULL == substr) {
 		return NULL;
@@ -601,31 +601,31 @@ char* ustr_find(ustring *string, const char *substr)
 }
 
 // Replace the first substring within a string
-ustring* ustr_replace(ustring *string, const char *find, const ustring *replace)
+istring* istr_replace(istring *string, const char *find, const istring *replace)
 {
 	if (NULL == string || NULL == find || NULL == replace) {
 		return NULL;
 	}
 
-	return ustr_replace_bytes(string, find, replace, ustr_len(replace));
+	return istr_replace_bytes(string, find, replace, istr_len(replace));
 }
 
-ustring* ustr_replace_bytes(ustring *string, const char *find, const char *replace, size_t r_len)
+istring* istr_replace_bytes(istring *string, const char *find, const char *replace, size_t r_len)
 {
 	if (NULL == string || NULL == find || NULL == replace) {
 		return NULL;
 	}
 
-	size_t total_len = safe_add(ustr_len(string), r_len);
+	size_t total_len = safe_add(istr_len(string), r_len);
 
-	string = ustr_ensure_size(string, safe_add(total_len, 1));
+	string = istr_ensure_size(string, safe_add(total_len, 1));
 	char *pos = string;
 	while ('\0' != *pos) {
-		pos = ustr_find(pos, find);
+		pos = istr_find(pos, find);
 	}
 
 	memcpy(pos, replace, r_len);
-	ustr_setlen(string, total_len);
+	istr_setlen(string, total_len);
 	string[total_len] = '\0';
 
 	return string;

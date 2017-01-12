@@ -1,17 +1,17 @@
 include config.mk
 
-ARCHIVE=libustr.a
+ARCHIVE=libistr.a
 
-HEADER=libustr.h
-SRC=libustr.c
+HEADER=libistr.h
+SRC=libistr.c
 OBJ=${SRC:.c=.o}
 
-MANPAGE=libustr.3
+MANPAGE=libistr.3
 
-all: settings run_test libustr.a
+all: settings run_test libistr.a
 
 settings:
-	@echo libustr build settings:
+	@echo libistr build settings:
 	@echo "CFLAGS   = ${CFLAGS}"
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
@@ -40,15 +40,15 @@ clean:
 	rm -f ${ARCHIVE} 
 	rm -f ${OBJ}
 	rm -f ${TEST}
-	rm -f libustr-${VERSION}.tar.gz
+	rm -f libistr-${VERSION}.tar.gz
 
 dist: clean
 	@echo creating dist tarball
-	@mkdir -p libustr-${VERSION}
-	@cp -r LICENSE README.md Makefile config.mk ${TEST_SRC} ${SRC} ${HEADER} ${MANPAGE} libustr-${VERSION}
-	tar -cvf libustr-${VERSION}.tar libustr-${VERSION}
-	@gzip libustr-${VERSION}.tar
-	@rm -rf libustr-${VERSION}
+	@mkdir -p libistr-${VERSION}
+	@cp -r LICENSE README.md Makefile config.mk ${TEST_SRC} ${SRC} ${HEADER} ${MANPAGE} libistr-${VERSION}
+	tar -cvf libistr-${VERSION}.tar libistr-${VERSION}
+	@gzip libistr-${VERSION}.tar
+	@rm -rf libistr-${VERSION}
 
 install: all
 	@echo installing library archive to ${DESTDIR}${PREFIX}/lib/
