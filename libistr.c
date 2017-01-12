@@ -81,13 +81,13 @@ static size_t nearest_pow(size_t base, size_t num)
 }
 
 // These are used internally to avoid the mess of setting the header info
-static inline void istr_setlen(istring *string, size_t len)
+static inline void istr_set_len(istring *string, size_t len)
 {
 	*((size_t*)(string-L_OFFSET)) = len;
 }
 
 // These are used internally to avoid the mess of setting the header info
-static inline void istr_setsize(istring *string, size_t size)
+static inline void istr_set_size(istring *string, size_t size)
 {
 	*((size_t*)(string-S_OFFSET)) = size;
 }
@@ -118,7 +118,7 @@ static istring* istr_ensure_size(istring *string, size_t target_size)
 	}
 
 	string += H_OFFSET;
-	istr_setsize(string, target_size);
+	istr_set_size(string, target_size);
 	return string;
 }
 
@@ -140,7 +140,7 @@ static istring* istr_init(size_t init_size)
 		return NULL;
 	}
 
-	istr_setlen(string, 0);
+	istr_set_len(string, 0);
 	string[0] = '\0';
 
 	return string;
@@ -275,7 +275,7 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 
 	// Don't bother memsetting the buffer, just shorten the logical length
 	memcpy(string, bytes, bytes_len);
-	istr_setlen(string, bytes_len);
+	istr_set_len(string, bytes_len);
 	string[bytes_len] = '\0';
 
 	return string;
@@ -287,7 +287,7 @@ void istr_trunc(istring *string, size_t len)
 		return;
 	}
 
-	istr_setlen(string, smin(istr_len(string), len));
+	istr_set_len(string, smin(istr_len(string), len));
 	string[istr_len(string)] = '\0';
 }
 
@@ -301,7 +301,7 @@ char istr_pop(istring *string)
 		return '\0';
 	}
 
-	istr_setlen(string, istr_len(string)-1);
+	istr_set_len(string, istr_len(string)-1);
 	char ch = string[istr_len(string)];
 	string[istr_len(string)] = '\0';
 	return ch;
@@ -344,7 +344,7 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 	}
 
 	memcpy(string + index, bytes, bytes_len);
-	istr_setlen(string, potential_len);
+	istr_set_len(string, potential_len);
 	string[istr_len(string)] = '\0';
 
 	return string;
@@ -379,7 +379,7 @@ void istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 			string + mvlen, \
 			istr_len(string) - mvlen);
 	
-	istr_setlen(string, istr_len(string) - remove_len);
+	istr_set_len(string, istr_len(string) - remove_len);
 	string[istr_len(string)] = '\0';
 }
 
@@ -453,7 +453,7 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	}
 
 	memcpy(string + index, bytes, bytes_len);
-	istr_setlen(string, total_len);
+	istr_set_len(string, total_len);
 	string[istr_len(string)] = '\0';
 
 	return string;
@@ -497,7 +497,7 @@ void istr_rstrip(istring *string, const char *chs)
 		len--;
 		begin--;
 	}
-	istr_setlen(string, len);
+	istr_set_len(string, len);
 	string[len] = '\0';
 }
 
@@ -516,7 +516,7 @@ void istr_lstrip(istring *string, const char *chs)
 		begin++;
 	}
 	if (begin != end) memmove(string, begin, len);
-	istr_setlen(string, len);
+	istr_set_len(string, len);
 	string[len] = '\0';
 }
 
@@ -575,7 +575,7 @@ istring* istr_replace_bytes(istring *string, const char *find, const char *repla
 	}
 
 	memcpy(pos, replace, r_len);
-	istr_setlen(string, total_len);
+	istr_set_len(string, total_len);
 	string[total_len] = '\0';
 
 	return string;
