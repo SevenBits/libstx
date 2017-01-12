@@ -6,14 +6,15 @@
 #include <stdio.h>
 
 #include "libistr.h"
+#include "libistrconfig.h"
 
 // Offsets of header information
 // len offset
-#define L_OFFSET (sizeof(size_t) * 1)
+#define L_OFFSET (sizeof(ISTR_HEADER_TYPE) * 1)
 // size offset
-#define S_OFFSET (sizeof(size_t) * 2)
+#define S_OFFSET (sizeof(ISTR_HEADER_TYPE) * 2)
 // beginning of header offset
-#define H_OFFSET (sizeof(size_t) * 2)
+#define H_OFFSET (sizeof(ISTR_HEADER_TYPE) * 2)
 
 /* 
 safe_add:
@@ -83,13 +84,13 @@ static size_t nearest_pow(size_t base, size_t num)
 // These are used internally to avoid the mess of setting the header info
 static inline void istr_set_len(istring *string, size_t len)
 {
-	*((size_t*)(string-L_OFFSET)) = len;
+	*((ISTR_HEADER_TYPE*)(string-L_OFFSET)) = len;
 }
 
 // These are used internally to avoid the mess of setting the header info
 static inline void istr_set_size(istring *string, size_t size)
 {
-	*((size_t*)(string-S_OFFSET)) = size;
+	*((ISTR_HEADER_TYPE*)(string-S_OFFSET)) = size;
 }
 
 /* 
@@ -107,9 +108,9 @@ static istring* istr_ensure_size(istring *string, size_t target_size)
 	target_size = nearest_pow(2, safe_add(target_size, 1));
 
 	if (NULL == string) {
-		string = malloc(H_OFFSET + sizeof(*string) * target_size);
+		string = ISTR_MALLOC(H_OFFSET + sizeof(*string) * target_size);
 	} else if (istr_size(string) < target_size) {
-		string = realloc(string - H_OFFSET, H_OFFSET + sizeof(*string) * target_size);
+		string = ISTR_REALLOC(string - H_OFFSET, H_OFFSET + sizeof(*string) * target_size);
 		if (NULL == string) {
 			return NULL;
 		}
@@ -149,12 +150,12 @@ static istring* istr_init(size_t init_size)
 // PUBLIC LIBRARY FUNCTIONS BELOW
 size_t istr_size(const istring *string)
 {
-	return *((size_t*)(string-S_OFFSET));
+	return (size_t)*((ISTR_HEADER_TYPE*)(string-S_OFFSET));
 }
 
 size_t istr_len(const istring *string)
 {
-	return *((size_t*)(string-L_OFFSET));
+	return (size_t)*((ISTR_HEADER_TYPE*)(string-L_OFFSET));
 }
 
 istring* istr_new(const istring *src) 
@@ -215,7 +216,7 @@ istring* istr_grow(istring *string, size_t target_size)
 
 void istr_free(istring *string)
 {
-	if (string) free(string-H_OFFSET);
+	if (string) ISTR_FREE(string-H_OFFSET);
 }
 
 int istr_eq(const istring *s1, const istring *s2)
