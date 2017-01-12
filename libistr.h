@@ -21,8 +21,6 @@ istring* istr_new_cstr(const char *cstr);
 
 istring* istr_grow(istring *string, size_t len);
 
-istring* istr_shrink(istring *string, size_t len);
-
 void istr_free(istring *string);
 
 int istr_eq(const istring *s1, const istring *s2);

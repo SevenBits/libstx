@@ -11,7 +11,7 @@ void test_new_and_free()
 	istring *is1 = istr_new(NULL);
 	assert(NULL != is1);
 	assert(0 == istr_len(is1));
-	assert(2 == istr_size(is1));
+	assert(0 <= istr_size(is1));
 	assert('\0' == is1[0]);
 	istr_free(is1);
 
@@ -51,7 +51,7 @@ void test_new_and_free()
 	}
 }
 
-void test_grow_and_shrink()
+void test_grow()
 {
 	istring *is1 = istr_new(NULL);
 	is1 = istr_grow(is1, 64);
@@ -62,12 +62,6 @@ void test_grow_and_shrink()
 	is1 = istr_grow(is1, 4096);
 	assert(0 == istr_len(is1));
 	assert(4096 <= istr_size(is1));
-	assert('\0' == is1[0]);
-
-	is1 = istr_shrink(is1, 8);
-	assert(0 == istr_len(is1));
-	assert(8 <= istr_size(is1));
-	assert(32 >= istr_size(is1));
 	assert('\0' == is1[0]);
 
 	istr_free(is1);
@@ -277,7 +271,7 @@ int main()
 {
 	printf("Starting tests\n");
 	test_new_and_free();
-	test_grow_and_shrink();
+	test_grow();
 	test_eq();
 	test_assign();
 	test_trunc();

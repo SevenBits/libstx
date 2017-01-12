@@ -93,28 +93,32 @@ static inline void istr_setsize(istring *string, size_t size)
 }
 
 /* 
-istr_realloc:
-	A Helper function that reallocates memory for an istring,
-	automatically taking care of header space and setting the new size
-return -> istring*:
-	success: The pointer to a newly allocated istring
-	failure: NULL
+istr_ensure_size:
+	A Helper function that guarentees to the caller 
+	that, if memory can be allocated successfully, the given istring's
+	char buffer will be able to hold at least the amount of requested bytes
+return -> istring*):
+	success: The original string object
+	bad args: NULL
+	memory error: NULL
  */
-static istring* istr_realloc(istring *string, size_t size) 
+static istring* istr_ensure_size(istring *string, size_t target_size)
 {
-	if (NULL == string) {
-		string = realloc(NULL, H_OFFSET + sizeof(*string) * size);
-	} else {
-		string = realloc(string - H_OFFSET, H_OFFSET + sizeof(*string) * size);
-	}
+	target_size = nearest_pow(2, safe_add(target_size, 1));
 
 	if (NULL == string) {
-		return NULL;
+		string = malloc(H_OFFSET + sizeof(*string) * target_size);
+	} else if (istr_size(string) < target_size) {
+		string = realloc(string - H_OFFSET, H_OFFSET + sizeof(*string) * target_size);
+		if (NULL == string) {
+			return NULL;
+		}
+	} else {
+		return string;
 	}
 
 	string += H_OFFSET;
-	istr_setsize(string, size);
-
+	istr_setsize(string, target_size);
 	return string;
 }
 
@@ -128,42 +132,16 @@ return -> istring*:
  */
 static istring* istr_init(size_t init_size)
 {
-	init_size = nearest_pow(2, smax(2, init_size));
+	init_size = nearest_pow(2, safe_add(init_size, 1));
 
 	// The header for the string is two size_t values containing size and length
-	istring *string = istr_realloc(NULL, init_size);
+	istring *string = istr_ensure_size(NULL, init_size);
 	if (NULL == string) {
 		return NULL;
 	}
 
 	istr_setlen(string, 0);
 	string[0] = '\0';
-
-	return string;
-}
-
-/* 
-istr_ensure_size:
-	A Helper function that guarentees to the caller 
-	that, if memory can be allocated successfully, the given istring's
-	char buffer will be able to hold at least the amount of requested bytes
-return -> istring*):
-	success: The original string object
-	bad args: NULL
-	memory error: NULL
- */
-static istring* istr_ensure_size(istring *string, size_t target_size)
-{
-	if (NULL == string) {
-		return NULL;
-	}
-
-	if (istr_size(string) < target_size) {
-		string = istr_realloc(string, nearest_pow(2, target_size));
-		if (NULL == string) {
-			return NULL;
-		}
-	}
 
 	return string;
 }
@@ -181,42 +159,38 @@ size_t istr_len(const istring *string)
 
 istring* istr_new(const istring *src) 
 {
-	if (NULL == src) return istr_init(0);
-
-	// +1 for '\0'
-	istring *string = istr_init(istr_len(src) + 1);
+	if (NULL == src) {
+		return istr_init(0);
+	}
+	istring *string = istr_init(istr_len(src));
 	if (NULL == string) {
 		return NULL;
 	}
-
 	return istr_assign_bytes(string, src, istr_len(src));
 }
 
 istring* istr_new_bytes(const char *bytes, size_t bytes_len) 
 {
-	if (NULL == bytes) return istr_init(0);
-
-	// +1 for '\0'
-	istring *string = istr_init(bytes_len + 1);
+	if (NULL == bytes) {
+		return istr_init(0);
+	}
+	istring *string = istr_init(bytes_len);
 	if (NULL == string) {
 		return NULL;
 	}
-
 	return istr_assign_bytes(string, bytes, bytes_len);
 }
 
 istring* istr_new_cstr(const char *cstr) 
 {
-	if (NULL == cstr) return istr_init(0);
-
+	if (NULL == cstr) {
+		return istr_init(0);
+	}
 	size_t cstr_len = strlen(cstr);
-
-	// +1 for '\0'
-	istring *string = istr_init(cstr_len + 1);
+	istring *string = istr_init(cstr_len);
 	if (NULL == string) {
 		return NULL;
 	}
-
 	return istr_assign_bytes(string, cstr, cstr_len);
 }
 
@@ -230,29 +204,12 @@ istring* istr_grow(istring *string, size_t target_size)
 		return string;
 	}
 
-	string = istr_ensure_size(string, safe_add(target_size, 1));
+	string = istr_ensure_size(string, target_size);
 	if (NULL == string) {
 		return NULL;
 	}
 
 	string[target_size] = '\0';
-	return string;
-}
-
-istring* istr_shrink(istring *string, size_t target_size)
-{
-	if (NULL == string) {
-		return NULL;
-	}
-
-	string = istr_realloc(string, target_size);
-	if (NULL == string) {
-		return NULL;
-	}
-
-	istr_setlen(string, smin(istr_len(string), target_size));
-	string[istr_len(string)] = '\0';
-
 	return string;
 }
 
@@ -311,7 +268,7 @@ istring* istr_assign_bytes(istring *string, const char *bytes, size_t bytes_len)
 		return NULL;
 	}
 
-	string = istr_ensure_size(string, safe_add(bytes_len, 1));
+	string = istr_ensure_size(string, bytes_len);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -381,7 +338,7 @@ istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size
 		potential_len = istr_len(string);
 	}
 
-	string = istr_ensure_size(string, safe_add(potential_len, 1));
+	string = istr_ensure_size(string, potential_len);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -481,7 +438,7 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 	// Overflow check
 	size_t total_len = safe_add(istr_len(string), bytes_len);
 
-	string = istr_ensure_size(string, safe_add(total_len, 1));
+	string = istr_ensure_size(string, total_len);
 	if (NULL == string) {
 		return NULL;
 	}
@@ -533,17 +490,13 @@ void istr_rstrip(istring *string, const char *chs)
 	if (NULL == string || NULL == chs) {
 		return;
 	}
-
 	size_t len = istr_len(string);
 	char *begin = string + smax(1, len) - 1;
 	char *end = string;
-
 	while (begin != end && strchr(chs, *begin)) {
-		*begin = '\0';
 		len--;
 		begin--;
 	}
-
 	istr_setlen(string, len);
 	string[len] = '\0';
 }
@@ -558,12 +511,10 @@ void istr_lstrip(istring *string, const char *chs)
 	size_t len = istr_len(string);
 	char *begin = string;
 	char *end = string + len;
-
 	while (begin != end && strchr(chs, *begin)) {
 		len--;
 		begin++;
 	}
-
 	if (begin != end) memmove(string, begin, len);
 	istr_setlen(string, len);
 	string[len] = '\0';
@@ -582,7 +533,6 @@ char* istr_find(istring *string, const char *substr)
 	if (NULL == string || NULL == substr) {
 		return NULL;
 	}
-	
 	while (*string) {
 		char *begin = string;
 		const char *token = substr;
@@ -618,7 +568,7 @@ istring* istr_replace_bytes(istring *string, const char *find, const char *repla
 
 	size_t total_len = safe_add(istr_len(string), r_len);
 
-	string = istr_ensure_size(string, safe_add(total_len, 1));
+	string = istr_ensure_size(string, total_len);
 	char *pos = string;
 	while ('\0' != *pos) {
 		pos = istr_find(pos, find);
