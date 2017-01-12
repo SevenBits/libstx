@@ -85,6 +85,14 @@ void test_eq()
 
 	istr_free(is1);
 	istr_free(is2);
+
+	is1 = istr_new(NULL);
+	is2 = istr_new(NULL);
+
+	assert(0 == istr_eq(is1, is2));
+
+	istr_free(is1);
+	istr_free(is2);
 }
 
 void test_assign()
@@ -108,6 +116,18 @@ void test_assign()
 	assert(0 == strcmp(is2, "hello"));
 
 	istr_free(is2);
+
+	is1 = istr_new(NULL);
+	is2 = istr_new_cstr("hello");
+
+	is2 = istr_assign(is2, is1);
+
+	assert(0 == istr_len(is2));
+	assert(0 <= istr_size(is2));
+	assert('\0' == *is2);
+
+	istr_free(is1);
+	istr_free(is2);
 }
 
 void test_trunc()
@@ -115,6 +135,11 @@ void test_trunc()
 	istring *is1 = istr_new_cstr("hello world");
 
 	istr_trunc(is1, 5);
+	assert(5 == istr_len(is1));
+	assert(11 <= istr_size(is1));
+	assert(0 == strcmp(is1, "hello"));
+
+	istr_trunc(is1, 100);
 	assert(5 == istr_len(is1));
 	assert(11 <= istr_size(is1));
 	assert(0 == strcmp(is1, "hello"));
@@ -262,6 +287,7 @@ int main()
 	test_append();
 	test_find();
 	test_strip();
+	//test_find();
 	//test_replace();
 	printf("Testing complete\n");
 
