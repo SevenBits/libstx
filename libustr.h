@@ -69,4 +69,8 @@ void ustr_strip(ustring *string, const char *chs);
 
 char* ustr_find(ustring *string, const char *substr);
 
+ustring* ustr_replace(ustring *string, const char *find, const ustring *replace);
+
+ustring* ustr_replace_bytes(ustring *string, const char *find, const char *replace, size_t r_len);
+
 #endif

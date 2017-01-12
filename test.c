@@ -220,6 +220,32 @@ void test_strip()
 	assert(0 == strcmp(us1, "hello"));
 
 	ustr_free(us1);
+
+	// Empty strip
+	ustring *us2 = ustr_new(NULL);
+
+	ustr_lstrip(us2, "hel");
+	assert('\0' == *us2);
+	assert(0 == ustr_len(us2));
+
+	ustr_rstrip(us2, "opn");
+	assert('\0' == *us2);
+	assert(0 == ustr_len(us2));
+
+	ustr_strip(us2, "zxcl");
+	assert('\0' == *us2);
+	assert(0 == ustr_len(us2));
+
+	ustr_free(us2);
+
+	// All chars stripped
+	ustring *us3 = ustr_new_cstr("hello");
+
+	ustr_strip(us3, "helo");
+	assert('\0' == *us3);
+	assert(0 == ustr_len(us3));
+
+	ustr_free(us3);
 }
 
 int main()

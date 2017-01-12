@@ -350,6 +350,7 @@ char ustr_pop(ustring *string)
 	return ch;
 }
 
+// The write_* functions overwrite characters in a ustring
 ustring* ustr_write(ustring *dest, size_t index, const ustring *src)
 {
 	if (NULL == src) {
@@ -452,6 +453,7 @@ ustring* ustr_append_bytes(ustring *string, const char *bytes, size_t bytes_len)
 	return ustr_insert_bytes(string, ustr_len(string), bytes, bytes_len);
 }
 
+// The insert_* functions allow insertion of text without overwriting.
 ustring* ustr_insert(ustring *dest, size_t index, const ustring *src)
 {
 	if (NULL == dest || NULL == src) {
@@ -469,19 +471,6 @@ ustring* ustr_insert_cstr(ustring *string, size_t index, const char *cstr)
 
 	return ustr_insert_bytes(string, index, cstr, strlen(cstr));
 }
-
-/*
-ustring* ustr_insert_unichar(ustring *string, size_t index, int32_t unichar)
-{
-	size_t unilen;
-	if (unichar < 0x80) {
-		unilen = 1;
-	} else if (unichar < 0x800) {
-		unilen = 2;
-	} else if (unichar < 0x8000) {
-	}
-}
-*/
 
 ustring* ustr_insert_bytes(ustring *string, size_t index, const char *bytes, size_t bytes_len)
 {
@@ -514,6 +503,19 @@ ustring* ustr_insert_bytes(ustring *string, size_t index, const char *bytes, siz
 }
 
 /*
+ustring* ustr_insert_unichar(ustring *string, size_t index, int32_t unichar)
+{
+	size_t unilen;
+	if (unichar < 0x80) {
+		unilen = 1;
+	} else if (unichar < 0x800) {
+		unilen = 2;
+	} else if (unichar < 0x8000) {
+	}
+}
+*/
+
+/*
 // Make sure this is unicode friendly!
 ustring* ustr_lower(ustring *string)
 {
@@ -528,11 +530,16 @@ ustring* ustr_upper(ustring *string)
 // strip characters from right of string
 void ustr_rstrip(ustring *string, const char *chs)
 {
+	if (NULL == string || NULL == chs) {
+		return;
+	}
+
 	size_t len = ustr_len(string);
-	char *begin = string + len - 1;
+	char *begin = string + smax(1, len) - 1;
 	char *end = string;
 
 	while (begin != end && strchr(chs, *begin)) {
+		*begin = '\0';
 		len--;
 		begin--;
 	}
@@ -544,9 +551,13 @@ void ustr_rstrip(ustring *string, const char *chs)
 // strip characters from left of string
 void ustr_lstrip(ustring *string, const char *chs)
 {
+	if (NULL == string || NULL == chs) {
+		return;
+	}
+
 	size_t len = ustr_len(string);
 	char *begin = string;
-	char *end = string + len - 1;
+	char *end = string + len;
 
 	while (begin != end && strchr(chs, *begin)) {
 		len--;
@@ -565,7 +576,7 @@ void ustr_strip(ustring *string, const char *chs)
 	ustr_rstrip(string, chs);
 }
 
-// Find a substring withing the ustring
+// Find the first substring within a string
 char* ustr_find(ustring *string, const char *substr)
 {
 	if (NULL == string || NULL == substr) {
@@ -589,10 +600,33 @@ char* ustr_find(ustring *string, const char *substr)
 	return NULL;
 }
 
-/*
-// Replace a substring
-ustring* ustr_replace(ustring *string, const char *find, const char *replace)
+// Replace the first substring within a string
+ustring* ustr_replace(ustring *string, const char *find, const ustring *replace)
 {
-	return NULL;
+	if (NULL == string || NULL == find || NULL == replace) {
+		return NULL;
+	}
+
+	return ustr_replace_bytes(string, find, replace, ustr_len(replace));
 }
-*/
+
+ustring* ustr_replace_bytes(ustring *string, const char *find, const char *replace, size_t r_len)
+{
+	if (NULL == string || NULL == find || NULL == replace) {
+		return NULL;
+	}
+
+	size_t total_len = safe_add(ustr_len(string), r_len);
+
+	string = ustr_ensure_size(string, safe_add(total_len, 1));
+	char *pos = string;
+	while ('\0' != *pos) {
+		pos = ustr_find(pos, find);
+	}
+
+	memcpy(pos, replace, r_len);
+	ustr_setlen(string, total_len);
+	string[total_len] = '\0';
+
+	return string;
+}
