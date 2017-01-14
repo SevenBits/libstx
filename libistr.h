@@ -67,8 +67,4 @@ void istr_strip(istring *string, const char *chs);
 
 char* istr_find(istring *string, const char *substr);
 
-istring* istr_replace(istring *string, const char *find, const istring *replace);
-
-istring* istr_replace_bytes(istring *string, const char *find, const char *replace, size_t r_len);
-
 #endif

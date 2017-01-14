@@ -9,22 +9,14 @@
 #include "libistrconfig.h"
 
 // Offsets of header information
-// len offset
+// Len offset
 #define L_OFFSET (sizeof(ISTR_HEADER_TYPE) * 1)
-// size offset
+// Size offset
 #define S_OFFSET (sizeof(ISTR_HEADER_TYPE) * 2)
-// beginning of header offset
+// Beginning of header offset
 #define H_OFFSET (sizeof(ISTR_HEADER_TYPE) * 2)
 
-/* 
-safe_add:
-	Safely adds together two size_t values while flagging an error
-	if integer overflow would happen.
-
-return -> size_t:
-	success: Sum of the two arguments
-	range error: SIZE_MAX
-*/
+// If a + b would cause an overflow, instead return the maximum size
 static inline size_t safe_add(size_t a, size_t b)
 {
 	if (a > SIZE_MAX - b) {
@@ -34,39 +26,17 @@ static inline size_t safe_add(size_t a, size_t b)
 	}
 }
 
-/*
-smax:
-	simple inline function that returns the largest input. Used instead of a 
-	macro for type safety
-
-return -> size_t:
-	success: largest value _INDEXbetween a and b
-*/
 static inline size_t smax(size_t a, size_t b)
 {
 	return (a > b) ? a : b;
 }
 
-/* 
-smin:
-	simple inline function that returns the smallest input. Used instead of a 
-	macro for type safety
-
-return -> size_t:
-	success: smallest value between a and b
-*/
 static inline size_t smin(size_t a, size_t b)
 {
 	return (a < b) ? a : b;
 }
 
-/* 
-nearest_pow:
-	Find the nearest power of two that can contain the given value.
-return -> size_t:
-	success: The closest power of two larger than num
-	range error: SIZE_MAX
- */
+// Find the nearest power of the given base that can contain at least num
 static size_t nearest_pow(size_t base, size_t num)
 {
 	// Catch bases of 0, as they will break the loop below
@@ -81,27 +51,22 @@ static size_t nearest_pow(size_t base, size_t num)
 	return base;
 }
 
-// These are used internally to avoid the mess of setting the header info
+// Set the header length information
 static inline void istr_set_len(istring *string, size_t len)
 {
 	*((ISTR_HEADER_TYPE*)(string-L_OFFSET)) = len;
 }
 
-// These are used internally to avoid the mess of setting the header info
+// Set the header size information
 static inline void istr_set_size(istring *string, size_t size)
 {
 	*((ISTR_HEADER_TYPE*)(string-S_OFFSET)) = size;
 }
 
-/* 
-istr_ensure_size:
-	A Helper function that guarentees to the caller 
-	that, if memory can be allocated successfully, the given istring's
-	char buffer will be able to hold at least the amount of requested bytes
-return -> istring*):
-	success: The original string object
-	bad args: NULL
-	memory error: NULL
+/*
+ * Either allocs a new istring, or reallocs an existing istring to hold
+ * at least target_size. If the istring can already hold the target_size,
+ * nothing is done.
  */
 static istring* istr_ensure_size(istring *string, size_t target_size)
 {
@@ -123,14 +88,7 @@ static istring* istr_ensure_size(istring *string, size_t target_size)
 	return string;
 }
 
-/* 
-istr_alloc:
-	A Helper function that allocates memory for an istring
-	and initializes all of it's fields.
-return -> istring*:
-	success: The pointer to a newly allocated istring
-	failure: NULL
- */
+// Initializes a new istring with all fields equal to 0
 static istring* istr_init(size_t init_size)
 {
 	init_size = nearest_pow(2, safe_add(init_size, 1));
@@ -147,7 +105,8 @@ static istring* istr_init(size_t init_size)
 	return string;
 }
 
-// PUBLIC LIBRARY FUNCTIONS BELOW
+// Public functions exposed in the header file go below:
+
 size_t istr_size(const istring *string)
 {
 	return (size_t)*((ISTR_HEADER_TYPE*)(string-S_OFFSET));
@@ -549,35 +508,4 @@ char* istr_find(istring *string, const char *substr)
 	}
 	// No substr could be found
 	return NULL;
-}
-
-// Replace the first substring within a string
-istring* istr_replace(istring *string, const char *find, const istring *replace)
-{
-	if (NULL == string || NULL == find || NULL == replace) {
-		return NULL;
-	}
-
-	return istr_replace_bytes(string, find, replace, istr_len(replace));
-}
-
-istring* istr_replace_bytes(istring *string, const char *find, const char *replace, size_t r_len)
-{
-	if (NULL == string || NULL == find || NULL == replace) {
-		return NULL;
-	}
-
-	size_t total_len = safe_add(istr_len(string), r_len);
-
-	string = istr_ensure_size(string, total_len);
-	char *pos = string;
-	while ('\0' != *pos) {
-		pos = istr_find(pos, find);
-	}
-
-	memcpy(pos, replace, r_len);
-	istr_set_len(string, total_len);
-	string[total_len] = '\0';
-
-	return string;
 }

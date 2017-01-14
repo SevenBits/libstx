@@ -6,7 +6,7 @@
 
 #include "libistr.h"
 
-void test_new_and_free()
+static void test_new_and_free()
 {
 	istring *is1 = istr_new(NULL);
 	assert(NULL != is1);
@@ -51,7 +51,7 @@ void test_new_and_free()
 	}
 }
 
-void test_grow()
+static void test_grow()
 {
 	istring *is1 = istr_new(NULL);
 	is1 = istr_grow(is1, 64);
@@ -67,7 +67,7 @@ void test_grow()
 	istr_free(is1);
 }
 
-void test_eq()
+static void test_eq()
 {
 	istring *is1 = istr_new_cstr("hello");
 	istring *is2 = istr_new_cstr("hello");
@@ -89,7 +89,7 @@ void test_eq()
 	istr_free(is2);
 }
 
-void test_assign()
+static void test_assign()
 {
 	istring *is1 = istr_new(NULL);
 	assert(NULL == istr_assign(is1, NULL));
@@ -124,7 +124,7 @@ void test_assign()
 	istr_free(is2);
 }
 
-void test_trunc()
+static void test_trunc()
 {
 	istring *is1 = istr_new_cstr("hello world");
 
@@ -141,7 +141,7 @@ void test_trunc()
 	istr_free(is1);
 }
 
-void test_pop()
+static void test_pop()
 {
 	istring *is1 = istr_new_cstr("hello");
 
@@ -153,7 +153,7 @@ void test_pop()
 	istr_free(is1);
 }
 
-void test_write()
+static void test_write()
 {
 	istring *is1 = istr_new_cstr("foobar 20");
 	is1 = istr_write_bytes(is1, 7, "2000 is aight.", 14);
@@ -166,7 +166,7 @@ void test_write()
 	istr_free(is1);
 }
 
-void test_insert()
+static void test_insert()
 {
 	istring *is1 = istr_new_cstr("hello world");
 
@@ -179,92 +179,98 @@ void test_insert()
 
 	istr_free(is1);
 
-	istring *us1 = istr_new(NULL);
+	istring *is2 = istr_new(NULL);
 	char* ch = "a";
 	for (size_t i=1; i<4096; i++) {
-		us1 = istr_insert_bytes(us1, 0, ch, 1);
-		assert(i == istr_len(us1));
-		assert(i <= istr_size(us1));
-		assert('\0' == us1[istr_len(us1)]);
+		is2 = istr_insert_bytes(is2, 0, ch, 1);
+		assert(i == istr_len(is2));
+		assert(i <= istr_size(is2));
+		assert('\0' == is2[istr_len(is2)]);
 	}
 
-	istr_free(us1);
+	istr_free(is2);
 }
 
-void test_append()
+static void test_append()
 {
-	istring *us1 = istr_new(NULL);
+	istring *is1 = istr_new(NULL);
 	char* ch = "a";
 	for (size_t i=1; i<100; i++) {
-		us1 = istr_append_bytes(us1, ch, 1);
-		assert(i == istr_len(us1));
-		assert(i <= istr_size(us1));
-		assert('\0' == us1[istr_len(us1)]);
+		is1 = istr_append_bytes(is1, ch, 1);
+		assert(i == istr_len(is1));
+		assert(i <= istr_size(is1));
+		assert('\0' == is1[istr_len(is1)]);
 	}
 
-	istr_free(us1);
+	istr_free(is1);
 }
 
-void test_find()
+static void test_strip()
 {
-	istring *us1 = istr_new_cstr("hellosubworld!");
-	char *substr = istr_find(us1, "sub");
-	assert(NULL != substr);
-	assert(0 == strncmp(substr, "sub", 3));
+	istring *is1 = istr_new_cstr("zxcvMMnnhellonnMMzxcv");
 
-	substr[1] = 'o';
+	istr_lstrip(is1, "zxcv");
+	assert(17 == istr_len(is1));
+	assert('\0' == is1[istr_len(is1)]);
+	assert(0 == strcmp(is1, "MMnnhellonnMMzxcv"));
 
-	assert(0 == strcmp(us1, "hellosobworld!"));
+	istr_rstrip(is1, "zxcv");
+	assert(13 == istr_len(is1));
+	assert('\0' == is1[istr_len(is1)]);
+	assert(0 == strcmp(is1, "MMnnhellonnMM"));
 
-	istr_free(us1);
-}
+	istr_strip(is1, "Mn");
+	assert(5 == istr_len(is1));
+	assert('\0' == is1[istr_len(is1)]);
+	assert(0 == strcmp(is1, "hello"));
 
-void test_strip()
-{
-	istring *us1 = istr_new_cstr("zxcvMMnnhellonnMMzxcv");
-
-	istr_lstrip(us1, "zxcv");
-	assert(17 == istr_len(us1));
-	assert('\0' == us1[istr_len(us1)]);
-	assert(0 == strcmp(us1, "MMnnhellonnMMzxcv"));
-
-	istr_rstrip(us1, "zxcv");
-	assert(13 == istr_len(us1));
-	assert('\0' == us1[istr_len(us1)]);
-	assert(0 == strcmp(us1, "MMnnhellonnMM"));
-
-	istr_strip(us1, "Mn");
-	assert(5 == istr_len(us1));
-	assert('\0' == us1[istr_len(us1)]);
-	assert(0 == strcmp(us1, "hello"));
-
-	istr_free(us1);
+	istr_free(is1);
 
 	// Empty strip
-	istring *us2 = istr_new(NULL);
+	istring *is2 = istr_new(NULL);
 
-	istr_lstrip(us2, "hel");
-	assert('\0' == *us2);
-	assert(0 == istr_len(us2));
+	istr_lstrip(is2, "hel");
+	assert('\0' == *is2);
+	assert(0 == istr_len(is2));
 
-	istr_rstrip(us2, "opn");
-	assert('\0' == *us2);
-	assert(0 == istr_len(us2));
+	istr_rstrip(is2, "opn");
+	assert('\0' == *is2);
+	assert(0 == istr_len(is2));
 
-	istr_strip(us2, "zxcl");
-	assert('\0' == *us2);
-	assert(0 == istr_len(us2));
+	istr_strip(is2, "zxcl");
+	assert('\0' == *is2);
+	assert(0 == istr_len(is2));
 
-	istr_free(us2);
+	istr_free(is2);
 
 	// All chars stripped
-	istring *us3 = istr_new_cstr("hello");
+	istring *is3 = istr_new_cstr("hello");
 
-	istr_strip(us3, "helo");
-	assert('\0' == *us3);
-	assert(0 == istr_len(us3));
+	istr_strip(is3, "helo");
+	assert('\0' == *is3);
+	assert(0 == istr_len(is3));
 
-	istr_free(us3);
+	istr_free(is3);
+}
+
+static void test_find()
+{
+	istring *is1 = istr_new_cstr("subworldstring");
+	char *ss;
+		
+	ss = istr_find(is1, "world");
+
+	assert(0 == strncmp(ss, "world", 5));
+
+	ss = istr_find(is1, "sub");
+
+	assert(0 == strncmp(ss, "sub", 3));
+
+	ss = istr_find(is1, "string");
+
+	assert(0 == strncmp(ss, "string", 6));
+
+	istr_free(is1);
 }
 
 int main()
