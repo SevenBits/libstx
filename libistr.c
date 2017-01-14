@@ -75,7 +75,8 @@ static istring* istr_ensure_size(istring *string, size_t target_size)
 	if (NULL == string) {
 		string = ISTR_MALLOC(H_OFFSET + sizeof(*string) * target_size);
 	} else if (istr_size(string) < target_size) {
-		string = ISTR_REALLOC(string - H_OFFSET, H_OFFSET + sizeof(*string) * target_size);
+		string = ISTR_REALLOC(string - H_OFFSET, 
+		                      H_OFFSET + sizeof(*string) * target_size);
 		if (NULL == string) {
 			return NULL;
 		}
@@ -193,16 +194,14 @@ int istr_eq(const istring *s1, const istring *s2)
 	return 0;
 }
 
-/*
 istring* istr_slice(istring *slice, const istring *src, size_t begin, size_t end)
 {
 	if (NULL == slice || NULL == src || begin > end) {
 		return NULL;
 	}
 
-	return istr_assign_bytes(slice, src->buf + begin, end - begin);
+	return istr_assign_bytes(slice, src + begin, end - begin);
 }
-*/
 
 istring* istr_assign(istring *dest, const istring *src)
 {
@@ -286,7 +285,8 @@ istring* istr_write_cstr(istring *string, size_t index, const char *cstr)
 	return istr_write_bytes(string, index, cstr, strlen(cstr));
 }
 
-istring* istr_write_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
+istring* istr_write_bytes(istring *string, size_t index, 
+                          const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
 		return NULL;
@@ -389,7 +389,8 @@ istring* istr_insert_cstr(istring *string, size_t index, const char *cstr)
 	return istr_insert_bytes(string, index, cstr, strlen(cstr));
 }
 
-istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, size_t bytes_len)
+istring* istr_insert_bytes(istring *string, size_t index, 
+                           const char *bytes, size_t bytes_len)
 {
 	if (NULL == string || NULL == bytes) {
 		return NULL;
@@ -509,3 +510,20 @@ char* istr_find(istring *string, const char *substr)
 	// No substr could be found
 	return NULL;
 }
+
+/*
+istring* istr_replace(istring *string, const istring* find, 
+                                       const istring* replace)
+{
+}
+
+istring* istr_replace_cstr(istring *string, const char* find, 
+                                            const char* replace)
+{
+}
+
+istring* istr_replace_bytes(istring *string, const char* find, size_t f_len, 
+                                             const char* replace, size_t r_len)
+{
+}
+*/

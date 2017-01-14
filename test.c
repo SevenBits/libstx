@@ -273,6 +273,14 @@ static void test_find()
 	istr_free(is1);
 }
 
+static void test_replace()
+{
+}
+
+static void test_slice()
+{
+}
+
 int main()
 {
 	printf("Starting tests\n");
@@ -287,8 +295,9 @@ int main()
 	test_append();
 	test_find();
 	test_strip();
-	//test_find();
+	test_find();
 	//test_replace();
+	//test_slice()
 	printf("Testing complete\n");
 
 	return 0;

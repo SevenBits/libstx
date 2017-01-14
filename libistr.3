@@ -105,21 +105,9 @@ and return the
 .IR string .
 If allocation fails, then return NULL.
 .TP
-.BI istring*\ istr_shrink(istring\ * string ,\ size_t\  len )
-If
-.I len
-is greater than the size of
-.IR string 's
-buffer, then grow the buffer to the size of
-.IR len .
-.TP
-.BI char*\ istr_free(istring\ * string ,\ bool\  free_buf )
-Free all memory used by an istring. If
-.I free_buf
-is true, then free the string buffer inside the istring and return NULL. 
-Otherwise return the buffer. If 
-.I string
-is NULL, then return NULL.
+.BI void\ istr_free(istring\ * string )
+Free all memory used by an istring. If string is NULL,
+nothing is done.
 .TP
 .BI int\ istr_eq(const\ istring\ * s1 ,\ const\ istring\ * s2 )
 Check for equality between two istrings. 
@@ -191,7 +179,7 @@ or
 are NULL, then return NULL. 
 If allocation fails return NULL.
 .TP
-.BI istring*\ istr_trunc(istring\ * string ,\ size_t\  len )
+.BI void\ istr_trunc(istring\ * string ,\ size_t\  len )
 Shorten's 
 .I string
 to the specified
@@ -273,20 +261,14 @@ or
 .I cstr
 are NULL, then return NULL.
 .TP
-.BI istring*\ istr_remove_bytes(istring\ * string ,\ size_t\  index ,\ size_t\  len )
+.BI void\ istr_remove_bytes(istring\ * string ,\ size_t\  index ,\ size_t\  len )
 Removes up to 
 .I len 
 bytes from 
 .I string
 at the
 .I index
-given. If
-.I string
-is NULL, then return NULL. If
-.I index
->
-.IR string->len ,
-then return NULL.
+given.
 .TP
 .BI istring*\ istr_append(istring\ * dest ,\ const\ istring\ * src )
 Append a copy of

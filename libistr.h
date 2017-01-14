@@ -1,6 +1,6 @@
 /* See LICENSE file for copyright and license details */
-#ifndef LIBistr_H_INCLUDED
-#define LIBistr_H_INCLUDED
+#ifndef LIBISTR_H_INCLUDED
+#define LIBISTR_H_INCLUDED
 
 #include <stdlib.h>
 #include <stdbool.h>
