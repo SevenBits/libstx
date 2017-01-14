@@ -41,7 +41,7 @@ be done with care, usually with a reference counter of some sort.
 ### features
 The advantages here are nearly the same as the SDS string library.
 
-1. The istring model is ease of interoperability with read-only C string
+1. The istring model is easy interoperability with read-only C string
 functions, as the istring can simply be passed as a parameter as if it
 were a normal char \*.
 
