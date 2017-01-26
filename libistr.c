@@ -421,14 +421,17 @@ istring* istr_insert_bytes(istring *string, size_t index,
 }
 
 /*
-istring* istr_insert_unichar(istring *string, size_t index, int32_t unichar)
+istring* istr_insert_utf32(istring *string, size_t index, int32_t unich)
 {
 	size_t unilen;
-	if (unichar < 0x80) {
+	if (ch < 0x80) {
 		unilen = 1;
-	} else if (unichar < 0x800) {
+	} else if (ch < 0x800) {
 		unilen = 2;
-	} else if (unichar < 0x8000) {
+	} else if (ch < 0x10000) {
+		unilen = 3;
+	} else if (ch < 0x20000) {
+		unilen = 4;
 	}
 }
 */
