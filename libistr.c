@@ -77,13 +77,13 @@ static istring* istr_ensure_size(istring *string, size_t target_size)
 	} else if (istr_size(string) < target_size) {
 		string = ISTR_REALLOC(string - H_OFFSET, 
 		                      H_OFFSET + sizeof(*string) * target_size);
-		if (NULL == string) {
-			return NULL;
-		}
 	} else {
 		return string;
 	}
 
+	if (NULL == string) {
+		return NULL;
+	}
 	string += H_OFFSET;
 	istr_set_size(string, target_size);
 	return string;
