@@ -442,6 +442,9 @@ istring* istr_insert_utf32(
 	} else if (ch < 0x200000) {
 		header = UTF8_H4;
 		len = 4;
+	} else {
+		// Invalid unicode character
+		return NULL;
 	}
 
 	char utf8chars[4];
