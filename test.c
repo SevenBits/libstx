@@ -6,64 +6,35 @@
 
 #include "libistr.h"
 
+char G_CSTR[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+size_t G_CSTR_LEN = sizeof(G_CSTR) - 1;
+
 static void test_new_and_free()
 {
-	istring *is1 = istr_new(NULL);
+	istring *is1;
+
+	is1 = istr_new(NULL);
 	assert(NULL != is1);
 	assert(0 == istr_len(is1));
 	assert(0 <= istr_size(is1));
 	assert('\0' == is1[0]);
 	istr_free(is1);
 
-	is1 = istr_new_bytes("hello", 5);
-	assert(NULL != is1);
-	assert(5 == istr_len(is1));
-	assert(5 <= istr_size(is1));
-	assert('\0' == is1[5]);
-	assert(0 == strcmp(is1, "hello"));
-	istr_free(is1);
-
-	is1 = istr_new_cstr("hello world");
-	assert(NULL != is1);
-	assert(11 == istr_len(is1));
-	assert(11 <= istr_size(is1));
-	assert('\0' == is1[11]);
-	assert(0 == strcmp(is1, "hello world"));
-
-	istring *is2 = istr_new(is1);
-	istr_free(is1);
-
-	assert(NULL != is2);
-	assert(11 == istr_len(is2));
-	assert(11 <= istr_size(is2));
-	assert('\0' == is2[11]);
-	assert(0 == strcmp(is2, "hello world"));
-	istr_free(is2);
-
-	istring *is3;
-	char varstr[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-	for (size_t i=1; i<sizeof(varstr); i++) {
-		is3 = istr_new_bytes(varstr, i);
-		assert(i == istr_len(is3));
-		assert(i <= istr_size(is3));
-		assert('\0' == is3[i]);
-		istr_free(is3);
+	for (size_t i=0; i<sizeof(G_CSTR); i++) {
+		is1 = istr_new_bytes(G_CSTR, i);
+		istr_free(is1);
 	}
 }
 
 static void test_grow()
 {
 	istring *is1 = istr_new(NULL);
-	is1 = istr_grow(is1, 64);
-	assert(0 == istr_len(is1));
-	assert(64 <= istr_size(is1));
-	assert('\0' == is1[0]);
-
-	is1 = istr_grow(is1, 4096);
-	assert(0 == istr_len(is1));
-	assert(4096 <= istr_size(is1));
-	assert('\0' == is1[0]);
-
+	for (size_t i=2; i<65536; i*=2) {
+		is1 = istr_grow(is1, i);
+		assert(0 == istr_len(is1));
+		assert(i <= istr_size(is1));
+		assert('\0' == is1[0]);
+	}
 	istr_free(is1);
 }
 
@@ -143,11 +114,10 @@ static void test_trunc()
 
 static void test_pop()
 {
-	istring *is1 = istr_new_cstr("hello");
+	istring *is1 = istr_new_cstr(G_CSTR);
 
-	char test[] = "hello";
-	for (size_t i=0; i<=4; i++) {
-		assert(test[4-i] == istr_pop(is1));
+	for (size_t i=0; i<G_CSTR_LEN; i++) {
+		assert(G_CSTR[G_CSTR_LEN-i-1] == istr_pop(is1));
 	}
 
 	istr_free(is1);
