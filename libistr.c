@@ -16,6 +16,14 @@
 // Beginning of header offset
 #define H_OFFSET (sizeof(ISTR_HEADER_TYPE) * 2)
 
+enum utf8_header {
+	UTF8_H1 = 0x00,      // 1-byte header '0xxxxxxx'
+	UTF8_H2 = 0x06 << 5, // 2-byte header '110xxxxx'
+	UTF8_H3 = 0x0E << 4, // 3-byte header '1110xxxx'
+	UTF8_H4 = 0x1E << 3, // 4-byte header '11110xxx'
+	UTF8_HC = 0x02 << 6, // c-byte header '10xxxxxx'
+};
+
 // If a + b would cause an overflow, instead return the maximum size
 static inline size_t safe_add(size_t a, size_t b)
 {
@@ -310,12 +318,6 @@ istring* istr_write_bytes(istring *string, size_t index,
 	return string;
 }
 
-/*
-istring* istr_remove_unichars()
-{
-}
-*/
-
 void istr_remove_bytes(istring *string, size_t index, size_t remove_len)
 {
 	if (NULL == string) {
@@ -420,21 +422,37 @@ istring* istr_insert_bytes(istring *string, size_t index,
 	return string;
 }
 
-/*
-istring* istr_insert_utf32(istring *string, size_t index, int32_t unich)
+// Requires ch to be big endian
+istring* istr_insert_utf32(
+		istring *string, 
+		size_t index, 
+		uint32_t ch)
 {
-	size_t unilen;
-	if (ch < 0x80) {
-		unilen = 1;
-	} else if (ch < 0x800) {
-		unilen = 2;
-	} else if (ch < 0x10000) {
-		unilen = 3;
-	} else if (ch < 0x20000) {
-		unilen = 4;
+	int len;
+	int header;
+	if (ch < 0x0080) {
+		header = UTF8_H1;
+		len = 1;
+	} else if (ch < 0x000800) {
+		header = UTF8_H2;
+		len = 2;
+	} else if (ch < 0x010000) {
+		header = UTF8_H3;
+		len = 3;
+	} else if (ch < 0x200000) {
+		header = UTF8_H4;
+		len = 4;
 	}
+
+	char utf8chars[4];
+	for (size_t i = len-1; i > 0; --i) {
+		utf8chars[i] = UTF8_HC | (ch & 0x3F);
+		ch >>= 6;
+	}
+	utf8chars[0] = header | ch;
+
+	return istr_insert_bytes(string, index, utf8chars, len);
 }
-*/
 
 /*
 // Make sure this is unicode friendly!
