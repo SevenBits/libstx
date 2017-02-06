@@ -3,6 +3,7 @@
 #define LIBISTR_H_INCLUDED
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 
 /**
