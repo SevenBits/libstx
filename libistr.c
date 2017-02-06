@@ -1,9 +1,9 @@
 /* See LICENSE file for copyright and license details */
-#include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "libistr.h"
 #include "libistrconfig.h"

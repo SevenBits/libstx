@@ -2,9 +2,9 @@
 #ifndef LIBISTR_H_INCLUDED
 #define LIBISTR_H_INCLUDED
 
-#include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 /**
  * This type for code clarity. A char* can be used, but might be 
