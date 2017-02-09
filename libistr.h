@@ -7,18 +7,27 @@
 #include <stdlib.h>
 
 /**
- * This type for code clarity. A char* can be used, but might be 
- * misleading. istring* is reccomended over char*. 
+ * istring - a typedef for char.
+ *
+ * Useful if the distrinction between an istring and a char wants to be made
  */
 typedef char istring;
 
 /**
- * Return the size of the buffer in bytes used by `string`
+ * istr_size - return the size a string
+ * @string: the string to return the size of
+ *
+ * The size is the total size of the buffer including unused bytes. This
+ * does not include the size of the prefix.
  */
 size_t istr_size(const istring *string);
 
 /**
- * Return the length of bytes used by `string`. 
+ * istr_len - return the length of a string
+ * @string: the string to return the length of
+ *
+ * The length is the the amount of defined bytes before
+ * the '\0' character at the end.
  */
 size_t istr_len(const istring *string);
 
@@ -101,16 +110,27 @@ istring* istr_insert_bytes(istring *string, size_t index, const char *bytes, siz
 istring* istr_insert_utf32(istring *string, size_t index, const uint32_t ch);
 
 /**
- * Strip all characters specified in `chs` from `string`.
- * rstrip is the right side, lstrip is the left side, strip is both sides.
+ * istr_strip - Strip a set of characters from a string.
+ * @string: string to strip
+ * @chs: set of characters to strip
+ *
+ * Strip all characters specified in @chs from @string.
+ * rstrip is from the right side,
+ * lstrip is from the left side, 
+ * strip is from both sides.
  */
 void istr_rstrip(istring *string, const char *chs);
 void istr_lstrip(istring *string, const char *chs);
 void istr_strip(istring *string, const char *chs);
 
 /** 
- * Find the first occurance of `substr` in `string`, and return a pointer to it.
- * If there are no occurances of `substr` in `string`, NULL is returned.
+ * istr_find - find a substring within a string.
+ * @string: string to be searched.
+ * @substr: string to search for.
+ *
+ * Find the first occurance of @substr in @string, and return a pointer to it.
+ * If there are no occurances of @substr in @string, NULL is returned. @substr
+ * can either be a char* or an istring*.
  */
 char* istr_find(istring *string, const char *substr);
 
