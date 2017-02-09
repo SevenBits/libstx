@@ -422,7 +422,7 @@ istring* istr_insert_bytes(istring *string, size_t index,
     return string;
 }
 
-// Requires ch to be big endian
+// Requires ch to be in big endian form
 istring* istr_insert_utf32(
         istring *string, 
         size_t index, 
@@ -448,7 +448,7 @@ istring* istr_insert_utf32(
     }
 
     char utf8chars[4];
-    for (size_t i = len-1; i > 0; --i) {
+    for (int i = len-1; i > 0; --i) {
         utf8chars[i] = UTF8_HC | (ch & 0x3F);
         ch >>= 6;
     }
@@ -469,7 +469,6 @@ istring* istr_upper(istring *string)
 }
 */
 
-// strip characters from right of string
 void istr_rstrip(istring *string, const char *chs)
 {
     if (NULL == string || NULL == chs) {
@@ -486,7 +485,6 @@ void istr_rstrip(istring *string, const char *chs)
     string[len] = '\0';
 }
 
-// strip characters from left of string
 void istr_lstrip(istring *string, const char *chs)
 {
     if (NULL == string || NULL == chs) {
@@ -505,14 +503,12 @@ void istr_lstrip(istring *string, const char *chs)
     string[len] = '\0';
 }
 
-// strip characters from both left and right of string
 void istr_strip(istring *string, const char *chs)
 {
     istr_lstrip(string, chs);
     istr_rstrip(string, chs);
 }
 
-// Find the first substring within a string
 char* istr_find(istring *string, const char *substr)
 {
     if (NULL == string || NULL == substr) {
