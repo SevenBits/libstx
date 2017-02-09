@@ -6,14 +6,16 @@ libistr - Improved String Library
 The istring library (hereafter referred to as libistr) is an efficient and 
 simple dynamic string library for C modeled after the SDS string library
 (Although libistr is a separate codebase). The reason for the reimplementation 
-of the concept is to allow for a cleaner codebase with an emphasis on unicode
-character handling. Most design changes have been made to avoid ambiguity, 
+of the concept is to allow for a cleaner codebase with an emphasis on consistent
+naming and unicode character handling. Most design changes have been made to avoid ambiguity, 
 like typedefing the istring type to char instead of char \*, 
 which makes the library easier to use and less error prone.
 
 This idea for modeling strings, rather than defining a structure to contain a 
 string's metadata, allocates room for a header prefixed to the string to store 
-metadata about the string. The SDS string libraryThis has a number of advantages detailed below.
+metadata about the string. This idea was inspired by SDS string library, which
+has a great idea but the implmentation was not quite up to my standards.
+This way of implementing strings comes with a number of advantages detailed below.
 
 ### Gotcha's
 1. ALWAYS assign the return value of an 'istr\_' prefixed function that returns
