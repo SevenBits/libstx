@@ -117,9 +117,9 @@ oystr_eq(const struct oystr *s1, const struct oystr *s2)
 void
 oystr_swap(struct oystr *s1, struct oystr *s2)
 {
-	s1->buf = s2->buf;
-	s1->len = s2->len;
-	s1->size = s2->size;
+	struct oystr tmp = *s1;
+	*s1 = *s2;
+	*s2 = tmp;
 }
 
 char
@@ -133,7 +133,7 @@ oystr_trunc(struct oystr *s1, size_t len)
 	if (0 == s1->len)
 		return '\0';
 
-	char ret = s1->buf[s1->len];
+	char ret = s1->buf[s1->len - 1];
 	oystr_set_len(s1, s1->len - len);
 
 	return ret;
