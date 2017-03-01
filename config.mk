@@ -1,18 +1,14 @@
-# tshell version
-VERSION=0.1
+VERSION=0.0.0
 
-# Paths
+# System paths
 PREFIX=/usr/local
-MANPREFIX=${PREFIX}/share/man
-
-# Compilation flags
-CFLAGS=-g -std=c99 -pedantic -Wall -Wextra -static -O3
-
-# Extra flags below
-#-Wfloat-equal -Wundef -Wstrict-prototypes -Wpointer-arith -Wstrict-overflow=5 -Waggregate-return -Wswitch-default -Wconversion -Wswitch-enum -Wunreachable-code
+MANPREFIX=${PREFIX}/man
+LIBPREFIX=${PREFIX}/lib
+INCLUDEPREFIX=${PREFIX}/include
 
 # Linking flags
-LDFLAGS=-g
+LDFLAGS=
 
-# Compiler and linker
+# Compiler settings
 CC=cc
+CFLAGS=-std=c99 -pedantic -Os -Wall -Wextra -static

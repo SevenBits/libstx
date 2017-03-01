@@ -1,73 +1,77 @@
+# oystr - oystring library
+# See LICENSE file for copyright and license details.
+
 include config.mk
 
-ARCHIVE=libistr.a
+TARGET=liboystr.a
+MANPAGE=oystr.3
 
-HEADER=libistr.h
-SRC=libistr.c
+SRC=oystr.c
+HEADER=oystr.h
 OBJ=${SRC:.c=.o}
 
-MANPAGE=libistr.3
+DIST=$(basename ${TARGET})-${VERSION}
+DIST_FILES=${SRC} Makefile README config.mk
 
-all: settings run_test libistr.a
+all: ${TARGET}
 
-settings:
-	@echo libistr build settings:
-	@echo "CFLAGS   = ${CFLAGS}"
-	@echo "LDFLAGS  = ${LDFLAGS}"
-	@echo "CC       = ${CC}"
+options: config.mk
+	@printf "${TARGET} build options:\n"
+	@printf "CFLAGS  = ${CFLAGS}\n"
+	@printf "LDFLAGS = ${LDFLAGS}\n"
+	@printf "CC      = ${CC}\n"
 
 .c.o:
-	${CC} -c ${CFLAGS} $<
+	@printf "CC $<\n"
+	@${CC} -c ${CFLAGS} $<
 
 ${OBJ}: config.mk
 
-${ARCHIVE}: ${OBJ}
-	@echo creating library archive
+${TARGET}: ${OBJ} ${HEADER}
+	@printf "Creating library archive ... "
 	@ar -cq $@ ${OBJ}
-
-# Tests below
-
-TEST=test
-
-${TEST}: ${TEST}.c ${OBJ}
-	${CC} -o ${TEST} ${TEST}.c ${OBJ}
-
-run_test: ${TEST}
-	./${TEST}
+	@printf "done.\n"
 
 clean:
-	@echo "cleaning..."
-	rm -f ${ARCHIVE} 
-	rm -f ${OBJ}
-	rm -f ${TEST}
-	rm -f libistr-${VERSION}.tar.gz
+	@printf "Cleaning ... "
+	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz test
+	@printf "done.\n"
 
 dist: clean
-	@echo creating dist tarball
-	@mkdir -p libistr-${VERSION}
-	@cp -r LICENSE README.md Makefile config.mk ${TEST_SRC} ${SRC} ${HEADER} ${MANPAGE} libistr-${VERSION}
-	tar -cvf libistr-${VERSION}.tar libistr-${VERSION}
-	@gzip libistr-${VERSION}.tar
-	@rm -rf libistr-${VERSION}
+	@printf "Creating dist tarball ... "
+	@mkdir -p ${DIST}
+	@cp -R ${DIST_FILES} ${DIST}
+	@tar -cf ${DIST}.tar ${DIST}
+	@gzip ${DIST}.tar
+	@rm -rf ${DIST}
+	@printf "done.\n"
 
 install: all
-	@echo installing library archive to ${DESTDIR}${PREFIX}/lib/
-	@mkdir -p ${DESTDIR}${PREFIX}/lib/
-	@cp -f ${ARCHIVE} ${DESTDIR}${PREFIX}/lib/
-	@echo installing library header to ${DESTDIR}${PREFIX}/include/
-	@mkdir -p ${DESTDIR}${PREFIX}/include/
-	@cp -f ${HEADER} ${DESTDIR}${PREFIX}/include/
-	@echo installing manual page to ${DESTDIR}${MANPREFIX}/man3/
-	@mkdir -p ${DESTDIR}${MANPREFIX}/man3/
-	@sed "s/VERSION/${VERSION}/g" < ${MANPAGE} > ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
+	@printf "Installing library archive to ${DESTDIR}${LIBPREFIX}.\n"
+	@mkdir -p ${DESTDIR}${LIBPREFIX}
+	@cp -f ${TARGET} ${DESTDIR}${LIBPREFIX}
+	@printf "Installing library header to ${DESTDIR}${INCLUDEPREFIX}.\n"
+	@mkdir -p ${DESTDIR}${INCLUDEPREFIX}
+	@cp -f ${HEADER} ${DESTDIR}${INCLUDEPREFIX}
+	@printf "Installing manual page to ${DESTDIR}${MANPREFIX}/man3\n."
+	@mkdir -p ${DESTDIR}${MANPREFIX}/man3
+	@cp -f ${MANPAGE} ${DESTDIR}${MANPREFIX}/man3
 	@chmod 644 ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
 
 uninstall:
-	@echo removing library archive from ${DESTDIR}${PREFIX}/lib/
-	@rm -f ${DESTDIR}${PREFIX}/lib/${ARCHIVE}
-	@echo removing library header from ${DESTDIR}${PREFIX}/include/
+	@printf "Removing library archive from ${DESTDIR}${LIBPREFIX}.\n"
+	@rm -f ${DESTDIR}${LIBPREFIX}/${TARGET}
+	@printf "Removing library header from ${DESTDIR}${INCLUDEPREFIX}.\n"
 	@rm -f ${DESTDIR}${PREFIX}/include/${HEADER}
-	@echo removing manual page from ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
+	@printf "Removing manual page from ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}.\n"
 	@rm -f ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
 
-.PHONY: all settings clean run_tests
+#------------------------------------------------------------------------------
+# Testing section
+#------------------------------------------------------------------------------
+
+test: test.c ${OBJ} ${HEADER}
+	@printf "CC $<\n"
+	@${CC} -o $@ test.c ${OBJ} ${LDFLAGS}
+
+.PHONY: all options clean dist install uninstall

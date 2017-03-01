@@ -3,9 +3,9 @@
 *.a
 *.so
 
+# Packages
+*.tar
+*.gz
+
 # Compiled tests
 test*
-
-# Packages
-*.gz
-*.tar
