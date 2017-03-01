@@ -1,10 +1,10 @@
 /* See LICENSE file for copyright and license details */
-#include "oystr.h"
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "oystr.h"
 
 static inline bool overflow_size_add(size_t a, size_t b)
 {
@@ -154,15 +154,26 @@ oystr_assign(struct oystr *s1, const char *bytes, size_t len)
 }
 
 int
-oystr_write(struct oystr *s1, size_t pos, const struct oystr *s2)
+oystr_write(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 {
-	//TODO determine length here
+	size_t newlen;
+
+	if (pos > s1->len) {
+		if (overflow_size_add(pos, len))
+			return -1;
+		newlen = pos + len;
+	} else {
+		if (overflow_size_add(s1->len - pos, len))
+			return -1;
+		newlen = (s1->len - pos + len) + 1;
+	}
+
 	int err;
-	if (0 != (err = oystr_ensure_size(s1, s2->len)))
+	if (0 != (err = oystr_ensure_size(s1, newlen)))
 		return err;
 
-	memcpy(s1->buf + pos, s2->buf, s2->len);
-	oystr_set_len(s1, 0);
+	memcpy(s1->buf + pos, bytes, len);
+	oystr_set_len(s1, newlen);
 
 	return 0;
 }
@@ -179,7 +190,7 @@ oystr_insert(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 
 	// Create some space if inserting before the end of the buffer.
 	if (pos < s1->len)
-		memcpy(s1->buf + pos + len, s1->buf + pos, s1->len - pos);
+		memmove(s1->buf + pos + len, s1->buf + pos, s1->len - pos);
 
 	memcpy(s1->buf + pos, bytes, len);
 	oystr_set_len(s1, s1->len + len);
@@ -205,9 +216,9 @@ oystr_append(struct oystr *s1, const char *buf, size_t len)
 
 bool
 oystr_find(struct oystr *slice,
-	const struct oystr *s1,
-	const char *buf,
-	size_t len)
+           const struct oystr *s1,
+           const char *buf,
+           size_t len)
 {
 	if (0 == len)
 		goto not_found;

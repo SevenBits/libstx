@@ -53,7 +53,13 @@ oystr_assign_oystr(struct oystr *s1, const struct oystr *s2)
 }
 
 int
-oystr_write(struct oystr *s1, size_t pos, const struct oystr *s2);
+oystr_write(struct oystr *s1, size_t pos, const char *bytes, size_t len);
+
+static inline int
+oystr_write_oystr(struct oystr *s1, size_t pos, const struct oystr *s2)
+{
+	return oystr_write(s1, pos, s2->buf, s2->len);
+}
 
 int
 oystr_insert(struct oystr *s1, size_t pos, const char *bytes, size_t len);

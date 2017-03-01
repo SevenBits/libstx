@@ -201,11 +201,32 @@ test_oystr_append()
 void
 test_oystr_write()
 {
+	struct oystr s1;
+	oystr_init(&s1);
+	assert(0 == oystr_assign(&s1, "hello world", 11));
+	CTEST_BEGIN;
+	ctest_assert(0 == oystr_write(&s1, 6, "jack the ripper.", 16));
+	ctest_assert(0 == strcmp(s1.buf, "hello jack the ripper."));
+	ctest_assert(22 == s1.len);
+	ctest_assert(22 <= s1.size);
+	CTEST_END;
+	oystr_deinit(&s1);
 }
 
 void
 test_oystr_insert()
 {
+	const char initstr[] = "pumpkin squash is good dude.";
+	struct oystr s1;
+	oystr_init(&s1);
+	assert(0 == oystr_assign(&s1, initstr, sizeof(initstr) - 1));
+	CTEST_BEGIN;
+	ctest_assert(0 == oystr_insert(&s1, 15, "beer ", 5));
+	ctest_assert(0 == strcmp(s1.buf, "pumpkin squash beer is good dude."));
+	ctest_assert(sizeof(initstr) - 1 + 5 == s1.len);
+	ctest_assert(sizeof(initstr) - 1 + 5 <= s1.size);
+	CTEST_END;
+	oystr_deinit(&s1);
 }
 
 void
@@ -287,8 +308,8 @@ main()
 
 	test_oystr_assign();
 	test_oystr_append();
-	//TODO test_oystr_write();
-	//TODO test_oystr_insert();
+	test_oystr_write();
+	test_oystr_insert();
 
 	test_oystr_eq();
 	test_oystr_swap();
