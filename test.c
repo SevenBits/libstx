@@ -98,15 +98,10 @@ test_oystr_ensure_size()
 	for (i=0; i<100; ++i) {
 		// 0 as a random value should be ok here.
 		r = rand() % 65536;
-		int ret;
-		ret = oystr_ensure_size(&s1, r);
-		ret = ret && ctest_assert(s1.buf);
-		ret = ret && ctest_assert(0 == s1.len);
-		ret = ret && ctest_assert(r <= s1.size);
-		if (ret) {
-			// Quit upon first failure
-			break;
-		}
+		oystr_ensure_size(&s1, r);
+		ctest_assert(s1.buf);
+		ctest_assert(0 == s1.len);
+		ctest_assert(r <= s1.size);
 		oystr_deinit(&s1);
 	}
 	CTEST_END;
@@ -294,6 +289,95 @@ test_oystr_trunc()
 	oystr_deinit(&s1);
 }
 
+void
+test_oystr_find()
+{
+	struct oystr slice;
+	struct oystr s1;
+	oystr_init(&s1);
+	oystr_assign(&s1, "hello world", 11);
+	CTEST_BEGIN;
+	ctest_assert(true == oystr_find(&slice, &s1, "world", 5));
+	ctest_assert(5 == slice.len);
+	ctest_assert(5 <= slice.size);
+	ctest_assert(0 == strncmp(slice.buf, "world", slice.len));
+
+	oystr_init(&slice);
+
+	ctest_assert(false == oystr_find(&slice, &s1, "hello", 6));
+	ctest_assert(0 == slice.len);
+	ctest_assert(0 <= slice.size);
+	ctest_assert(NULL == slice.buf);
+
+	ctest_assert(false == oystr_find(&slice, &s1, "world ", 6));
+	ctest_assert(0 == slice.len);
+	ctest_assert(0 <= slice.size);
+	ctest_assert(NULL == slice.buf);
+	CTEST_END;
+	oystr_deinit(&s1);
+}
+
+void
+test_oystr_rstrip()
+{
+	const char initstr[] = "mmnnlo??STRIPm>?lnonnmm";
+	struct oystr s1;
+	oystr_init(&s1);
+	assert(0 == oystr_assign(&s1, initstr, sizeof(initstr) - 1));
+	CTEST_BEGIN;
+	ctest_assert(10 == oystr_rstrip(&s1, "m>?lno", 6));
+	ctest_assert(0 == strcmp(s1.buf, "mmnnlo??STRIP"));
+	ctest_assert(13 == s1.len);
+	CTEST_END;
+	oystr_deinit(&s1);
+}
+
+void
+test_oystr_lstrip()
+{
+	const char initstr[] = "zzannlo~>STRIPmozzannmmaz";
+	struct oystr s1;
+	oystr_init(&s1);
+	assert(0 == oystr_assign(&s1, initstr, sizeof(initstr) - 1));
+	CTEST_BEGIN;
+	ctest_assert(9 == oystr_lstrip(&s1, "zanlo~>", 7));
+	ctest_assert(0 == strcmp(s1.buf, "STRIPmozzannmmaz"));
+	ctest_assert(16 == s1.len);
+	CTEST_END;
+	oystr_deinit(&s1);
+}
+
+void
+test_oystr_strip()
+{
+	const char initstr[] = "zzanloSTRIPm&?lnonnmm";
+	struct oystr s1;
+	oystr_init(&s1);
+	assert(0 == oystr_assign(&s1, initstr, sizeof(initstr) - 1));
+	CTEST_BEGIN;
+	ctest_assert(16 == oystr_strip(&s1, "zanlom&?", 8));
+	ctest_assert(0 == strcmp(s1.buf, "STRIP"));
+	ctest_assert(5 == s1.len);
+	CTEST_END;
+	oystr_deinit(&s1);
+}
+
+void
+test_oystr_slice()
+{
+	struct oystr slice;
+	struct oystr s1;
+	oystr_init(&s1);
+	assert(0 == oystr_assign(&s1, "slicemeplease", 13));
+	CTEST_BEGIN;
+	oystr_slice(&slice, &s1, 0, 5);
+	ctest_assert(5 == slice.len);
+	ctest_assert(5 <= slice.size);
+	ctest_assert(0 == strncmp(slice.buf, "slice", slice.len));
+	CTEST_END;
+	oystr_deinit(&s1);
+}
+
 int
 main()
 {
@@ -314,6 +398,13 @@ main()
 	test_oystr_eq();
 	test_oystr_swap();
 	test_oystr_trunc();
+	test_oystr_find();
+
+	test_oystr_rstrip();
+	test_oystr_lstrip();
+	test_oystr_strip();
+
+	test_oystr_slice();
 
 	ctest_summary();
 	return !(ctest_passed == ctest_total);

@@ -91,10 +91,19 @@ oystr_append_dup(struct oystr *s1)
 	return oystr_append(s1, s1->buf, s1->len);
 }
 
+void
+oystr_slice(struct oystr *slice, struct oystr *s1, size_t begin, size_t end);
+
 bool
-oystr_find(struct oystr *slice,
-	const struct oystr *s1,
-	const char *buf,
-	size_t len);
+oystr_find(struct oystr *slice, struct oystr *s1, const char *buf, size_t len);
+
+size_t
+oystr_rstrip(struct oystr *s1, const char *bytes, size_t len);
+
+size_t
+oystr_lstrip(struct oystr *s1, const char *bytes, size_t len);
+
+size_t
+oystr_strip(struct oystr *s1, const char *bytes, size_t len);
 
 #endif

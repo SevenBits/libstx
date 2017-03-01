@@ -214,29 +214,33 @@ oystr_append(struct oystr *s1, const char *buf, size_t len)
 	return 0;
 }
 
-bool
-oystr_find(struct oystr *slice,
-           const struct oystr *s1,
-           const char *buf,
-           size_t len)
+void
+oystr_slice(struct oystr *slice, struct oystr *s1, size_t begin, size_t end)
 {
+	slice->buf = s1->buf + begin;
+	slice->size = s1->size - begin;
+	slice->len = end - begin;
+}
+
+bool
+oystr_find(struct oystr *slice, struct oystr *s1, const char *buf, size_t len)
+{
+	size_t i, j;
+
 	if (0 == len)
 		goto not_found;
 
-	size_t i, j;
+	if (s1->len < len)
+		goto not_found;
 
 	for (i=0; i<s1->len; ++i) {
-		if (i > len)
-			// @s1 cannot possibly contain @buf
-			goto not_found;
-
-		for (j=0; j<len; ++j) {
-			if (s1->buf[j] != buf[j]) {
+		for (j=i; j<i+len; ++j) {
+			if (s1->buf[j] != buf[j-i]) {
 				break;
 			}
 		}
 
-		if (j == len-1)
+		if (j-i == len)
 			goto found;
 	}
 
@@ -244,10 +248,27 @@ not_found:
 	return false;
 
 found:
-	slice->buf = s1->buf + i;
-	slice->len = len;
-	slice->size = s1->size - i;
+	oystr_slice(slice, s1, i, j);
 	return true;
+}
+
+size_t
+oystr_rstrip(struct oystr *s1, const char *bytes, size_t len)
+{
+	if (0 == s1->len)
+		return 0;
+
+	size_t removed = 0;
+	char *begin = s1->buf + s1->len - 1;
+	char *end = s1->buf;
+
+	while (begin != end && memchr(bytes, *begin, len)) {
+		++removed;
+		--begin;
+	}
+
+	oystr_set_len(s1, s1->len - removed);
+	return removed;
 }
 
 size_t
@@ -257,29 +278,13 @@ oystr_lstrip(struct oystr *s1, const char *bytes, size_t len)
 	char *begin = s1->buf;
 	char *end = s1->buf + s1->len;
 
-	while (begin != end && memchr(bytes, len, *begin)) {
+	while (begin != end && memchr(bytes, *begin, len)) {
 		++removed;
 		++begin;
 	}
 
 	if (begin != end)
 		memmove(s1->buf, begin, s1->len - removed);
-
-	oystr_set_len(s1, s1->len - removed);
-	return removed;
-}
-
-size_t
-oystr_rstrip(struct oystr *s1, const char *bytes, size_t len)
-{
-	size_t removed = 0;
-	char *begin = s1->buf + s1->len;
-	char *end = s1->buf;
-
-	while (begin != end && memchr(bytes, len, *begin)) {
-		++removed;
-		--begin;
-	}
 
 	oystr_set_len(s1, s1->len - removed);
 	return removed;
@@ -295,12 +300,4 @@ oystr_strip(struct oystr *s1, const char *bytes, size_t len)
 	}
 
 	return left + right;
-}
-
-void
-oystr_slice(struct oystr *slice, struct oystr *s1, size_t begin, size_t end)
-{
-	slice->buf = s1->buf + begin;
-	slice->size = s1->size - begin;
-	slice->len = end - begin;
 }
