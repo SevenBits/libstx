@@ -19,9 +19,6 @@ static inline size_t oystr_avail(struct oystr *s1)
 int
 oystr_ensure_size(struct oystr *s1, size_t size);
 
-int
-oystr_grow(struct oystr *s1, size_t size);
-
 void
 oystr_init(struct oystr *s1);
 
@@ -47,6 +44,15 @@ char
 oystr_trunc(struct oystr *s1, size_t len);
 
 int
+oystr_assign(struct oystr *s1, const char *bytes, size_t len);
+
+static inline int
+oystr_assign_oystr(struct oystr *s1, const struct oystr *s2)
+{
+	return oystr_assign(s1, s2->buf, s2->len);
+}
+
+int
 oystr_write(struct oystr *s1, size_t pos, const struct oystr *s2);
 
 int
@@ -58,8 +64,11 @@ oystr_insert_oystr(struct oystr *s1, size_t pos, const struct oystr *s2)
 	return oystr_insert(s1, pos, s2->buf, s2->len);
 }
 
-int
-oystr_insert_dup(struct oystr *s1, size_t pos);
+static inline int
+oystr_insert_dup(struct oystr *s1, size_t pos)
+{
+	return oystr_insert(s1, pos, s1->buf, s1->len);
+}
 
 int
 oystr_append(struct oystr *s1, const char *buf, size_t len);

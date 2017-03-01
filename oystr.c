@@ -17,7 +17,11 @@ oystr_ensure_size(struct oystr *s1, size_t size)
 	size_t base;
 	char *tmp;
 
-	// Find the nearest power of two
+	if (overflow_size_add(size, 1))
+		return -1;
+	size += 1;
+
+	// Find the nearest power of two that can fit size.
 	base = 2;
 	if (size >= SIZE_MAX / 2) {
 		base = SIZE_MAX;
@@ -27,11 +31,9 @@ oystr_ensure_size(struct oystr *s1, size_t size)
 		}
 	}
 
-	if (overflow_size_add(base, 1))
-		return -1;
-
-	size = base + 1;
+	size = base;
 	if (s1->size >= size)
+		// No need to increase the buffer size.
 		return 0;
 
 	tmp = realloc(s1->buf, sizeof(*s1->buf) * size);
@@ -41,14 +43,6 @@ oystr_ensure_size(struct oystr *s1, size_t size)
 	s1->buf = tmp;
 	s1->size = size;
 	return 0;
-}
-
-int
-oystr_grow(struct oystr *s1, size_t size)
-{
-	if (overflow_size_add(s1->len, size))
-		return -1;
-	return oystr_ensure_size(s1, s1->len + size);
 }
 
 void
@@ -62,13 +56,14 @@ oystr_init(struct oystr *s1)
 int
 oystr_init_buf(struct oystr *s1, size_t size)
 {
+	int err;
+
 	s1->buf = NULL;
 	s1->len = 0;
 	s1->size = 0;
 
-	if (0 > oystr_ensure_size(s1, size)) {
-		return -1;
-	}
+	if (0 != (err = oystr_ensure_size(s1, size)))
+		return err;
 
 	s1->buf[s1->len] = '\0';
 	return 0;
@@ -88,7 +83,6 @@ oystr_valid(struct oystr *s1)
 {
 	if (!s1)
 		return -1;
-
 	if (!s1->buf || s1->size < s1->len)
 		return -1;
 
@@ -146,11 +140,25 @@ oystr_trunc(struct oystr *s1, size_t len)
 }
 
 int
+oystr_assign(struct oystr *s1, const char *bytes, size_t len)
+{
+	int err;
+
+	if (0 != (err = oystr_ensure_size(s1, len)))
+		return err;
+
+	memcpy(s1->buf, bytes, len);
+	oystr_set_len(s1, len);
+
+	return 0;
+}
+
+int
 oystr_write(struct oystr *s1, size_t pos, const struct oystr *s2)
 {
 	//TODO determine length here
-	int err = oystr_ensure_size(s1, s2->len);
-	if (0 > err)
+	int err;
+	if (0 != (err = oystr_ensure_size(s1, s2->len)))
 		return err;
 
 	memcpy(s1->buf + pos, s2->buf, s2->len);
@@ -162,10 +170,11 @@ oystr_write(struct oystr *s1, size_t pos, const struct oystr *s2)
 int
 oystr_insert(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 {
+	int err;
+
 	if (overflow_size_add(s1->len, len))
 		return -1;
-	int err = oystr_ensure_size(s1, s1->len + len);
-	if (0 > err)
+	if (0 != (err = oystr_ensure_size(s1, s1->len + len)))
 		return err;
 
 	// Create some space if inserting before the end of the buffer.
@@ -174,16 +183,18 @@ oystr_insert(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 
 	memcpy(s1->buf + pos, bytes, len);
 	oystr_set_len(s1, s1->len + len);
+
 	return 0;
 }
 
 int
 oystr_append(struct oystr *s1, const char *buf, size_t len)
 {
+	int err;
+
 	if (overflow_size_add(s1->len, len))
 		return -1;
-	int err = oystr_ensure_size(s1, s1->len + len);
-	if (0 > err)
+	if (0 != (err = oystr_ensure_size(s1, s1->len + len)))
 		return err;
 
 	memcpy(s1->buf + s1->len, buf, len);
@@ -271,6 +282,7 @@ oystr_strip(struct oystr *s1, const char *bytes, size_t len)
 	if (overflow_size_add(left, right)) {
 		return SIZE_MAX;
 	}
+
 	return left + right;
 }
 
