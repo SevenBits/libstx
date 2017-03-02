@@ -3,10 +3,52 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "oystr.h"
 
-static inline bool overflow_size_add(size_t a, size_t b)
+enum utf8_header {
+	UTF8_H1 = 0x00,      // 1-byte header 0xxxxxxx.
+	UTF8_H2 = 0x06 << 5, // 2-byte header 110xxxxx.
+	UTF8_H3 = 0x0e << 4, // 3-byte header 1110xxxx.
+	UTF8_H4 = 0x1e << 3, // 4-byte header 11110xxx.
+	UTF8_HC = 0x02 << 6, // Continuation byte header 10xxxxxx.
+};
+
+int
+oystr_utf8_from_utf32(char *bytes, uint32_t wc)
+{
+    int len;
+    uint32_t header;
+    if (wc < 0x000080) {
+        header = UTF8_H1;
+        len = 1;
+    } else if (wc < 0x000800) {
+        header = UTF8_H2;
+        len = 2;
+    } else if (wc < 0x010000) {
+        header = UTF8_H3;
+        len = 3;
+    } else if (wc < 0x200000) {
+        header = UTF8_H4;
+        len = 4;
+    } else {
+        // Invalid unicode character
+        return 0;
+    }
+
+    int i;
+    for (i = len-1; i > 0; --i) {
+        bytes[i] = (UTF8_HC | (wc & 0x3F));
+        wc >>= 6;
+    }
+    bytes[0] = (header | wc);
+
+    return len;
+}
+
+static inline bool
+overflow_size_add(size_t a, size_t b)
 {
     return (a > (SIZE_MAX - b)) ? true : false;
 }
@@ -18,7 +60,7 @@ oystr_ensure_size(struct oystr *s1, size_t size)
 	char *tmp;
 
 	if (overflow_size_add(size, 1))
-		return -1;
+		return OYSTR_ERR;
 	size += 1;
 
 	// Find the nearest power of two that can fit size.
@@ -34,15 +76,15 @@ oystr_ensure_size(struct oystr *s1, size_t size)
 	size = base;
 	if (s1->size >= size)
 		// No need to increase the buffer size.
-		return 0;
+		return OYSTR_OK;
 
 	tmp = realloc(s1->buf, sizeof(*s1->buf) * size);
 	if (!tmp)
-		return -1;
+		return OYSTR_ERR;
 
 	s1->buf = tmp;
 	s1->size = size;
-	return 0;
+	return OYSTR_OK;
 }
 
 void
@@ -66,7 +108,7 @@ oystr_init_buf(struct oystr *s1, size_t size)
 		return err;
 
 	s1->buf[s1->len] = '\0';
-	return 0;
+	return OYSTR_OK;
 }
 
 void
@@ -82,22 +124,22 @@ int
 oystr_valid(struct oystr *s1)
 {
 	if (!s1)
-		return -1;
+		return OYSTR_ERR;
 	if (!s1->buf || s1->size < s1->len)
-		return -1;
+		return OYSTR_ERR;
 
-	return 0;
+	return OYSTR_OK;
 }
 
 int
 oystr_set_len(struct oystr *s1, size_t len)
 {
 	if (len > (s1->size ? s1->size - 1 : 0)) {
-			return -1;
+			return OYSTR_ERR;
 	}
 	s1->len = len;
 	s1->buf[s1->len]= '\0';
-	return 0;
+	return OYSTR_OK;
 }
 
 bool
@@ -150,7 +192,7 @@ oystr_assign(struct oystr *s1, const char *bytes, size_t len)
 	memcpy(s1->buf, bytes, len);
 	oystr_set_len(s1, len);
 
-	return 0;
+	return OYSTR_OK;
 }
 
 int
@@ -160,11 +202,11 @@ oystr_write(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 
 	if (pos > s1->len) {
 		if (overflow_size_add(pos, len))
-			return -1;
+			return OYSTR_ERR;
 		newlen = pos + len;
 	} else {
 		if (overflow_size_add(s1->len - pos, len))
-			return -1;
+			return OYSTR_ERR;
 		newlen = (s1->len - pos + len) + 1;
 	}
 
@@ -175,7 +217,7 @@ oystr_write(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 	memcpy(s1->buf + pos, bytes, len);
 	oystr_set_len(s1, newlen);
 
-	return 0;
+	return OYSTR_OK;
 }
 
 int
@@ -184,7 +226,7 @@ oystr_insert(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 	int err;
 
 	if (overflow_size_add(s1->len, len))
-		return -1;
+		return OYSTR_ERR;
 	if (0 != (err = oystr_ensure_size(s1, s1->len + len)))
 		return err;
 
@@ -195,7 +237,17 @@ oystr_insert(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 	memcpy(s1->buf + pos, bytes, len);
 	oystr_set_len(s1, s1->len + len);
 
-	return 0;
+	return OYSTR_OK;
+}
+
+int oystr_insert_uni(struct oystr *s1, size_t pos, uint32_t wc)
+{
+	int len;
+	char utf8_bytes[4];
+	if (0 == (len = oystr_utf8_from_utf32(utf8_bytes, wc))) {
+		return OYSTR_ERR;
+	}
+	return oystr_insert(s1, pos, utf8_bytes, len);
 }
 
 int
@@ -204,14 +256,24 @@ oystr_append(struct oystr *s1, const char *buf, size_t len)
 	int err;
 
 	if (overflow_size_add(s1->len, len))
-		return -1;
+		return OYSTR_ERR;
 	if (0 != (err = oystr_ensure_size(s1, s1->len + len)))
 		return err;
 
 	memcpy(s1->buf + s1->len, buf, len);
 	oystr_set_len(s1, s1->len + len);
 
-	return 0;
+	return OYSTR_OK;
+}
+
+int oystr_append_uni(struct oystr *s1, uint32_t wc)
+{
+	int len;
+	char utf8_bytes[4];
+	if (0 == (len = oystr_utf8_from_utf32(utf8_bytes, wc))) {
+		return OYSTR_ERR;
+	}
+	return oystr_append(s1, utf8_bytes, len);
 }
 
 void
@@ -256,7 +318,7 @@ size_t
 oystr_rstrip(struct oystr *s1, const char *bytes, size_t len)
 {
 	if (0 == s1->len)
-		return 0;
+		return OYSTR_OK;
 
 	size_t removed = 0;
 	char *begin = s1->buf + s1->len - 1;

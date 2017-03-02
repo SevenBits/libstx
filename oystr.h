@@ -1,10 +1,22 @@
 /* See LICENSE file for copyright and license details */
-#ifndef oystr_H
-#define oystr_H
+#ifndef OYSTR_H
+#define OYSTR_H
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdint.h>
 
+#define OYSTR_OK 0
+#define OYSTR_ERR -1
+
+/**
+ * The oystr structure for holding multibyte data.
+ *
+ * All of the fields in this struct are public and available for
+ * direct modification and assignment, just don't expect the oystr functions
+ * to behave correctly if you don't follow the same rules as the rest of the
+ * library when it comes to setting these fields.
+ */
 struct oystr {
     size_t len;
     size_t size;
@@ -79,6 +91,9 @@ oystr_insert_dup(struct oystr *s1, size_t pos)
 int
 oystr_append(struct oystr *s1, const char *buf, size_t len);
 
+int
+oystr_append_uni(struct oystr *s1, uint32_t wc);
+
 static inline int
 oystr_append_oystr(struct oystr *s1, const struct oystr *s2)
 {
@@ -105,5 +120,8 @@ oystr_lstrip(struct oystr *s1, const char *bytes, size_t len);
 
 size_t
 oystr_strip(struct oystr *s1, const char *bytes, size_t len);
+
+int
+oystr_utf8_from_utf32(char *bytes, uint32_t wc);
 
 #endif
