@@ -103,6 +103,8 @@ test_oystr_ensure_size()
 		ctest_assert(0 == s1.len);
 		ctest_assert(r <= s1.size);
 		oystr_deinit(&s1);
+		if (!ctest_ret)
+			break;
 	}
 	CTEST_END;
 }
@@ -153,6 +155,8 @@ test_oystr_set_len()
 		ctest_assert(i == s1.len);
 		ctest_assert('\0' == s1.buf[i]);
 		ctest_assert(20 <= s1.size);
+		if (!ctest_ret)
+			break;
 	}
 	CTEST_END;
 
@@ -172,6 +176,8 @@ test_oystr_assign()
 		ctest_assert(0 == strncmp(s1.buf, "hello world", i));
 		ctest_assert(i == s1.len);
 		ctest_assert(i <= s1.size);
+		if (!ctest_ret)
+			break;
 	}
 	CTEST_END;
 
@@ -283,6 +289,8 @@ test_oystr_trunc()
 		ctest_assert(tstring[10-i] == oystr_trunc(&s1, 1));
 		ctest_assert(10 - i == s1.len);
 		ctest_assert(11 <= s1.size);
+		if (ctest_ret)
+			break;
 	}
 	ctest_assert('\0' == oystr_trunc(&s1, 20));
 	CTEST_END;
@@ -378,6 +386,52 @@ test_oystr_slice()
 	oystr_deinit(&s1);
 }
 
+// Function to validate if a utf32 character is invalid character
+static int is_non_character(unsigned int ch)
+{
+}
+
+void
+test_oystr_utf8_from_utf32()
+{
+	int i;
+	struct oystr s1;
+	char bytes[4];
+
+	oystr_init_buf(&s1, 12);
+	CTEST_BEGIN;
+	// Simple case for ASCII
+	for (i=0; i<127; ++i) {
+		ctest_assert(1 == oystr_utf8_from_utf32(bytes, i));
+		ctest_assert(bytes[0] == i);
+		if (!ctest_ret)
+			goto failure;
+	}
+	// 2-byte utf8
+	for (i=161; i<0x800; ++i) {
+		ctest_assert(2 == oystr_utf8_from_utf32(bytes, i));
+		if (!ctest_ret)
+			goto failure;
+	}
+	/*
+	// 3-byte utf8
+	for (;;) {
+		ctest_assert(4 == oystr_utf8_from_utf32(bytes, i));
+		if (!ctest_ret)
+			goto failure;
+	}
+	// 4-byte utf8
+	for (;;) {
+		ctest_assert(4 == oystr_utf8_from_utf32(bytes, i));
+		if (!ctest_ret)
+			goto failure;
+	}
+	*/
+failure:
+	CTEST_END;
+	oystr_deinit(&s1);
+}
+
 int
 main()
 {
@@ -405,6 +459,8 @@ main()
 	test_oystr_strip();
 
 	test_oystr_slice();
+
+	test_oystr_utf8_from_utf32();
 
 	ctest_summary();
 	return !(ctest_passed == ctest_total);
