@@ -11,4 +11,4 @@ LDFLAGS=
 
 # Compiler settings
 CC=cc
-CFLAGS=-std=c99 -pedantic -Os -Wall -Wextra -static
+CFLAGS=-std=c99 -pedantic -O2 -Wall -Wextra -static
