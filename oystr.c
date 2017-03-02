@@ -120,15 +120,15 @@ oystr_deinit(struct oystr *s1)
 	s1->len = 0;
 }
 
-int 
+bool
 oystr_valid(struct oystr *s1)
 {
 	if (!s1)
-		return OYSTR_ERR;
+		return false;
 	if (!s1->buf || s1->size < s1->len)
-		return OYSTR_ERR;
+		return false;
 
-	return OYSTR_OK;
+	return true;
 }
 
 int

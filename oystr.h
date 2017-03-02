@@ -23,6 +23,12 @@ struct oystr {
     char *buf;
 };
 
+/**
+ * Check how much space is available in @s1->buf.
+ *
+ * The space leftover is the amount of uninitialized memory after
+ * s1->buf+s1->len+1.
+ */
 static inline size_t oystr_avail(struct oystr *s1)
 {
     return s1->size ? s1->size - s1->len - 1 : 0;
