@@ -73,5 +73,6 @@ uninstall:
 test: test.c ${OBJ} ${HEADER}
 	@printf "CC $<\n"
 	@${CC} -o $@ test.c ${OBJ} ${LDFLAGS}
+	@./test
 
 .PHONY: all options clean dist install uninstall

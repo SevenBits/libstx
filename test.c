@@ -133,8 +133,8 @@ test_oystr_valid()
 	assert(0 == oystr_init_buf(&s2, 10));
 
 	CTEST_BEGIN;
-	ctest_assert(0 > oystr_valid(s1));
-	ctest_assert(0 == oystr_valid(&s2));
+	ctest_assert(false == oystr_valid(s1));
+	ctest_assert(true == oystr_valid(&s2));
 	CTEST_END;
 
 	oystr_deinit(&s2);
