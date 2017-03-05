@@ -1,14 +1,14 @@
-VERSION=0.0.0
+VERSION = 0.0.0
 
 # System paths
-PREFIX=/usr/local
-MANPREFIX=${PREFIX}/man
-LIBPREFIX=${PREFIX}/lib
-INCLUDEPREFIX=${PREFIX}/include
+PREFIX = /usr/local
+MANPREFIX = ${PREFIX}/man
+LIBPREFIX = ${PREFIX}/lib
+INCLUDEPREFIX = ${PREFIX}/include
 
 # Linking flags
-LDFLAGS=
+LDFLAGS = -s
 
 # Compiler settings
-CC=cc
-CFLAGS=-std=c99 -pedantic -O2 -Wall -Wextra -static
+CC = cc
+CFLAGS = -std=c99 -pedantic -O2 -Wall -Wextra -static

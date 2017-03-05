@@ -3,15 +3,40 @@
 
 include config.mk
 
-TARGET=liboystr.a
-MANPAGE=oystr.3
+CFLAGS := -I .
 
-SRC=oystr.c
-HEADER=oystr.h
-OBJ=${SRC:.c=.o}
+SRC_DIR = src
+FUN =\
+	oystr_append\
+	oystr_assign\
+	oystr_deinit\
+	oystr_ensure_size\
+	oystr_eq\
+	oystr_find\
+	oystr_init\
+	oystr_insert\
+	oystr_set_len\
+	oystr_slice\
+	oystr_strip\
+	oystr_swap\
+	oystr_trunc\
+	oystr_utf8_from_utf32\
+	oystr_valid\
+	oystr_write
 
-DIST=$(basename ${TARGET})-${VERSION}
-DIST_FILES=${SRC} Makefile README config.mk
+FUN_INLINE =\
+	oystr_avail
+
+SRC = ${FUN:=.c}
+OBJ = ${FUN:=.o}
+MAN3 = ${FUN:=.3} ${FUN_INLINE:=.3}
+MAN7 = ${TARGET:=.7}
+
+HDR = oystr.h src/internal.h
+TARGET = liboystr.a
+
+DIST = $(basename ${TARGET})-${VERSION}
+DIST_FILES = ${SRC_DIR} ${MAN_DIR} ${HDR} Makefile README config.mk test.c
 
 all: ${TARGET}
 
@@ -21,16 +46,21 @@ options: config.mk
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "CC      = ${CC}\n"
 
-.c.o:
+%.o: ${SRC_DIR}/%.c ${HDR} config.mk
 	@printf "CC $<\n"
-	@${CC} -c ${CFLAGS} $<
+	@${CC} ${CFLAGS} -c $<
 
-${OBJ}: config.mk
-
-${TARGET}: ${OBJ} ${HEADER}
+${TARGET}: ${OBJ}
 	@printf "Creating library archive ... "
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
+
+test: test.c ${TARGET}
+	@printf "CC $<\n"
+	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ test.c ${TARGET}
+
+check: test
+	@./test
 
 clean:
 	@printf "Cleaning ... "
@@ -52,7 +82,7 @@ install: all
 	@cp -f ${TARGET} ${DESTDIR}${LIBPREFIX}
 	@printf "Installing library header to ${DESTDIR}${INCLUDEPREFIX}.\n"
 	@mkdir -p ${DESTDIR}${INCLUDEPREFIX}
-	@cp -f ${HEADER} ${DESTDIR}${INCLUDEPREFIX}
+	@cp -f ${HDR} ${DESTDIR}${INCLUDEPREFIX}
 	@printf "Installing manual page to ${DESTDIR}${MANPREFIX}/man3\n."
 	@mkdir -p ${DESTDIR}${MANPREFIX}/man3
 	@cp -f ${MANPAGE} ${DESTDIR}${MANPREFIX}/man3
@@ -62,17 +92,10 @@ uninstall:
 	@printf "Removing library archive from ${DESTDIR}${LIBPREFIX}.\n"
 	@rm -f ${DESTDIR}${LIBPREFIX}/${TARGET}
 	@printf "Removing library header from ${DESTDIR}${INCLUDEPREFIX}.\n"
-	@rm -f ${DESTDIR}${PREFIX}/include/${HEADER}
+	@rm -f ${DESTDIR}${PREFIX}/include/${HDR}
 	@printf "Removing manual page from ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}.\n"
 	@rm -f ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
 
-#------------------------------------------------------------------------------
-# Testing section
-#------------------------------------------------------------------------------
-
-test: test.c ${OBJ} ${HEADER}
-	@printf "CC $<\n"
-	@${CC} -o $@ test.c ${OBJ} ${LDFLAGS}
-	@./test
+#man -t $< | ps2pdf - $@.pdf
 
 .PHONY: all options clean dist install uninstall

@@ -1,18 +1,13 @@
-/**
- * struct oystr - Structure for holding '\0'-terminated byte arrays.
- * @len             The length of used bytes in 'buf'.
- * @size            The allocated size of 'buf'.
- * @buf             The character buffer.
- *
- * All fields in the oystr struct are "public" and available for
- * direct modification and assignment. However, do not expect the 
- * functions supplied with oystr to behave correctly if the fields don't
- * are not consistent.
- *
- * An example of an inconsistent modification that will break many oystr
- * functions is something like changing the 'size' field without changing the
- * actually allocated length of 'buf'.
- */
+.TH OYSTR_APPEND 3 liboystr
+.SH NAME
+oystr_append - append arbitrary bytes to an oystr.
+.SH SYNOPSIS
+.nf
+#include <oystr.h>
+
+int oystr_append(struct oystr \fI*s1\fP, char \fI*bytes\fP, size_t \fIlen\fP);
+.fi
+.SH DESCRIPTION
 
 /**
  * oystr_avail() - Check how much space is available in an oystr.

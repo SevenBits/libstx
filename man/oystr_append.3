@@ -1,0 +1,39 @@
+.TH OYSTR_APPEND 3 liboystr
+.SH NAME
+oystr_append, oystr_append_oystr, oystr_append_uni, oystr_append_dup - append
+to an oystr.
+.SH SYNOPSIS
+.nf
+#include <oystr.h>
+
+int oystr_append(struct oystr *\fIs1\fP, const char *\fIbytes\fP, size_t \fIlen\fP);
+
+int oystr_append_oystr(struct oystr *\fIs1\fP, const struct oystr *\fIs2\fP);
+
+int oystr_append_uni(struct oystr *\fIs1\fP, uint32_t \fIwc\fP);
+
+int oystr_append_dup(struct oystr *\fIs1\fP);
+.fi
+.SH DESCRIPTION
+.B oystr_append()
+appends
+.I len
+bytes from
+.I bytes
+to
+.IR s1 .
+.P
+.B oystr_append_oystr()
+appends
+.I s2
+to
+.IR s1 .
+.P
+.B oystr_append_uni()
+converts
+.I wc
+from a utf32 representation of unicode character to it's corresponding utf8
+byte sequence. It then appends that utf8 byte sequence to
+.IR s1 .
+.SH SEE ALSO
+.BR liboystr (7)
