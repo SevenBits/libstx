@@ -18,7 +18,7 @@ oystr_append(struct oystr *s1, const char *buf, size_t len)
 	int err;
 
 	if (overflow_size_add(s1->len, len))
-		return OYSTR_ERR;
+		return OYSTR_OVERFLOW;
 	if (0 != (err = oystr_ensure_size(s1, s1->len + len)))
 		return err;
 

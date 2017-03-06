@@ -10,6 +10,9 @@
 #define OYSTR_OK 0
 // Return value for a malfunction.
 #define OYSTR_ERR -1
+// If the length field would've overflowed, it is instead set to SIZE_MAX and
+// this value is returned.
+#define OYSTR_OVERFLOW -2
 
 struct oystr {
     size_t len;

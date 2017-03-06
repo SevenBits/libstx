@@ -8,7 +8,7 @@ oystr_ensure_size(struct oystr *s1, size_t size)
 	char *tmp;
 
 	if (overflow_size_add(size, 1))
-		return OYSTR_ERR;
+		return OYSTR_OVERFLOW;
 	size += 1;
 
 	// Find the nearest power of two that can fit size.

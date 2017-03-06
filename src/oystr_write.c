@@ -8,11 +8,11 @@ oystr_write(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 
 	if (pos > s1->len) {
 		if (overflow_size_add(pos, len))
-			return OYSTR_ERR;
+			return OYSTR_OVERFLOW;
 		newlen = pos + len;
 	} else {
 		if (overflow_size_add(s1->len - pos, len))
-			return OYSTR_ERR;
+			return OYSTR_OVERFLOW;
 		newlen = (s1->len - pos + len) + 1;
 	}
 
