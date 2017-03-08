@@ -386,11 +386,6 @@ test_oystr_slice()
 	oystr_deinit(&s1);
 }
 
-// Function to validate if a utf32 character is invalid character
-static int is_non_character(unsigned int ch)
-{
-}
-
 void
 test_oystr_utf8_from_utf32()
 {
