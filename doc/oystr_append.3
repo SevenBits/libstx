@@ -35,5 +35,16 @@ converts
 from a utf32 representation of unicode character to it's corresponding utf8
 byte sequence. It then appends that utf8 byte sequence to
 .IR s1 .
+.SH RETURN VALUE
+.BR oystr_append() ,
+.BR oystr_append_oystr() ,
+.BR oystr_append_uni() ,
+and
+.B oystr_append_dup()
+return OYSTR_OK upon successful appendation, or OYSTR_ERR if reallocation for
+.I s1->buf
+failed, or OYSTR_OVERFLOW if
+.I size
++ 1 reached the maximum size of a size_t (SIZE_MAX).
 .SH SEE ALSO
 .BR liboystr (7)
