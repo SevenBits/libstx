@@ -427,6 +427,7 @@ failure:
 	oystr_deinit(&s1);
 }
 
+void
 test_oystr_printf()
 {
 	struct oystr s1;
