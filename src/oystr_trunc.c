@@ -5,7 +5,7 @@ char
 oystr_trunc(struct oystr *s1, size_t len)
 {
 	if (len > s1->len) {
-		oystr_set_len(s1, 0);
+		oystr_setlen(s1, 0);
 		return '\0';
 	}
 
@@ -13,7 +13,7 @@ oystr_trunc(struct oystr *s1, size_t len)
 		return '\0';
 
 	char ret = s1->buf[s1->len - 1];
-	oystr_set_len(s1, s1->len - len);
+	oystr_setlen(s1, s1->len - len);
 
 	return ret;
 }

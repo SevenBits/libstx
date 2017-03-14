@@ -16,7 +16,7 @@ oystr_lstrip(struct oystr *s1, const char *bytes, size_t len)
 	if (begin != end)
 		memmove(s1->buf, begin, s1->len - removed);
 
-	oystr_set_len(s1, s1->len - removed);
+	oystr_setlen(s1, s1->len - removed);
 	return removed;
 }
 
@@ -35,7 +35,7 @@ oystr_rstrip(struct oystr *s1, const char *bytes, size_t len)
 		--begin;
 	}
 
-	oystr_set_len(s1, s1->len - removed);
+	oystr_setlen(s1, s1->len - removed);
 	return removed;
 }
 

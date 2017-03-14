@@ -15,7 +15,8 @@ FUN =\
 	oystr_find\
 	oystr_init\
 	oystr_insert\
-	oystr_set_len\
+	oystr_printf\
+	oystr_setlen\
 	oystr_slice\
 	oystr_strip\
 	oystr_swap\

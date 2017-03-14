@@ -2,7 +2,7 @@
 #include "internal.h"
 
 int
-oystr_set_len(struct oystr *s1, size_t len)
+oystr_setlen(struct oystr *s1, size_t len)
 {
 	if (len > (s1->size ? s1->size - 1 : 0)) {
 			return OYSTR_ERR;

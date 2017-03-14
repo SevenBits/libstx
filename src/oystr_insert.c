@@ -27,7 +27,7 @@ oystr_insert(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 		memmove(s1->buf + pos + len, s1->buf + pos, s1->len - pos);
 
 	memcpy(s1->buf + pos, bytes, len);
-	oystr_set_len(s1, s1->len + len);
+	oystr_setlen(s1, s1->len + len);
 
 	return OYSTR_OK;
 }

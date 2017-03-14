@@ -141,7 +141,7 @@ test_oystr_valid()
 }
 
 void
-test_oystr_set_len()
+test_oystr_setlen()
 {
 	int i;
 	int ret;
@@ -151,7 +151,7 @@ test_oystr_set_len()
 
 	CTEST_BEGIN;
 	for (i=0; i<20; ++i) {
-		ctest_assert(0 == oystr_set_len(&s1, i));
+		ctest_assert(0 == oystr_setlen(&s1, i));
 		ctest_assert(i == s1.len);
 		ctest_assert('\0' == s1.buf[i]);
 		ctest_assert(20 <= s1.size);
@@ -427,6 +427,16 @@ failure:
 	oystr_deinit(&s1);
 }
 
+test_oystr_printf()
+{
+	struct oystr s1;
+	oystr_init(&s1);
+	CTEST_BEGIN;
+	ctest_assert(25 == oystr_snprintf(&s1, 26, "Hello %s, how are you?", "world"));
+	CTEST_END;
+	oystr_deinit(&s1);
+}
+
 int
 main()
 {
@@ -437,7 +447,7 @@ main()
 	test_oystr_ensure_size();
 	test_oystr_init_buf();
 	test_oystr_valid();
-	test_oystr_set_len();
+	test_oystr_setlen();
 
 	test_oystr_assign();
 	test_oystr_append();
@@ -456,6 +466,8 @@ main()
 	test_oystr_slice();
 
 	test_oystr_utf8_from_utf32();
+
+	test_oystr_printf();
 
 	ctest_summary();
 	return !(ctest_passed == ctest_total);
