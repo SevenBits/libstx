@@ -21,7 +21,7 @@ oystr_write(struct oystr *s1, size_t pos, const char *bytes, size_t len)
 		return err;
 
 	memcpy(s1->buf + pos, bytes, len);
-	oystr_set_len(s1, newlen);
+	oystr_setlen(s1, newlen);
 
 	return OYSTR_OK;
 }

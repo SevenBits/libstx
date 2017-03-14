@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 // Return value for well behaved functions.
 #define OYSTR_OK 0
@@ -42,7 +43,7 @@ bool
 oystr_valid(struct oystr *s1);
 
 int
-oystr_set_len(struct oystr *s1, size_t len);
+oystr_setlen(struct oystr *s1, size_t len);
 
 bool
 oystr_eq(const struct oystr *s1, const struct oystr *s2);
@@ -55,6 +56,12 @@ oystr_trunc(struct oystr *s1, size_t len);
 
 int
 oystr_assign(struct oystr *s1, const char *bytes, size_t len);
+
+static inline int
+oystr_assign_cstr(struct oystr *s1, const char *bytes)
+{
+	return oystr_assign(s1, bytes, strlen(bytes));
+}
 
 static inline int
 oystr_assign_oystr(struct oystr *s1, const struct oystr *s2)
@@ -76,6 +83,14 @@ oystr_write_oystr(struct oystr *s1, size_t pos, const struct oystr *s2)
 int
 oystr_insert(struct oystr *s1, size_t pos, const char *bytes, size_t len);
 
+int oystr_insert_uni(struct oystr *s1, size_t pos, uint32_t wc);
+
+static inline int
+oystr_insert_cstr(struct oystr *s1, size_t pos, const char *bytes)
+{
+	return oystr_insert(s1, pos, bytes, strlen(bytes));
+}
+
 static inline int
 oystr_insert_oystr(struct oystr *s1, size_t pos, const struct oystr *s2)
 {
@@ -94,6 +109,12 @@ oystr_append(struct oystr *s1, const char *buf, size_t len);
 
 int
 oystr_append_uni(struct oystr *s1, uint32_t wc);
+
+static inline int
+oystr_append_cstr(struct oystr *s1, const char *bytes)
+{
+	return oystr_append(s1, bytes, strlen(bytes));
+}
 
 static inline int
 oystr_append_oystr(struct oystr *s1, const struct oystr *s2)
@@ -116,5 +137,8 @@ size_t oystr_strip(struct oystr *s1, const char *bytes, size_t len);
 
 // Utilities that don't necessarily operate on an oystr.
 int oystr_utf8_from_utf32(char *bytes, uint32_t wc);
+
+// sprintf family function wrappers.
+int oystr_snprintf(struct oystr *s1, size_t size, const char *fmt, ...);
 
 #endif

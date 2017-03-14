@@ -1,0 +1,31 @@
+.TH OYSTR_APPEND 3 liboystr
+.SH NAME
+oystr_ensure_size - Ensure a minimum size of the allocated oystr buffer.
+to an oystr.
+.SH SYNOPSIS
+.nf
+#include <oystr.h>
+
+int oystr_ensure_size(struct oystr *s1, size_t size);
+
+.fi
+.SH DESCRIPTION
+.B oystr_ensure_size()
+checks if
+.I s1->buf
+can contain at least
+.I size
+bytes. If
+.I s1->buf
+cannot contain the requested amount of bytes, it will be resized to hold at
+least that many bytes. Otherwise, nothing will be done to
+.IR s1 .
+.SH RETURN VALUE
+.BR oystr_ensure_size() ,
+returns OYSTR_OK upon a successful resize, or OYSTR_ERR if resizing of
+.I s1->buf
+failed, or OYSTR_OVERFLOW if
+.I size
++ 1 reached the maximum size of a size_t (SIZE_MAX).
+.SH SEE ALSO
+.BR liboystr (7)
