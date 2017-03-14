@@ -7,3 +7,6 @@ caveats).
 The library aims to be simple and optimized for statically linking, as each
 function is compiled to seperate object files which then compose the library
 archive.
+
+Further documentation can be found in the man-pages found in this repository
+under "doc/".
