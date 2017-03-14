@@ -1,0 +1,34 @@
+.TH OYSTR_INIT 3 liboystr
+.SH NAME
+oystr_init, oystr_init_buf - Initialize the fields of an oystr.
+.SH SYNOPSIS
+.nf
+#include <oystr.h>
+
+void oystr_init(struct oystr *s1, size_t size);
+
+int oystr_init_buf(struct oystr *s1, size_t size);
+
+.fi
+.SH DESCRIPTION
+.B oystr_init()
+Sets all fields of an oystr to 0/NULL. If
+.I s1
+contains any heap allocated memory, it will be leaked unless there were any
+other references to it. It will not be freed.
+.P
+.B oystr_init_buf()
+Sets all fields of an oystr to 0/NULL, but also allocates at least
+.I size
+bytes of memory for
+.IR s1->buf .
+.SH RETURN VALUE
+.BR oystr_init_buf()
+returns OYSTR_OK upon successful initialization, or OYSTR_ERR if allocation for
+.I s1->buf
+failed, or OYSTR_OVERFLOW if
+.I size
++ 1 reached the maximum size of a size_t (SIZE_MAX).
+.SH SEE ALSO
+.BR liboystr (7),
+.BR oystr_ensure_size (7),
