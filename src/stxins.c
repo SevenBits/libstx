@@ -6,7 +6,7 @@ stxins(stx *sp, size_t pos, const char *bytes, size_t len)
 {
 	int err;
 
-	if (overflow_size_add(len, 1))
+	if (size_add_overflows(len, 1))
 		return ESTX_OVERFLOW;
 
 	err = stxgrow(sp, len + 1);
