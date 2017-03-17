@@ -35,7 +35,7 @@ bool stxvalid(stx *sp);
 // Various utility
 int stxterm(stx *sp, size_t len);
 bool stxeq(const stx *s1, const stx *s2);
-void stx_swap(stx *s1, stx *s2);
+void stxswap(stx *s1, stx *s2);
 char stxtrunc(stx *sp, size_t len);
 int stxdup(stx *sp, stx *src);
 int stxcpy(stx *sp, const char *src, size_t len);
