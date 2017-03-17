@@ -25,11 +25,11 @@ stxavail(stx *sp)
 {
     return sp->size ? sp->size - sp->len - 1 : 0;
 }
-int stxnew(stx *sp, size_t size);
+int stxnew(stx *sp, size_t n);
 void stdel(stx *sp);
 
-int stxgrow(stx *sp, size_t size);
-int stxgexp(stx *sp, size_t size);
+int stxgrow(stx *sp, size_t n);
+int stxensure_size(stx *sp, size_t n);
 bool stxvalid(stx *sp);
 
 // Various utility
@@ -37,8 +37,8 @@ int stxterm(stx *sp, size_t len);
 bool stxeq(const stx *s1, const stx *s2);
 void stxswap(stx *s1, stx *s2);
 char stxtrunc(stx *sp, size_t len);
-int stxdup(stx *sp, stx *src);
 int stxcpy(stx *sp, const char *src, size_t len);
+int stxdup(stx *sp, const stx *src);
 
 // Insertion
 int stxins(stx *sp, size_t pos, const char *src, size_t len);
@@ -75,11 +75,11 @@ stxappdup(stx *sp)
 // Python inspired utilities.
 void stxslice(stx *slice, stx *sp, size_t begin, size_t end);
 bool stxfind(stx *slice, stx *sp, const char *src, size_t len);
-size_t stxstripr(stx *sp, const char *chs, size_t len);
-size_t stxstripl(stx *sp, const char *chs, size_t len);
+size_t stxrstrip(stx *sp, const char *chs, size_t len);
+size_t stxlstrip(stx *sp, const char *chs, size_t len);
 size_t stxstrip(stx *sp, const char *chs, size_t len);
 
-// Utilities that don't necessarily operate on an oystr.
+// Other library utilites
 int stxuni8f32(char *dst, uint32_t wc);
 
 #endif

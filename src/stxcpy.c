@@ -2,7 +2,7 @@
 #include "internal.h"
 
 int
-stxcpy(stx *sp, char *src, size_t len)
+stxcpy(stx *sp, const char *src, size_t len)
 {
 	int err;
 	if (sp->len < len) { 
@@ -10,7 +10,7 @@ stxcpy(stx *sp, char *src, size_t len)
 		if (err)
 			return err;
 	}
-	memcpy(sp, src, len)
+	memcpy(sp, src, len);
 	stxterm(sp, len);
 	return 0;
 }

@@ -2,9 +2,13 @@
 #include "internal.h"
 
 int
-stxdup(stx *dst, stx *src)
+stxdup(stx *dst, const stx *src)
 {
-	stxnew(dst, src->len);
-	stxcpy(dst, src->mem, src->len);
-	return 0;
+	int err;
+
+	err = stxnew(dst, src->len);
+	if (err)
+		return err;
+
+	return stxcpy(dst, src->mem, src->len);
 }
