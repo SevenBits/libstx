@@ -2,19 +2,15 @@
 #include "internal.h"
 
 int
-stxnew(stx *s1, size_t size)
+stxnew(stx *sp, size_t n)
 {
 	int err;
 
-	memset(s1, 0, sizeof(*s1));
-
-	if (size_add_overflows(size, 1))
-		return ESTX_OVERFLOW;
-
-	err = stxgrow(s1, size + 1);
+	memset(sp, 0, sizeof(*sp));
+	err = stxgrow(sp, n);
 	if (err)
 		return err;
 
-	*s1->mem = '\0';
+	*sp->mem = '\0';
 	return 0;
 }
