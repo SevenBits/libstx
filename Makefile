@@ -8,6 +8,7 @@ CFLAGS := -I .
 SRC_DIR = src
 FUN =\
 	stxapp\
+	stxcpy\
 	stxdel\
 	stxdup\
 	stxensure_size\
@@ -55,9 +56,9 @@ ${TARGET}: ${OBJ}
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
-test: test.c ${TARGET}
+test: test.c ${TARGET} ${OBJ}
 	@printf "CC $<\n"
-	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ test.c ${TARGET}
+	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ test.c ${OBJ}
 
 check: test
 	@./test
