@@ -7,19 +7,22 @@
 #include <stdbool.h>
 #include <assert.h>
 
-static int ctest_ret = 0;
-#define ctest_assert(x) (ctest_ret = ctest_ret && (x))
+static int ctest_ok = 1;
+#define ctest_assert(x) _ctest_assert(__func__, __LINE__, (x))
 #define CTEST_BEGIN (ctest_begin(__func__))
 #define CTEST_END (ctest_end())
 
 static int ctest_passed = 0;
 static int ctest_total = 0;
 
-struct ctest {
-	int ret;
-	int passed;
-	int total;
-};
+int
+_ctest_assert(const char *func, int line, int x)
+{
+	ctest_ok = ctest_ok && x;
+	if (!ctest_ok)
+		fprintf(stderr, "Failed assertion in '%s', line %d.\n", func, line);
+	return ctest_ok;
+}
 
 void
 ctest_intro()
@@ -31,16 +34,16 @@ void
 ctest_begin(const char *name)
 {
 	++ctest_total;
-	ctest_ret = 1;
+	ctest_ok = 1;
 	printf("- Testing %s ... ", name);
 }
 
 void
 ctest_end()
 {
-	if (ctest_ret)
+	if (ctest_ok)
 		++ctest_passed;
-	printf("%s\n", ctest_ret ? "pass" : "fail");
+	printf("%s\n", ctest_ok ? "pass" : "fail");
 }
 
 void
@@ -84,23 +87,23 @@ test_stxdel()
 void
 test_stxgrow()
 {
-	stx s1;
 	int i;
 	int r;
+	stx s1;
 
-	r = 0;
 	memset(&s1, 0, sizeof(s1));
 	CTEST_BEGIN;
-	for (i=0; i<362; ++i) {
-		stxgrow(&s1, i);
-		if (ctest_assert(s1.mem)
-		|| ctest_assert(0 == s1.len)
-		|| ctest_assert(r == s1.size)) {
+	for (i = 1; i < 1025; ++i) {
+		// 0 as a random value is NOT ok.
+		r = 1 + (rand() % 65535);
+		ctest_assert(0 == stxgrow(&s1, r));
+		ctest_assert(NULL != s1.mem);
+		ctest_assert(0 == s1.len);
+		ctest_assert(r == s1.size);
+		if (!ctest_ok)
 			break;
-		}
-		r += i;
+		stxdel(&s1);
 	}
-	stxdel(&s1);
 	CTEST_END;
 }
 
@@ -110,18 +113,17 @@ test_stxensure_size()
 	int r;
 	stx s1;
 
-	r = 0;
 	memset(&s1, 0, sizeof(s1));
 	CTEST_BEGIN;
-	for (i = 0; i < 100; ++i) {
-		// 0 as a random value should be ok here.
-		r = rand() % 65536;
-		stxensure_size(&s1, r);
-		if (ctest_assert(s1.mem)
-		|| ctest_assert(0 == s1.len)
-		|| ctest_assert(r <= s1.size)) {
+	for (i = 1; i < 1025; ++i) {
+		// 0 as a random value is NOT ok.
+		r = 1 + (rand() % 65535);
+		ctest_assert(0 == stxensure_size(&s1, r));
+		ctest_assert(NULL != s1.mem);
+		ctest_assert(0 == s1.len);
+		ctest_assert(r <= s1.size);
+		if (!ctest_ok)
 			break;
-		}
 	}
 	stxdel(&s1);
 	CTEST_END;
@@ -131,16 +133,20 @@ void
 test_stxnew()
 {
 	int i;
+	int r;
 	stx s1;
 
 	CTEST_BEGIN;
-	for (i = 0; i < 65536; ++i) {
-		stxnew(&s1, i);
-		if (ctest_assert(s1.mem)
-		|| ctest_assert(0 == s1.len)
-		|| ctest_assert(i == s1.size)) {
+	for (i = 1; i < 1025; ++i) {
+		// 0 as a random value is NOT ok.
+		r = 1 + (rand() % 65535);
+		ctest_assert(0 == stxnew(&s1, i));
+		ctest_assert(NULL != s1.mem);
+		ctest_assert(0 == s1.len);
+		ctest_assert(i == s1.size);
+		stxdel(&s1);
+		if (!ctest_ok)
 			break;
-		}
 		stxdel(&s1);
 	}
 	CTEST_END;
