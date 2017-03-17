@@ -1,7 +1,7 @@
-oystr is a simple C string library focused on being easy to use, fast, and
+libstx is a simple C string library focused on being easy to use, fast, and
 compatible with standard C-style strings. This is accomplished by fully exposing the
-oystr struct, and allowing both stack allocated and dynamically allocated
-oystr objects to work for any function provided by the library (with some
+libstx struct, and allowing both stack allocated and dynamically allocated
+libstx objects to work for any function provided by the library (with some
 caveats).
 
 The library aims to be simple and optimized for statically linking, as each
