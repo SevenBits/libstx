@@ -1,4 +1,4 @@
-# oystr - oystring library
+# stx - stxing library
 # See LICENSE file for copyright and license details.
 
 include config.mk
@@ -7,34 +7,33 @@ CFLAGS := -I .
 
 SRC_DIR = src
 FUN =\
-	oystr_append\
-	oystr_assign\
-	oystr_deinit\
-	oystr_ensure_size\
-	oystr_eq\
-	oystr_find\
-	oystr_init\
-	oystr_insert\
-	oystr_printf\
-	oystr_setlen\
-	oystr_slice\
-	oystr_strip\
-	oystr_swap\
-	oystr_trunc\
-	oystr_utf8_from_utf32\
-	oystr_valid\
-	oystr_write
+	stxapp\
+	stxdel\
+	stxdup\
+	stxensure_size\
+	stxeq\
+	stxfind\
+	stxgrow\
+	stxins\
+	stxnew\
+	stxslice\
+	stxstrip\
+	stxswap\
+	stxterm\
+	stxtrunc\
+	stxuni8f32\
+	stxvalid\
 
 FUN_INLINE =\
-	oystr_avail
+	stxavail
 
 SRC = ${FUN:=.c}
 OBJ = ${FUN:=.o}
 MAN3 = ${FUN:=.3} ${FUN_INLINE:=.3}
 MAN7 = ${TARGET:=.7}
 
-HDR = oystr.h src/internal.h
-TARGET = liboystr.a
+HDR = libstx.h src/internal.h
+TARGET = libstx.a
 
 DIST = $(basename ${TARGET})-${VERSION}
 DIST_FILES = ${SRC_DIR} ${MAN_DIR} ${HDR} Makefile README config.mk test.c

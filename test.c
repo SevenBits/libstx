@@ -1,4 +1,4 @@
-#include "oystr.h"
+#include "libstx.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -55,97 +55,120 @@ ctest_summary()
 // Begin unit test section
 // ----------------------------------------------------------------------------
 
-void
-test_oystr_init()
-{
-	struct oystr s1;
-
-	CTEST_BEGIN;
-	oystr_init(&s1);
-	ctest_assert(NULL == s1.buf);
-	ctest_assert(0 == s1.len);
-	ctest_assert(0 == s1.size);
-	CTEST_END;
-}
+static char teststr0[] = "";
+static char teststr1[] = "c";
+static char teststr2[] = "hello world";
+static char teststr3[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static char teststr4[] = "\0hello world\r\n\0";
+static char teststr5[] = "lxjistriplxjimelxji";
+static char teststr6[] = "    strip me      ";
 
 void
-test_oystr_deinit()
+test_stxdel()
 {
-	struct oystr s1;
-	s1.buf = malloc(2);
-	s1.buf[0] = 1;
-	s1.buf[1] = 2;
+	stx s1;
+	s1.mem = malloc(2);
+	s1.mem[0] = 1;
+	s1.mem[1] = 2;
 	s1.len = 1;
 	s1.size = 2;
 
 	CTEST_BEGIN;
-	oystr_deinit(&s1);
-	ctest_assert(NULL == s1.buf);
+	stxdel(&s1);
+	ctest_assert(NULL == s1.mem);
 	ctest_assert(0 == s1.len);
 	ctest_assert(0 == s1.size);
 	CTEST_END;
 }
 
 void
-test_oystr_ensure_size()
+test_stxgrow()
 {
-	int r;
+	stx s1;
 	int i;
-	struct oystr s1;
-	oystr_init(&s1);
+	int r;
 
+	r = 0;
+	memset(&s1, 0, sizeof(s1));
 	CTEST_BEGIN;
-	for (i=0; i<100; ++i) {
+	for (i=0; i<362; ++i) {
+		stxgrow(&s1, i);
+		if (ctest_assert(s1.mem)
+		|| ctest_assert(0 == s1.len)
+		|| ctest_assert(r == s1.size)) {
+			break;
+		}
+		r += i;
+	}
+	stxdel(&s1);
+	CTEST_END;
+}
+
+test_stxensure_size()
+{
+	int i;
+	int r;
+	stx s1;
+
+	r = 0;
+	memset(&s1, 0, sizeof(s1));
+	CTEST_BEGIN;
+	for (i = 0; i < 100; ++i) {
 		// 0 as a random value should be ok here.
 		r = rand() % 65536;
-		oystr_ensure_size(&s1, r);
-		ctest_assert(s1.buf);
-		ctest_assert(0 == s1.len);
-		ctest_assert(r <= s1.size);
-		oystr_deinit(&s1);
-		if (!ctest_ret)
+		stxensure_size(&s1, r);
+		if (ctest_assert(s1.mem)
+		|| ctest_assert(0 == s1.len)
+		|| ctest_assert(r <= s1.size)) {
 			break;
+		}
+	}
+	stxdel(&s1);
+	CTEST_END;
+}
+
+void
+test_stxnew()
+{
+	int i;
+	stx s1;
+
+	CTEST_BEGIN;
+	for (i = 0; i < 65536; ++i) {
+		stxnew(&s1, i);
+		if (ctest_assert(s1.mem)
+		|| ctest_assert(0 == s1.len)
+		|| ctest_assert(i == s1.size)) {
+			break;
+		}
+		stxdel(&s1);
 	}
 	CTEST_END;
 }
 
 void
-test_oystr_init_buf()
+test_stxvalid()
 {
-	struct oystr s1;
+	stx *s1 = NULL;
+	stx s2;
+
+	assert(0 == stxnew(&s2, 10));
 
 	CTEST_BEGIN;
-	ctest_assert(0 == oystr_init_buf(&s1, 20));
-	ctest_assert(NULL != s1.buf);
-	ctest_assert(0 == s1.len);
-	ctest_assert(20 <= s1.size);
+	ctest_assert(false == stxvalid(s1));
+	ctest_assert(true == stxvalid(&s2));
 	CTEST_END;
 
-	oystr_deinit(&s1);
+	stxdel(&s2);
 }
 
+/*
 void
-test_oystr_valid()
-{
-	struct oystr *s1 = NULL;
-	struct oystr s2;
-
-	assert(0 == oystr_init_buf(&s2, 10));
-
-	CTEST_BEGIN;
-	ctest_assert(false == oystr_valid(s1));
-	ctest_assert(true == oystr_valid(&s2));
-	CTEST_END;
-
-	oystr_deinit(&s2);
-}
-
-void
-test_oystr_setlen()
+test_stxterm()
 {
 	int i;
 	int ret;
-	struct oystr s1;
+	stx s1;
 	assert(0 == oystr_init_buf(&s1, 20));
 	memset(s1.buf, 1, 20);
 
@@ -164,11 +187,11 @@ test_oystr_setlen()
 }
 
 void
-test_oystr_assign()
+test_stxcpy()
 {
 	int i;
 	int ret;
-	struct oystr s1;
+	stx s1;
 	oystr_init(&s1);
 	CTEST_BEGIN;
 	for (i=0; i<11; ++i) {
@@ -185,9 +208,9 @@ test_oystr_assign()
 }
 
 void
-test_oystr_append()
+test_stxapp()
 {
-	struct oystr s1;
+	stx s1;
 	oystr_init(&s1);
 	assert(0 == oystr_assign(&s1, "hello ", 6));
 	CTEST_BEGIN;
@@ -200,25 +223,10 @@ test_oystr_append()
 }
 
 void
-test_oystr_write()
-{
-	struct oystr s1;
-	oystr_init(&s1);
-	assert(0 == oystr_assign(&s1, "hello world", 11));
-	CTEST_BEGIN;
-	ctest_assert(0 == oystr_write(&s1, 6, "jack the ripper.", 16));
-	ctest_assert(0 == strcmp(s1.buf, "hello jack the ripper."));
-	ctest_assert(22 == s1.len);
-	ctest_assert(22 <= s1.size);
-	CTEST_END;
-	oystr_deinit(&s1);
-}
-
-void
-test_oystr_insert()
+test_stxins()
 {
 	const char initstr[] = "pumpkin squash is good dude.";
-	struct oystr s1;
+	stx s1;
 	oystr_init(&s1);
 	assert(0 == oystr_assign(&s1, initstr, sizeof(initstr) - 1));
 	CTEST_BEGIN;
@@ -233,9 +241,9 @@ test_oystr_insert()
 void
 test_oystr_eq()
 {
-	struct oystr s1;
-	struct oystr s2;
-	struct oystr s3;
+	stx s1;
+	stx s2;
+	stx s3;
 	oystr_init(&s1);
 	oystr_init(&s2);
 	oystr_init(&s3);
@@ -255,8 +263,8 @@ test_oystr_eq()
 void
 test_oystr_swap()
 {
-	struct oystr s1;
-	struct oystr s2;
+	stx s1;
+	stx s2;
 	oystr_init(&s1);
 	oystr_init(&s2);
 	assert(0 == oystr_assign(&s1, "buffer_one", 10));
@@ -281,7 +289,7 @@ test_oystr_trunc()
 {
 	const char tstring[] = "truncateme";
 	int i;
-	struct oystr s1;
+	stx s1;
 	oystr_init(&s1);
 	assert(0 == oystr_assign(&s1, tstring, 10));
 	CTEST_BEGIN;
@@ -300,8 +308,8 @@ test_oystr_trunc()
 void
 test_oystr_find()
 {
-	struct oystr slice;
-	struct oystr s1;
+	stx slice;
+	stx s1;
 	oystr_init(&s1);
 	oystr_assign(&s1, "hello world", 11);
 	CTEST_BEGIN;
@@ -329,7 +337,7 @@ void
 test_oystr_rstrip()
 {
 	const char initstr[] = "mmnnlo??STRIPm>?lnonnmm";
-	struct oystr s1;
+	stx s1;
 	oystr_init(&s1);
 	assert(0 == oystr_assign(&s1, initstr, sizeof(initstr) - 1));
 	CTEST_BEGIN;
@@ -344,7 +352,7 @@ void
 test_oystr_lstrip()
 {
 	const char initstr[] = "zzannlo~>STRIPmozzannmmaz";
-	struct oystr s1;
+	stx s1;
 	oystr_init(&s1);
 	assert(0 == oystr_assign(&s1, initstr, sizeof(initstr) - 1));
 	CTEST_BEGIN;
@@ -359,7 +367,7 @@ void
 test_oystr_strip()
 {
 	const char initstr[] = "zzanloSTRIPm&?lnonnmm";
-	struct oystr s1;
+	stx s1;
 	oystr_init(&s1);
 	assert(0 == oystr_assign(&s1, initstr, sizeof(initstr) - 1));
 	CTEST_BEGIN;
@@ -373,8 +381,8 @@ test_oystr_strip()
 void
 test_oystr_slice()
 {
-	struct oystr slice;
-	struct oystr s1;
+	stx slice;
+	stx s1;
 	oystr_init(&s1);
 	assert(0 == oystr_assign(&s1, "slicemeplease", 13));
 	CTEST_BEGIN;
@@ -390,7 +398,7 @@ void
 test_oystr_utf8_from_utf32()
 {
 	int i;
-	struct oystr s1;
+	stx s1;
 	char bytes[4];
 
 	oystr_init_buf(&s1, 12);
@@ -408,7 +416,7 @@ test_oystr_utf8_from_utf32()
 		if (!ctest_ret)
 			goto failure;
 	}
-	/*
+
 	// 3-byte utf8
 	for (;;) {
 		ctest_assert(4 == oystr_utf8_from_utf32(bytes, i));
@@ -421,54 +429,42 @@ test_oystr_utf8_from_utf32()
 		if (!ctest_ret)
 			goto failure;
 	}
-	*/
 failure:
 	CTEST_END;
 	oystr_deinit(&s1);
 }
-
-void
-test_oystr_printf()
-{
-	struct oystr s1;
-	oystr_init(&s1);
-	CTEST_BEGIN;
-	ctest_assert(25 == oystr_snprintf(&s1, 26, "Hello %s, how are you?", "world"));
-	CTEST_END;
-	oystr_deinit(&s1);
-}
+*/
 
 int
 main()
 {
 	ctest_intro();
 
-	test_oystr_init();
-	test_oystr_deinit();
-	test_oystr_ensure_size();
-	test_oystr_init_buf();
-	test_oystr_valid();
-	test_oystr_setlen();
+	test_stxdel();
+	test_stxgrow();
+	test_stxensure_size();
+	test_stxnew();
+	test_stxvalid();
+	/*
+	test_stxterm();
 
-	test_oystr_assign();
-	test_oystr_append();
-	test_oystr_write();
-	test_oystr_insert();
+	test_stxcpy();
+	test_stxapp();
+	test_stxins();
 
-	test_oystr_eq();
-	test_oystr_swap();
-	test_oystr_trunc();
-	test_oystr_find();
+	test_stxeq();
+	test_stxswap();
+	test_stxtrunc();
+	test_stxfind();
 
-	test_oystr_rstrip();
-	test_oystr_lstrip();
-	test_oystr_strip();
+	test_stxrstrip();
+	test_stxlstrip();
+	test_stxstrip();
 
-	test_oystr_slice();
+	test_stxslice();
 
-	test_oystr_utf8_from_utf32();
-
-	test_oystr_printf();
+	test_stxunif32();
+	*/
 
 	ctest_summary();
 	return !(ctest_passed == ctest_total);

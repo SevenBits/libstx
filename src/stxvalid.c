@@ -2,11 +2,11 @@
 #include "internal.h"
 
 bool
-oystr_valid(struct oystr *s1)
+stxvalid(stx *s1)
 {
 	if (!s1)
 		return false;
-	if (!s1->buf || s1->size < s1->len)
+	if (!s1->mem || s1->size < s1->len)
 		return false;
 
 	return true;

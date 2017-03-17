@@ -2,9 +2,9 @@
 #include "internal.h"
 
 void
-oystr_swap(struct oystr *s1, struct oystr *s2)
+stxswap(stx *s1, stx *s2)
 {
-	struct oystr tmp = *s1;
+	stx tmp = *s1;
 	*s1 = *s2;
 	*s2 = tmp;
 }

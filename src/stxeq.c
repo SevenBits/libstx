@@ -2,7 +2,7 @@
 #include "internal.h"
 
 bool
-oystr_eq(const struct oystr *s1, const struct oystr *s2)
+stxeq(const stx *s1, const stx *s2)
 {
 	size_t i;
 
@@ -10,7 +10,7 @@ oystr_eq(const struct oystr *s1, const struct oystr *s2)
 		return false;
 
 	for (i=0; i<s1->len; ++i) {
-		if (s1->buf[i] != s2->buf[i])
+		if (s1->mem[i] != s2->mem[i])
 			return false;
 	}
 

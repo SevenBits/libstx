@@ -1,7 +1,7 @@
 // See LICENSE file for copyright and license details
 #include "internal.h"
 
-enum utf8_header {
+enum {
 	UTF8_H1 = 0x00,      // 1-byte header 0xxxxxxx.
 	UTF8_H2 = 0x06 << 5, // 2-byte header 110xxxxx.
 	UTF8_H3 = 0x0e << 4, // 3-byte header 1110xxxx.
@@ -10,7 +10,7 @@ enum utf8_header {
 };
 
 int
-oystr_utf8_from_utf32(char *bytes, uint32_t wc)
+stxuni8f32(char *dst, uint32_t wc)
 {
     int len;
     uint32_t header;
@@ -28,15 +28,15 @@ oystr_utf8_from_utf32(char *bytes, uint32_t wc)
         len = 4;
     } else {
         // Invalid unicode character
-        return 0;
+        return ESTX_INVALID_UNICODE;
     }
 
     int i;
     for (i = len-1; i > 0; --i) {
-        bytes[i] = (UTF8_HC | (wc & 0x3F));
+        dst[i] = (UTF8_HC | (wc & 0x3F));
         wc >>= 6;
     }
-    bytes[0] = (header | wc);
+    dst[0] = (header | wc);
 
     return len;
 }
