@@ -63,7 +63,7 @@ int stxappuni(stx *sp, uint32_t wc);
 static inline int
 stxappstx(stx *s1, const stx *s2)
 {
-	return oystr_append(s1, s2->mem, s2->len);
+	return stxapp(s1, s2->mem, s2->len);
 }
 
 static inline int
