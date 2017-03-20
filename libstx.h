@@ -26,7 +26,7 @@ stxavail(stx *sp)
     return sp->size ? sp->size - sp->len - 1 : 0;
 }
 int stxnew(stx *sp, size_t n);
-void stdel(stx *sp);
+void stxdel(stx *sp);
 
 int stxgrow(stx *sp, size_t n);
 int stxensure_size(stx *sp, size_t n);
