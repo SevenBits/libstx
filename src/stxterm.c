@@ -5,7 +5,7 @@ int
 stxterm(stx *sp, size_t len)
 {
 	if (len > (sp->size ? sp->size - 1 : 0)) {
-			return -1;
+		return -1;
 	}
 	sp->len = len;
 	sp->mem[sp->len]= '\0';
