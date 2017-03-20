@@ -63,6 +63,9 @@ test: test.c ${TARGET} ${OBJ}
 check: test
 	@./test
 
+vcheck: test
+	@valgrind ./test
+
 clean:
 	@printf "Cleaning ... "
 	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz test
