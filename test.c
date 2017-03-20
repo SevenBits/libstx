@@ -66,7 +66,7 @@ static const char teststr5[] = "lxjistriplxjimelxji";
 static const char teststr6[] = "    strip me      ";
 
 void
-test_stxdel()
+test_stxdel(void)
 {
 	stx s1;
 	CTEST_BEGIN;
@@ -83,7 +83,7 @@ test_stxdel()
 }
 
 void
-test_stxgrow()
+test_stxgrow(void)
 {
 	stx s1;
 	CTEST_BEGIN;
@@ -107,7 +107,7 @@ test_stxgrow()
 }
 
 void
-test_stxnew()
+test_stxnew(void)
 {
 	stx s1;
 	ctest_assert(0 == stxnew(&s1, 1));
@@ -118,7 +118,7 @@ test_stxnew()
 }
 
 void
-test_stxensure_size()
+test_stxensure_size(void)
 {
 	stx s1;
 	CTEST_BEGIN;
@@ -137,7 +137,7 @@ test_stxensure_size()
 }
 
 void
-test_stxvalid()
+test_stxvalid(void)
 {
 	stx s1, s2, s3;
 	CTEST_BEGIN;
@@ -154,6 +154,32 @@ test_stxvalid()
 	CTEST_END;
 }
 
+void
+test_stxterm(void)
+{
+	stx s1;
+	stxnew(&s1, 6);
+	memset(s1.mem, 1, 6);
+	CTEST_BEGIN;
+	ctest_assert(0 == stxterm(&s1, 5));
+	ctest_assert(5 == s1.len);
+	ctest_assert(6 == s1.size);
+	ctest_assert('\0' == s1.mem[s1.len]);
+	CTEST_END;
+	stxdel(&s1);
+}
+
+void
+test_stxcpy(void)
+{
+	stx s1;
+	memset(&s1, 0, sizeof(s1));
+	CTEST_BEGIN;
+	stxcpy(&s1, teststr2, sizeof(teststr2));
+	ctest_assert(0 == strncmp(s1.mem, teststr2, sizeof(teststr2)));
+	CTEST_END;
+	stxdel(&s1);
+}
 
 int
 main()
@@ -166,11 +192,10 @@ main()
 	test_stxnew();
 	test_stxensure_size();
 	test_stxvalid();
-
-	/*
 	test_stxterm();
 
 	test_stxcpy();
+	/*
 	test_stxapp();
 	test_stxins();
 
