@@ -10,7 +10,7 @@ stxcpy(stx *sp, const char *src, size_t len)
 		if (err)
 			return err;
 	}
-	memcpy(sp, src, len);
+	memcpy(sp->mem, src, len);
 	stxterm(sp, len);
 	return 0;
 }
