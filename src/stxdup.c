@@ -1,14 +1,9 @@
 // See LICENSE file for copyright and license details
 #include "internal.h"
 
-int
+stx *
 stxdup(stx *dst, const stx *src)
 {
-	int err;
-
-	err = stxnew(dst, src->len);
-	if (err)
-		return err;
-
+	dst = stxnew(dst, src->len);
 	return stxcpy(dst, src->mem, src->len);
 }

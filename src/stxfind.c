@@ -1,16 +1,16 @@
 // See LICENSE file for copyright and license details
 #include "internal.h"
 
-bool
+stx *
 stxfind(stx *slice, stx *haystack, const char *needle, size_t len)
 {
 	size_t i, j;
 
 	if (0 == len)
-		return false;
+		return NULL;
 
 	if (haystack->len < len)
-		return false;
+		return NULL;
 
 	for (i=0; i<haystack->len; ++i) {
 		for (j=i; j<i+len; ++j) {
@@ -21,8 +21,8 @@ stxfind(stx *slice, stx *haystack, const char *needle, size_t len)
 
 		if (j-i == len) {
 			stxslice(slice, haystack, i, j);
-			return true;
+			return NULL;
 		}
 	}
-	return false;
+	return slice;
 }

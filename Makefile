@@ -23,7 +23,7 @@ FUN =\
 	stxterm\
 	stxtrunc\
 	stxuni8f32\
-	stxvalid\
+	stxval\
 
 FUN_INLINE =\
 	stxavail
