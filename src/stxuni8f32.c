@@ -28,7 +28,7 @@ stxuni8f32(char *dst, uint32_t wc)
         len = 4;
     } else {
         // Invalid unicode character
-        return ESTX_INVALID_UNICODE;
+        return 0;
     }
 
     int i;
