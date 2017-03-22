@@ -70,9 +70,9 @@ stxappdup(stx *sp)
 // Python inspired utilities.
 stx *stxslice(stx *slice, stx *sp, size_t begin, size_t end);
 stx *stxfind(stx *slice, stx *sp, const char *src, size_t len);
-size_t stxrstrip(stx *sp, const char *chs, size_t len);
-size_t stxlstrip(stx *sp, const char *chs, size_t len);
-size_t stxstrip(stx *sp, const char *chs, size_t len);
+stx *stxrstrip(stx *sp, const char *chs, size_t len);
+stx *stxlstrip(stx *sp, const char *chs, size_t len);
+stx *stxstrip(stx *sp, const char *chs, size_t len);
 
 // Other library utilites
 int stxuni8f32(char *dst, uint32_t wc);

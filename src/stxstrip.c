@@ -1,7 +1,7 @@
 // See LICENSE file for copyright and license details
 #include "internal.h"
 
-size_t
+stx *
 stxlstrip(stx *s1, const char *chs, size_t len)
 {
 	size_t removed = 0;
@@ -17,14 +17,14 @@ stxlstrip(stx *s1, const char *chs, size_t len)
 		memmove(s1->mem, begin, s1->len - removed);
 
 	stxterm(s1, s1->len - removed);
-	return removed;
+	return s1;
 }
 
-size_t
+stx *
 stxrstrip(stx *s1, const char *chs, size_t len)
 {
 	if (0 == s1->len)
-		return 0;
+		return s1;
 
 	size_t removed = 0;
 	char *begin = s1->mem + s1->len - 1;
@@ -36,17 +36,13 @@ stxrstrip(stx *s1, const char *chs, size_t len)
 	}
 
 	stxterm(s1, s1->len - removed);
-	return removed;
+	return s1;
 }
 
-size_t
+stx *
 stxstrip(stx *s1, const char *chs, size_t len)
 {
-	size_t left = stxlstrip(s1, chs, len);
-	size_t right = stxrstrip(s1, chs, len);
-	if (size_add_overflows(left, right)) {
-		return SIZE_MAX;
-	}
-
-	return left + right;
+	s1 = stxlstrip(s1, chs, len);
+	s1 = stxrstrip(s1, chs, len);
+	return s1;
 }
