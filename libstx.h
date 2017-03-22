@@ -20,6 +20,8 @@ stxavail(stx *sp)
 {
     return sp->size ? sp->size - sp->len - 1 : 0;
 }
+
+// NOTE: 'n' must be greater than zero, otherwise behavior is undefined.
 stx *stxnew(stx *sp, size_t n);
 stx *stxdel(stx *sp);
 

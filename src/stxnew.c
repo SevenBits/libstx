@@ -1,9 +1,6 @@
 // See LICENSE file for copyright and license details
 #include "internal.h"
 
-/**
- * NOTE: 'n' must be greater than zero, otherwise behavior is undefined.
- */
 stx *
 stxnew(stx *sp, size_t n)
 {
