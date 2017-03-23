@@ -21,8 +21,8 @@ stxfind(stx *slice, stx *haystack, const char *needle, size_t len)
 
 		if (j-i == len) {
 			stxslice(slice, haystack, i, j);
-			return NULL;
+			return slice;
 		}
 	}
-	return slice;
+	return NULL;
 }

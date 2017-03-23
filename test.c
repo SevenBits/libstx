@@ -216,6 +216,39 @@ test_stxeq()
 	stxdel(&s3);
 }
 
+void
+test_stxtrunc()
+{
+	stx s1;
+	stxcpy(stxnew(&s1, 4), "wall", 4);
+	CTEST_BEGIN;
+	ctest_assert(&s1 == stxtrunc(&s1, 2));
+	ctest_assert(2 == s1.len);
+	ctest_assert(4 == s1.size);
+	ctest_assert(0 == strncmp(s1.mem, "wa", 2));
+	CTEST_END;
+	stxdel(&s1);
+}
+
+void
+test_stxfind()
+{
+	stx s1, slice;
+	stxcpy(stxnew(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	CTEST_BEGIN;
+	ctest_assert(&slice == stxfind(&slice, &s1, "world", 5));
+	ctest_assert(5 == slice.len);
+	ctest_assert(s1.size >= slice.size);
+	ctest_assert(0 == strncmp(slice.mem, "world", 5));
+	CTEST_END;
+	stxdel(&s1);
+}
+
+void
+test_compose()
+{
+}
+
 int
 main()
 {
@@ -232,11 +265,10 @@ main()
 	test_stxins();
 
 	test_stxeq();
-	/*
-	test_stxswap();
 	test_stxtrunc();
 	test_stxfind();
 
+	/*
 	test_stxrstrip();
 	test_stxlstrip();
 	test_stxstrip();
@@ -244,6 +276,7 @@ main()
 	test_stxslice();
 
 	test_stxunif32();
+	test_compose();
 	*/
 
 	ctest_summary();
