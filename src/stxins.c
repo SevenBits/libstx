@@ -9,7 +9,7 @@ stxins(stx *sp, size_t pos, const char *bytes, size_t len)
 		memmove(sp->mem + pos + len, sp->mem + pos, sp->len - pos);
 
 	memcpy(sp->mem + pos, bytes, len);
-	stxterm(sp, sp->len + len);
+	sp->len += len;
 
 	return sp; 
 }

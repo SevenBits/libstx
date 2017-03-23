@@ -30,7 +30,6 @@ stx *stxensure_size(stx *sp, size_t n);
 stx *stxvalid(stx *sp);
 
 // Various utility
-stx *stxterm(stx *sp, size_t len);
 bool stxeq(const stx *s1, const stx *s2);
 void stxswap(stx *s1, stx *s2);
 stx *stxtrunc(stx *sp, size_t len);

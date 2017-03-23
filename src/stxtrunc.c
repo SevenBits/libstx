@@ -4,14 +4,11 @@
 stx *
 stxtrunc(stx *sp, size_t len)
 {
-	if (len > sp->len) {
-		stxterm(sp, 0);
-		return NULL;
+	if (len >= sp->len) {
+		sp->len = 0;
+		return sp;
 	}
 
-	if (0 == sp->len)
-		return NULL;
-
-	stxterm(sp, sp->len - len);
+	sp->len -= len;
 	return sp;
 }

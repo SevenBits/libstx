@@ -20,7 +20,6 @@ FUN =\
 	stxslice\
 	stxstrip\
 	stxswap\
-	stxterm\
 	stxtrunc\
 	stxuni8f32\
 	stxval\

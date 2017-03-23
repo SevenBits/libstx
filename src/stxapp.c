@@ -5,7 +5,7 @@ stx *
 stxapp(stx *sp, const char *src, size_t len)
 {
 	memcpy(sp->mem + sp->len, src, len);
-	stxterm(sp, sp->len + len);
+	sp->len += len;
 
 	return sp;
 }

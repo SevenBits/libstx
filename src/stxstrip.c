@@ -16,7 +16,7 @@ stxlstrip(stx *s1, const char *chs, size_t len)
 	if (begin != end)
 		memmove(s1->mem, begin, s1->len - removed);
 
-	stxterm(s1, s1->len - removed);
+	s1->len -= removed;
 	return s1;
 }
 
@@ -35,7 +35,7 @@ stxrstrip(stx *s1, const char *chs, size_t len)
 		--begin;
 	}
 
-	stxterm(s1, s1->len - removed);
+	s1->len -= removed;
 	return s1;
 }
 

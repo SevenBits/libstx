@@ -5,7 +5,7 @@ stx *
 stxcpy(stx *sp, const char *src, size_t len)
 {
 	memcpy(sp->mem, src, len);
-	stxterm(sp, len);
+	sp->len = len;
 
 	return sp;
 }

@@ -152,27 +152,13 @@ test_stxvalid(void)
 }
 
 void
-test_stxterm(void)
-{
-	stx s1 = {0};
-	stxnew(&s1, 6);
-	CTEST_BEGIN;
-	ctest_assert(stxterm(&s1, 5) == &s1);
-	ctest_assert(5 == s1.len);
-	ctest_assert(6 == s1.size);
-	ctest_assert('\0' == s1.mem[s1.len]);
-	CTEST_END;
-	stxdel(&s1);
-}
-
-void
 test_stxcpy(void)
 {
 	stx s1 = {0};
 	stxgrow(&s1, sizeof(teststr2));
 	CTEST_BEGIN;
 	ctest_assert(stxcpy(&s1, teststr2, sizeof(teststr2)) == &s1);
-	ctest_assert(0 == strncmp(s1.mem, teststr2, sizeof(teststr2)));
+	ctest_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2)));
 	CTEST_END;
 	stxdel(&s1);
 }
@@ -186,23 +172,53 @@ test_stxapp(void)
 	ctest_assert(stxapp(&s1, teststr2, sizeof(teststr2) - 1) == &s1);
 	ctest_assert(sizeof(teststr2) - 1 == s1.size);
 	ctest_assert(sizeof(teststr2) - 1 == s1.len);
-	ctest_assert(0 == strncmp(s1.mem, teststr2, sizeof(teststr2) - 1));
+	ctest_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2) - 1));
 
 	stxgrow(&s1, sizeof("end"));
 	ctest_assert(stxapp(&s1, "end", sizeof("end")) == &s1);
 	ctest_assert(sizeof(teststr2) - 1 + sizeof("end") == s1.size);
 	ctest_assert(sizeof(teststr2) - 1 + sizeof("end") == s1.len);
-	ctest_assert(0 == strncmp(s1.mem, teststr2, sizeof(teststr2) - 1));
-	ctest_assert(0 == strncmp(s1.mem + sizeof(teststr2) - 1,
+	ctest_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2) - 1));
+	ctest_assert(0 == memcmp(s1.mem + sizeof(teststr2) - 1,
 				"end", sizeof("end")));
 	CTEST_END;
 	stxdel(&s1);
 }
 
+void
+test_stxins(void)
+{
+	stx s1 = {0};
+	stxgrow(&s1, sizeof(teststr3) + sizeof(teststr2) - 1);
+	stxcpy(&s1, teststr3, sizeof(teststr3));
+	CTEST_BEGIN;
+	ctest_assert(&s1 == stxins(&s1, 10, teststr2, sizeof(teststr2) - 1));
+	ctest_assert(0 == memcmp(s1.mem + 10, teststr2, sizeof(teststr2) - 1));
+	ctest_assert(0 == memcmp(s1.mem, teststr3, 10));
+	//ctest_assert(0 == memcmp(s1.mem + 10 + sizeof(teststr2) - 1, teststr3 + 10 + sizeof(teststr2), sizeof(teststr3) - 10 ));
+	CTEST_END;
+	stxdel(&s1);
+}
+
+void
+test_stxeq()
+{
+	stx s1, s2, s3;
+	stxcpy(stxnew(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	stxcpy(stxnew(&s2, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	stxcpy(stxnew(&s3, sizeof(teststr4)), teststr2, sizeof(teststr2));
+	CTEST_BEGIN;
+	ctest_assert(true == stxeq(&s1, &s2));
+	ctest_assert(false == stxeq(&s1, &s3));
+	CTEST_END;
+	stxdel(&s1);
+	stxdel(&s2);
+	stxdel(&s3);
+}
+
 int
 main()
 {
-
 	ctest_intro();
 
 	test_stxdel();
@@ -210,14 +226,13 @@ main()
 	test_stxnew();
 	test_stxensure_size();
 	test_stxvalid();
-	test_stxterm();
 
 	test_stxcpy();
 	test_stxapp();
-	/*
 	test_stxins();
 
 	test_stxeq();
+	/*
 	test_stxswap();
 	test_stxtrunc();
 	test_stxfind();
