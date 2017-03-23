@@ -231,6 +231,20 @@ test_stxtrunc()
 }
 
 void
+test_stxslice()
+{
+	stx s1, slice;
+	stxcpy(stxnew(&s1, sizeof(teststr3)), teststr3, sizeof(teststr3));
+	CTEST_BEGIN;
+	ctest_assert(&slice == stxslice(&slice, &s1, 4, 6));
+	ctest_assert(2 == slice.len);
+	ctest_assert(sizeof(teststr3) - 4 == slice.size);
+	ctest_assert(s1.mem + 4 == slice.mem);
+	CTEST_END;
+	stxdel(&s1);
+}
+
+void
 test_stxfind()
 {
 	stx s1, slice;
@@ -266,6 +280,7 @@ main()
 
 	test_stxeq();
 	test_stxtrunc();
+	test_stxslice();
 	test_stxfind();
 
 	/*
@@ -273,7 +288,6 @@ main()
 	test_stxlstrip();
 	test_stxstrip();
 
-	test_stxslice();
 
 	test_stxunif32();
 	test_compose();
