@@ -1,0 +1,87 @@
+.TH LIBSTX 7 libstx
+.SH NAME
+libstx - Dynamic string handling library.
+.SH Description
+.B libstx
+is a C library for dynamic string handling. The goals of this library are to be 
+small, fast, and simple.
+.P
+.B libstx
+approaches C string handling in a rather traditional way, using a C structure to
+contain both a NULL-terminated string buffer, and integer fields keeping track
+of it's size and length.
+.P
+However,
+.B libstx
+does not automatically grow this
+buffer, and does not perform needless validation checks every single function
+call. Instead this is left up to the user of the library, since they will now
+where it is most efficient to run validation code.
+.SS libstx format
+The libstx string struct is a simple one, and all of it's fields are open to
+direct modification as long as the libstx remains valid after doing so.
+.P
+.in +4n
+.nf
+typedef struct stx {
+	size_t len;  // Length of used bytes in \fIbuf\fP.
+	size_t size; // Size of the \fIbuf\fP field.
+	char *buf;   // Character buffer.
+} stx;
+.fi
+.in
+.P
+A valid struct stx is defined as one where
+.I buf
+!= NULL,
+.I len
+<
+.IR size ,and
+.I size
+!= 0.
+An example of an inconsistent modification that will break many libstx
+functions is something like changing the \fIsize\fP field without changing 
+the actually allocated size of \fIbuf\fP.
+.P
+.B libstx
+functions that write to the struct stx in any way will always
+update the
+.I len
+field of the struct stx. This is implied functionality of the library that will
+always occur unless a function explicity states it does not conform to this
+behavior.
+.SH RATIONALE
+Many string library unnecessarily force the user to allocate memory they don't
+plan on using (GLib GString), don't properly check for unsigned integer
+overflows (bstrlib), or repeatedly validate function input over and over
+(bstrlib) causing needless overhead.
+.B libstx
+functions are also designed to be able to be chained together, allowing
+functions to be composed in an elegant way that doesn't require naming new
+functions that simply call one or more other functions.
+.P
+.B libstx
+functions do no input validation, but there is a provided validation function
+provided. This allows the caller to validate a struct stx when it is most 
+appropriate, rather than penalize the caller by unnecessarily checking in every 
+single call into the library. Be warned that the user MUST validate any
+function that changes the allocated memory of struct stx, as that relies on
+malloc() which should always be checked.
+
+.SH AUTHOR
+Written by Todd O. Gaunt.
+.SH SEE ALSO
+.BR stxapp (3),
+.BR stxcpy (3),
+.BR stxavail (3),
+.BR stxdel (3),
+.BR stxensure_size (3),
+.BR stxeq (3),
+.BR stxfind (3),
+.BR stxnew (3),
+.BR stxins (3),
+.BR stxslice (3),
+.BR stxstrip (3),
+.BR stxtrunc (3),
+.BR stxuni8f32 (3),
+.BR stxval (3),
