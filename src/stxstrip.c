@@ -13,7 +13,7 @@ stxlstrip(stx *s1, const char *chs, size_t len)
 		++begin;
 	}
 
-	if (begin != end)
+	if (begin != s1->mem)
 		memmove(s1->mem, begin, s1->len - removed);
 
 	s1->len -= removed;
