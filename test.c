@@ -259,6 +259,35 @@ test_stxfind()
 }
 
 void
+test_stxrstrip()
+{
+	stx s1;
+	stxcpy(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
+	CTEST_BEGIN;
+	ctest_assert(&s1 == stxrstrip(&s1, "lxji", 5));
+	ctest_assert(0 == strncmp(s1.mem, teststr5, sizeof(teststr5) - 5));
+	ctest_assert(sizeof(teststr5) - 5 == s1.len);
+	ctest_assert(sizeof(teststr5) == s1.size);
+	CTEST_END;
+	stxdel(&s1);
+}
+
+void
+test_stxlstrip()
+{
+	stx s1;
+	stxcpy(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
+	CTEST_BEGIN;
+	ctest_assert(&s1 == stxlstrip(&s1, "lxji", 4));
+	printf(s1.mem);
+	ctest_assert(0 == strncmp(s1.mem, teststr5 + 4, sizeof(teststr5) - 4));
+	ctest_assert(sizeof(teststr5) - 4 == s1.len);
+	ctest_assert(sizeof(teststr5) == s1.size);
+	CTEST_END;
+	stxdel(&s1);
+}
+
+void
 test_compose()
 {
 }
@@ -283,12 +312,9 @@ main()
 	test_stxslice();
 	test_stxfind();
 
-	/*
 	test_stxrstrip();
 	test_stxlstrip();
-	test_stxstrip();
-
-
+	/*
 	test_stxunif32();
 	test_compose();
 	*/
