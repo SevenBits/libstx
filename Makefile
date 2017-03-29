@@ -86,10 +86,6 @@ install: all
 	@printf "Installing library header to ${DESTDIR}${INCLUDEPREFIX}.\n"
 	@mkdir -p ${DESTDIR}${INCLUDEPREFIX}
 	@cp -f ${HDR} ${DESTDIR}${INCLUDEPREFIX}
-	@printf "Installing manual page to ${DESTDIR}${MANPREFIX}/man3\n."
-	@mkdir -p ${DESTDIR}${MANPREFIX}/man3
-	@cp -f ${MANPAGE} ${DESTDIR}${MANPREFIX}/man3
-	@chmod 644 ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
 
 uninstall:
 	@printf "Removing library archive from ${DESTDIR}${LIBPREFIX}.\n"
