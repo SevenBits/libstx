@@ -66,6 +66,13 @@ static const char teststr5[] = "lxjistriplxjimelxji";
 static const char teststr6[] = "    strip me      ";
 
 void
+assert_non_null(stx *s1, int len, int size) {
+	ctest_assert(NULL != s1->mem);
+	ctest_assert(len == s1->len);
+	ctest_assert(size == s1->size);
+}
+
+void
 test_stxdel(void)
 {
 	stx s1;
@@ -75,7 +82,7 @@ test_stxdel(void)
 	s1.mem[1] = 2;
 	s1.len = 1;
 	s1.size = 2;
-	ctest_assert(stxdel(&s1) == &s1);
+	ctest_assert(&s1 == stxdel(&s1));
 	ctest_assert(NULL == s1.mem);
 	ctest_assert(0 == s1.len);
 	ctest_assert(0 == s1.size);
@@ -89,14 +96,10 @@ test_stxgrow(void)
 	CTEST_BEGIN;
 	memset(&s1, 0, sizeof(s1));
 	ctest_assert(stxgrow(&s1, 10) == &s1);
-	ctest_assert(NULL != s1.mem);
-	ctest_assert(0 == s1.len);
-	ctest_assert(10 == s1.size);
+	assert_non_null(&s1, 0, 10);
 
 	ctest_assert(stxgrow(&s1, 20) == &s1);
-	ctest_assert(NULL != s1.mem);
-	ctest_assert(0 == s1.len);
-	ctest_assert(30 == s1.size);
+	assert_non_null(&s1, 0, 30);
 	CTEST_END;
 	stxdel(&s1);
 }
@@ -107,9 +110,7 @@ test_stxnew(void)
 	stx s1;
 	CTEST_BEGIN;
 	ctest_assert(stxnew(&s1, 1) == &s1);
-	ctest_assert(NULL != s1.mem);
-	ctest_assert(0 == s1.len);
-	ctest_assert(1 == s1.size);
+	assert_non_null(&s1, 0, 1);
 	CTEST_END;
 	stxdel(&s1);
 }
@@ -121,14 +122,10 @@ test_stxensure_size(void)
 	CTEST_BEGIN;
 	memset(&s1, 0, sizeof(s1));
 	ctest_assert(stxensure_size(&s1, 65535) == &s1);
-	ctest_assert(NULL != s1.mem);
-	ctest_assert(0 == s1.len);
-	ctest_assert(65535 == s1.size);
+	assert_non_null(&s1, 0, 65535);
 
 	ctest_assert(stxensure_size(&s1, 64) == &s1);
-	ctest_assert(NULL != s1.mem);
-	ctest_assert(0 == s1.len);
-	ctest_assert(65535 == s1.size);
+	assert_non_null(&s1, 0, 65535);
 	CTEST_END;
 	stxdel(&s1);
 }
@@ -158,6 +155,7 @@ test_stxcpy(void)
 	stxgrow(&s1, sizeof(teststr2));
 	CTEST_BEGIN;
 	ctest_assert(stxcpy(&s1, teststr2, sizeof(teststr2)) == &s1);
+	ctest_assert(sizeof(teststr2) == s1.len);
 	ctest_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2)));
 	CTEST_END;
 	stxdel(&s1);
@@ -279,17 +277,11 @@ test_stxlstrip()
 	stxcpy(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
 	CTEST_BEGIN;
 	ctest_assert(&s1 == stxlstrip(&s1, "lxji", 4));
-	printf(s1.mem);
 	ctest_assert(0 == strncmp(s1.mem, teststr5 + 4, sizeof(teststr5) - 4));
 	ctest_assert(sizeof(teststr5) - 4 == s1.len);
 	ctest_assert(sizeof(teststr5) == s1.size);
 	CTEST_END;
 	stxdel(&s1);
-}
-
-void
-test_compose()
-{
 }
 
 int
