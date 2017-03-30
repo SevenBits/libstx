@@ -13,7 +13,7 @@ stxapp(stx *sp, const char *src, size_t len)
 stx *
 stxappuni(stx *sp, uint32_t wc)
 {
-	if (0 >= stxuni8f32(uni8, wc))
+	if (0 >= stxuni8f32(sp->mem + sp->len, wc))
 		return NULL;
 
 	return sp;
