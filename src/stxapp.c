@@ -13,14 +13,8 @@ stxapp(stx *sp, const char *src, size_t len)
 stx *
 stxappuni(stx *sp, uint32_t wc)
 {
-	int len;
-	char uni8[4];
-	len = stxuni8f32(uni8, wc);
-	if (0 >= len)
-		return NULL;
-	
-	if (!stxgrow(sp, len))
+	if (0 >= stxuni8f32(uni8, wc))
 		return NULL;
 
-	return stxapp(sp, uni8, len);
+	return sp;
 }

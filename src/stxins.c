@@ -23,8 +23,5 @@ stxinsuni(stx *sp, size_t pos, uint32_t wc)
 	if (0 >= len)
 		return NULL;
 
-	if (!stxgrow(sp, len))
-		return NULL;
-
 	return stxins(sp, pos, uni8, len);
 }
