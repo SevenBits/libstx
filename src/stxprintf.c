@@ -6,17 +6,14 @@
 #include "internal.h"
 
 stx *
-stxsnprintf(stx *s1, size_t size, const char *fmt, ...)
+stxfmt(stx *s1, const char *fmt, ...)
 {
 	int err;
 	int len;
 	va_list ap;
 
-	if (!stx_ensure_size(s1, size))
-		return NULL;
-
 	va_start(ap, fmt);
-	if (0 > (len = vsnprintf(s1->mem, size, fmt, ap)))
+	if (0 > (len = vsnprintf(s1->mem, s1->size, fmt, ap)))
 		return NULL;
 	va_end(ap);
 	stxterm(s1, len);
