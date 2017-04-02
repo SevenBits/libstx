@@ -58,20 +58,26 @@ ${TARGETPP}: ${OBJ}
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
-test: test.c ${TARGET} ${OBJ} ${HDR}
+test: test.c ${TARGET} ${OBJ}
 	@printf "CC $<\n"
-	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ test.c ${OBJ}
+	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
 
-check: test
+testpp: testpp.cpp ${TARGET} ${OBJ}
+	@printf "CC $<\n"
+	@${CPP} ${CPPFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
+
+check: test testpp
 	@./test
+	@./testpp
 
 clean:
 	@printf "Cleaning ... "
-	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz test
+	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz test testpp
 	@printf "done.\n"
 
 vcheck:
 	@valgrind ./test
+	@valgrind ./testpp
 
 dist: clean
 	@printf "Creating dist tarball ... "

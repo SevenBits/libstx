@@ -8,7 +8,9 @@
  * functions.
  */
 namespace libstx {
+	extern "C" {
 	#include "libstx.h"
+	}
 
 	int alloc(stx *sp, size_t n)
 	{return stxalloc(sp, n);}
