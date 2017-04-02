@@ -6,7 +6,7 @@ stxgrow(stx *s1, size_t n)
 {
 	char *tmp;
 
-	if (size_add_overflows(s1->size, n))
+	if (internal_size_add_overflows(s1->size, n))
 		return NULL;
 
 	tmp = realloc(s1->mem, s1->size + n);

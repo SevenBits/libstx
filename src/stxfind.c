@@ -2,7 +2,7 @@
 #include "internal.h"
 
 stx *
-stxfind(stx *slice, stx *haystack, const char *needle, size_t len)
+stxfind_mem(stx *slice, stx *haystack, const char *needle, size_t len)
 {
 	size_t i, j;
 
@@ -25,4 +25,16 @@ stxfind(stx *slice, stx *haystack, const char *needle, size_t len)
 		}
 	}
 	return NULL;
+}
+
+stx *
+stxfind_str(stx *slice, stx *haystack, const char *needle)
+{
+	return stxfind_mem(slice, haystack, needle, strlen(needle));
+}
+
+stx *
+stxfind_stx(stx *slice, stx *sp, const stx *src)
+{
+	return stxfind_mem(slice, sp, src->mem, src->len);
 }
