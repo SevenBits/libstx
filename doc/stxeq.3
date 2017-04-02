@@ -1,0 +1,30 @@
+.TH STXEQ 3 libstx
+.SH NAME
+ stxeq - Check for equality between two stx objects.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B bool stxeq(stx *\fIs1\fP, stx *\fIs2\fP);
+
+.B #include <libstx.hpp>
+
+.B bool libstx::eq(stx *\fIs1\fP, stx *\fIs2\fP);
+.SH DESCRIPTION
+.B stxeq()
+and
+.B libstx::eq()
+compare the contents of 
+.I s1
+and
+.I s2
+to eachother. These functions do not compare the values of the pointers, but of
+the raw data pointed to by the relevant pointers inside the stx object.
+.SH RETURN VALUE
+.B stxeq()
+and
+.B libstx::eq()
+return true if both stx objects contain equivalent lengths, and their memory
+buffers contain equivalent characters up to that length, otherwise
+returns false.
+.SH SEE ALSO
+.B libstx (7)
