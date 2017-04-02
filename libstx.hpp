@@ -1,4 +1,6 @@
 /* See LICENSE file for copyright and license details */
+#ifndef LIBSTX_HPP
+#define LIBSTX_HPP
 
 /**
  * This header is used to wrap the libstx library with a C++ namespace, and to
@@ -89,3 +91,5 @@ namespace libstx {
 	int uni8f32(char *dst, uint32_t wc)
 	{return stxuni8f32(dst, wc);}
 }
+
+#endif

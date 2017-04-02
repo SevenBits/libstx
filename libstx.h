@@ -1,6 +1,6 @@
 /* See LICENSE file for copyright and license details */
-#ifndef STX_H
-#define STX_H
+#ifndef LIBSTX_H
+#define LIBSTX_H
 
 struct stx {
     size_t len;
