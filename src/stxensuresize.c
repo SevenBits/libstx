@@ -2,7 +2,7 @@
 #include "internal.h"
 
 int
-stxensure_size(stx *s1, size_t size)
+stxensuresize(stx *s1, size_t size)
 {
 	char *tmp;
 

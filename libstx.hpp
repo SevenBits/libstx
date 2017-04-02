@@ -21,8 +21,8 @@ namespace libstx {
 	int grow(stx *sp, size_t n)
 	{return stxgrow(sp, n);}
 
-	int ensure_size(stx *sp, size_t n)
-	{return stxensure_size(sp, n);}
+	int ensuresize(stx *sp, size_t n)
+	{return stxensuresize(sp, n);}
 
 	int valid(stx *sp)
 	{return stxvalid(sp);}

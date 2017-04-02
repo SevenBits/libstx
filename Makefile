@@ -12,7 +12,7 @@ FUN =\
 	stxapp\
 	stxcpy\
 	stxdel\
-	stxensure_size\
+	stxensuresize\
 	stxeq\
 	stxfind\
 	stxgrow\

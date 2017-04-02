@@ -14,7 +14,7 @@ int stxalloc(stx *sp, size_t n);
 void stxdel(const stx *sp);
 
 int stxgrow(stx *sp, size_t n);
-int stxensure_size(stx *sp, size_t n);
+int stxensuresize(stx *sp, size_t n);
 int stxvalid(stx *sp);
 
 size_t stxavail(stx *sp);
