@@ -2,11 +2,6 @@
 #ifndef STX_H
 #define STX_H
 
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
-
 struct stx {
     size_t len;
     size_t size;
