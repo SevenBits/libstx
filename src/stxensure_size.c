@@ -1,7 +1,7 @@
 // See LICENSE file for copyright and license details
 #include "internal.h"
 
-stx *
+int
 stxensure_size(stx *s1, size_t size)
 {
 	char *tmp;
@@ -11,9 +11,9 @@ stxensure_size(stx *s1, size_t size)
 
 	tmp = realloc(s1->mem, size);
 	if (!tmp)
-		return NULL;
+		return -1;
 
 	s1->mem = tmp;
 	s1->size = size;
-	return s1;
+	return 0;
 }
