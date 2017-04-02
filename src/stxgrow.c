@@ -2,18 +2,21 @@
 #include "internal.h"
 
 int
-stxgrow(stx *s1, size_t n)
+stxgrow(stx *sp, size_t n)
 {
 	char *tmp;
 
-	if (internal_size_add_overflows(s1->size, n))
+	if (internal_size_add_overflows(sp->size, n)) {
 		n = SIZE_MAX;
+	} else {
+		n = sp->size + n;
+	}
 
-	tmp = realloc(s1->mem, s1->size + n);
+	tmp = realloc(sp->mem, n);
 	if (!tmp)
 		return -1;
 
-	s1->mem = tmp;
-	s1->size += n;
+	sp->mem = tmp;
+	sp->size = n;
 	return 0;
 }

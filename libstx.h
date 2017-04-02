@@ -10,12 +10,12 @@ struct stx {
 
 typedef struct stx stx;
 
-stx *stxalloc(stx *sp, size_t n);
-stx *stxdel(stx *sp);
+int stxalloc(stx *sp, size_t n);
+void stxdel(const stx *sp);
 
-stx *stxgrow(stx *sp, size_t n);
-stx *stxensure_size(stx *sp, size_t n);
-stx *stxvalid(stx *sp);
+int stxgrow(stx *sp, size_t n);
+int stxensure_size(stx *sp, size_t n);
+int stxvalid(stx *sp);
 
 size_t stxavail(stx *sp);
 bool stxeq(const stx *s1, const stx *s2);

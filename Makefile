@@ -21,7 +21,7 @@ FUN =\
 	stxswap\
 	stxtrunc\
 	stxuni8f32\
-	stxval\
+	stxvalid\
 	stxavail\
 
 SRC = ${FUN:=.c}
@@ -31,6 +31,7 @@ MAN7 = ${TARGET:=.7}
 
 HDR = libstx.h src/internal.h
 TARGET = libstx.a
+TARGETPP = libstxpp.a
 
 DIST = $(basename ${TARGET})-${VERSION}
 DIST_FILES = ${SRC_DIR} ${MAN_DIR} ${HDR} Makefile README config.mk test.c
@@ -52,15 +53,17 @@ ${TARGET}: ${OBJ}
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
+${TARGETPP}: ${OBJ}
+	@printf "Creating library archive ... "
+	@ar -cq $@ ${OBJ}
+	@printf "done.\n"
+
 ctest: ctest.c ${TARGET} ${OBJ} ${HDR}
 	@printf "CC $<\n"
 	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ ctest.c ${OBJ}
 
 check: ctest
 	@./ctest
-
-vcheck: ctest
-	@valgrind ./ctest
 
 clean:
 	@printf "Cleaning ... "

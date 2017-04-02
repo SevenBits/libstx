@@ -1,13 +1,12 @@
 // See LICENSE file for copyright and license details
 #include "internal.h"
 
-stx *
+int
 stxalloc(stx *sp, size_t n)
 {
 	memset(sp, 0, sizeof(*sp));
-	if (!stxgrow(sp, n))
-		return NULL;
-	*sp->mem = '\0';
+	if (stxgrow(sp, n))
+		return -1;
 
-	return sp;
+	return 0;
 }

@@ -10,19 +10,19 @@
 namespace libstx {
 	#include "libstx.h"
 
-	stx *alloc(stx *sp, size_t n)
+	int alloc(stx *sp, size_t n)
 	{return stxalloc(sp, n);}
 
-	stx *del(stx *sp)
+	void del(stx *sp)
 	{return stxdel(sp);}
 
-	stx *grow(stx *sp, size_t n)
+	int grow(stx *sp, size_t n)
 	{return stxgrow(sp, n);}
 
-	stx *ensure_size(stx *sp, size_t n)
+	int ensure_size(stx *sp, size_t n)
 	{return stxensure_size(sp, n);}
 
-	stx *valid(stx *sp)
+	int valid(stx *sp)
 	{return stxvalid(sp);}
 
 	bool eq(const stx *s1, const stx *s2)

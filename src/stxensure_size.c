@@ -7,7 +7,7 @@ stxensure_size(stx *s1, size_t size)
 	char *tmp;
 
 	if (s1->size >= size)
-		return s1;
+		return 0;
 
 	tmp = realloc(s1->mem, size);
 	if (!tmp)
