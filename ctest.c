@@ -1,5 +1,3 @@
-#include "libstx.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
@@ -7,56 +5,16 @@
 #include <stdbool.h>
 #include <assert.h>
 
-static int ctest_ok = 1;
-#define ctest_assert(x) _ctest_assert(__func__, __LINE__, (x))
-#define CTEST_BEGIN ctest_begin(__func__)
-#define CTEST_END ctest_end()
+#include "libstx.h"
+#include "ctest.h"
 
-static int ctest_passed = 0;
-static int ctest_total = 0;
+/**
+ * This test suite is for most of the libstx library. Anything that is C99
+ * compatible should be tested in this test suite.
+ *
+ * C11 specific code should be placed in "ctest11.c".
+ */
 
-int
-_ctest_assert(const char *func, int line, int x)
-{
-	ctest_ok = ctest_ok && x;
-	if (!ctest_ok)
-		fprintf(stderr, "Failed assertion in '%s', line %d.\n", func, line);
-	return ctest_ok;
-}
-
-void
-ctest_intro()
-{
-	printf("Beginning tests.\n");
-}
-
-void
-ctest_begin(const char *name)
-{
-	++ctest_total;
-	ctest_ok = 1;
-	printf("- Testing %s ... ", name);
-}
-
-void
-ctest_end()
-{
-	if (ctest_ok)
-		++ctest_passed;
-	printf("%s\n", ctest_ok ? "pass" : "fail");
-}
-
-void
-ctest_summary()
-{
-	printf("Total tests: %d\n", ctest_total);
-	printf("Tests passed: %d\n", ctest_passed);
-	printf("Tests failed: %d\n", ctest_total - ctest_passed);
-}
-
-// ----------------------------------------------------------------------------
-// Tests
-// ----------------------------------------------------------------------------
 static const char teststr0[] = "";
 static const char teststr1[] = "c";
 static const char teststr2[] = "hello world";
@@ -149,12 +107,12 @@ test_stxvalid(void)
 }
 
 void
-test_stxcpy(void)
+test_stxcpy_mem(void)
 {
 	stx s1 = {0};
 	stxgrow(&s1, sizeof(teststr2));
 	CTEST_BEGIN;
-	ctest_assert(stxcpy(&s1, teststr2, sizeof(teststr2)) == &s1);
+	ctest_assert(stxcpy_mem(&s1, teststr2, sizeof(teststr2)) == &s1);
 	ctest_assert(sizeof(teststr2) == s1.len);
 	ctest_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2)));
 	CTEST_END;
@@ -162,18 +120,18 @@ test_stxcpy(void)
 }
 
 void
-test_stxapp(void)
+test_stxapp_mem(void)
 {
 	stx s1 = {0};
 	stxgrow(&s1, sizeof(teststr2) - 1);
 	CTEST_BEGIN;
-	ctest_assert(stxapp(&s1, teststr2, sizeof(teststr2) - 1) == &s1);
+	ctest_assert(stxapp_mem(&s1, teststr2, sizeof(teststr2) - 1) == &s1);
 	ctest_assert(sizeof(teststr2) - 1 == s1.size);
 	ctest_assert(sizeof(teststr2) - 1 == s1.len);
 	ctest_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2) - 1));
 
 	stxgrow(&s1, sizeof("end"));
-	ctest_assert(stxapp(&s1, "end", sizeof("end")) == &s1);
+	ctest_assert(stxapp_mem(&s1, "end", sizeof("end")) == &s1);
 	ctest_assert(sizeof(teststr2) - 1 + sizeof("end") == s1.size);
 	ctest_assert(sizeof(teststr2) - 1 + sizeof("end") == s1.len);
 	ctest_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2) - 1));
@@ -184,13 +142,13 @@ test_stxapp(void)
 }
 
 void
-test_stxins(void)
+test_stxins_mem(void)
 {
 	stx s1 = {0};
 	stxgrow(&s1, sizeof(teststr3) + sizeof(teststr2) - 1);
-	stxcpy(&s1, teststr3, sizeof(teststr3));
+	stxcpy_mem(&s1, teststr3, sizeof(teststr3));
 	CTEST_BEGIN;
-	ctest_assert(&s1 == stxins(&s1, 10, teststr2, sizeof(teststr2) - 1));
+	ctest_assert(&s1 == stxins_mem(&s1, 10, teststr2, sizeof(teststr2) - 1));
 	ctest_assert(0 == memcmp(s1.mem + 10, teststr2, sizeof(teststr2) - 1));
 	ctest_assert(0 == memcmp(s1.mem, teststr3, 10));
 	//ctest_assert(0 == memcmp(s1.mem + 10 + sizeof(teststr2) - 1, teststr3 + 10 + sizeof(teststr2), sizeof(teststr3) - 10 ));
@@ -202,9 +160,9 @@ void
 test_stxeq()
 {
 	stx s1, s2, s3;
-	stxcpy(stxnew(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
-	stxcpy(stxnew(&s2, sizeof(teststr4)), teststr4, sizeof(teststr4));
-	stxcpy(stxnew(&s3, sizeof(teststr4)), teststr2, sizeof(teststr2));
+	stxcpy_mem(stxnew(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	stxcpy_mem(stxnew(&s2, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	stxcpy_mem(stxnew(&s3, sizeof(teststr4)), teststr2, sizeof(teststr2));
 	CTEST_BEGIN;
 	ctest_assert(true == stxeq(&s1, &s2));
 	ctest_assert(false == stxeq(&s1, &s3));
@@ -218,7 +176,7 @@ void
 test_stxtrunc()
 {
 	stx s1;
-	stxcpy(stxnew(&s1, 4), "wall", 4);
+	stxcpy_mem(stxnew(&s1, 4), "wall", 4);
 	CTEST_BEGIN;
 	ctest_assert(&s1 == stxtrunc(&s1, 2));
 	ctest_assert(2 == s1.len);
@@ -232,7 +190,7 @@ void
 test_stxslice()
 {
 	stx s1, slice;
-	stxcpy(stxnew(&s1, sizeof(teststr3)), teststr3, sizeof(teststr3));
+	stxcpy_mem(stxnew(&s1, sizeof(teststr3)), teststr3, sizeof(teststr3));
 	CTEST_BEGIN;
 	ctest_assert(&slice == stxslice(&slice, &s1, 4, 6));
 	ctest_assert(2 == slice.len);
@@ -243,12 +201,12 @@ test_stxslice()
 }
 
 void
-test_stxfind()
+test_stxfind_mem()
 {
 	stx s1, slice;
-	stxcpy(stxnew(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	stxcpy_mem(stxnew(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
 	CTEST_BEGIN;
-	ctest_assert(&slice == stxfind(&slice, &s1, "world", 5));
+	ctest_assert(&slice == stxfind_mem(&slice, &s1, "world", 5));
 	ctest_assert(5 == slice.len);
 	ctest_assert(s1.size >= slice.size);
 	ctest_assert(0 == strncmp(slice.mem, "world", 5));
@@ -260,7 +218,7 @@ void
 test_stxrstrip()
 {
 	stx s1;
-	stxcpy(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
+	stxcpy_mem(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
 	CTEST_BEGIN;
 	ctest_assert(&s1 == stxrstrip(&s1, "lxji", 5));
 	ctest_assert(0 == strncmp(s1.mem, teststr5, sizeof(teststr5) - 5));
@@ -274,7 +232,7 @@ void
 test_stxlstrip()
 {
 	stx s1;
-	stxcpy(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
+	stxcpy_mem(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
 	CTEST_BEGIN;
 	ctest_assert(&s1 == stxlstrip(&s1, "lxji", 4));
 	ctest_assert(0 == strncmp(s1.mem, teststr5 + 4, sizeof(teststr5) - 4));
@@ -285,7 +243,7 @@ test_stxlstrip()
 }
 
 int
-main()
+main(void)
 {
 	ctest_intro();
 
@@ -295,14 +253,14 @@ main()
 	test_stxensure_size();
 	test_stxvalid();
 
-	test_stxcpy();
-	test_stxapp();
-	test_stxins();
+	test_stxcpy_mem();
+	test_stxapp_mem();
+	test_stxins_mem();
 
 	test_stxeq();
 	test_stxtrunc();
 	test_stxslice();
-	test_stxfind();
+	test_stxfind_mem();
 
 	test_stxrstrip();
 	test_stxlstrip();
