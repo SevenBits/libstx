@@ -6,6 +6,3 @@
 # Packages
 *.tar
 *.gz
-
-# Compiled tests
-test*
