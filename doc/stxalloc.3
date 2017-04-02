@@ -1,0 +1,34 @@
+.TH STXALLOC 3 libstx
+.SH NAME
+ stxalloc - Allocate memory in a stx for a number of bytes.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B void stxalloc(stx *\fIsp\fP, size_t \fIsize\fP);
+
+.B #include <libstx.hpp>
+
+.B void libstx::alloc(stx *\fIsp\fP, size_t \fIsize\fP);
+
+.SH DESCRIPTION
+.B stxalloc()
+and
+.B libstx::alloc()
+allocate memory for
+.I sp->mem
+then set
+.I sp->len
+and 
+.I sp->size
+to 0.
+.SH RETURN VALUE
+.B stxalloc()
+and
+.B libstx::alloc()
+return a pointer to
+.I sp
+upon successful allocation, NULL otherwise.
+.SH SEE ALSO
+.BR libstx (7),
+.BR stxensure_size (3),
+.BR stxgrow (3)
