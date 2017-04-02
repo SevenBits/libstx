@@ -10,7 +10,6 @@ FUN =\
 	stxapp\
 	stxcpy\
 	stxdel\
-	stxdup\
 	stxensure_size\
 	stxeq\
 	stxfind\
@@ -55,19 +54,19 @@ ${TARGET}: ${OBJ}
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
-test: test.c ${TARGET} ${OBJ}
+ctest: ctest.c ${TARGET} ${OBJ} ${HDR}
 	@printf "CC $<\n"
-	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ test.c ${OBJ}
+	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ ctest.c ${OBJ}
 
-check: test
-	@./test
+check: ctest
+	@./ctest
 
-vcheck: test
-	@valgrind ./test
+vcheck: ctest
+	@valgrind ./ctest
 
 clean:
 	@printf "Cleaning ... "
-	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz test
+	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz ctest
 	@printf "done.\n"
 
 dist: clean

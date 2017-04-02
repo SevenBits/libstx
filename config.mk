@@ -1,4 +1,4 @@
-VERSION = 0.0.0
+VERSION = 1.0.0
 
 # System paths
 PREFIX = /usr/local
@@ -11,4 +11,4 @@ LDFLAGS = -s
 
 # Compiler settings
 CC = cc
-CFLAGS = -std=c99 -pedantic -O2 -Wall -Wextra -static
+CFLAGS = -std=c11 -pedantic -O2 -Wall -Wextra -static
