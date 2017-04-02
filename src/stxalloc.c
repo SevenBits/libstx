@@ -2,7 +2,7 @@
 #include "internal.h"
 
 stx *
-stxnew(stx *sp, size_t n)
+stxalloc(stx *sp, size_t n)
 {
 	memset(sp, 0, sizeof(*sp));
 	if (!stxgrow(sp, n))

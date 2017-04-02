@@ -15,20 +15,18 @@ FUN =\
 	stxfind\
 	stxgrow\
 	stxins\
-	stxnew\
+	stxalloc\
 	stxslice\
 	stxstrip\
 	stxswap\
 	stxtrunc\
 	stxuni8f32\
 	stxval\
-
-FUN_INLINE =\
-	stxavail
+	stxavail\
 
 SRC = ${FUN:=.c}
 OBJ = ${FUN:=.o}
-MAN3 = ${FUN:=.3} ${FUN_INLINE:=.3}
+MAN3 = ${FUN:=.3}
 MAN7 = ${TARGET:=.7}
 
 HDR = libstx.h src/internal.h
