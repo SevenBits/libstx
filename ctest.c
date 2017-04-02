@@ -63,11 +63,11 @@ test_stxgrow(void)
 }
 
 void
-test_stxnew(void)
+test_stxalloc(void)
 {
 	stx s1;
 	CTEST_BEGIN;
-	ctest_assert(stxnew(&s1, 1) == &s1);
+	ctest_assert(stxalloc(&s1, 1) == &s1);
 	assert_non_null(&s1, 0, 1);
 	CTEST_END;
 	stxdel(&s1);
@@ -94,9 +94,9 @@ test_stxvalid(void)
 	stx s1, s2, s3;
 	CTEST_BEGIN;
 	s1.mem = NULL;
-	stxnew(&s2, 5);
+	stxalloc(&s2, 5);
 	s2.len = 10;
-	stxnew(&s3, 10);
+	stxalloc(&s3, 10);
 	ctest_assert(NULL == stxvalid(&s1));
 	ctest_assert(NULL == stxvalid(&s2));
 	ctest_assert(&s3 == stxvalid(&s3));
@@ -160,9 +160,9 @@ void
 test_stxeq()
 {
 	stx s1, s2, s3;
-	stxcpy_mem(stxnew(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
-	stxcpy_mem(stxnew(&s2, sizeof(teststr4)), teststr4, sizeof(teststr4));
-	stxcpy_mem(stxnew(&s3, sizeof(teststr4)), teststr2, sizeof(teststr2));
+	stxcpy_mem(stxalloc(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	stxcpy_mem(stxalloc(&s2, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	stxcpy_mem(stxalloc(&s3, sizeof(teststr4)), teststr2, sizeof(teststr2));
 	CTEST_BEGIN;
 	ctest_assert(true == stxeq(&s1, &s2));
 	ctest_assert(false == stxeq(&s1, &s3));
@@ -176,7 +176,7 @@ void
 test_stxtrunc()
 {
 	stx s1;
-	stxcpy_mem(stxnew(&s1, 4), "wall", 4);
+	stxcpy_mem(stxalloc(&s1, 4), "wall", 4);
 	CTEST_BEGIN;
 	ctest_assert(&s1 == stxtrunc(&s1, 2));
 	ctest_assert(2 == s1.len);
@@ -190,7 +190,7 @@ void
 test_stxslice()
 {
 	stx s1, slice;
-	stxcpy_mem(stxnew(&s1, sizeof(teststr3)), teststr3, sizeof(teststr3));
+	stxcpy_mem(stxalloc(&s1, sizeof(teststr3)), teststr3, sizeof(teststr3));
 	CTEST_BEGIN;
 	ctest_assert(&slice == stxslice(&slice, &s1, 4, 6));
 	ctest_assert(2 == slice.len);
@@ -204,7 +204,7 @@ void
 test_stxfind_mem()
 {
 	stx s1, slice;
-	stxcpy_mem(stxnew(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
+	stxcpy_mem(stxalloc(&s1, sizeof(teststr4)), teststr4, sizeof(teststr4));
 	CTEST_BEGIN;
 	ctest_assert(&slice == stxfind_mem(&slice, &s1, "world", 5));
 	ctest_assert(5 == slice.len);
@@ -218,7 +218,7 @@ void
 test_stxrstrip()
 {
 	stx s1;
-	stxcpy_mem(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
+	stxcpy_mem(stxalloc(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
 	CTEST_BEGIN;
 	ctest_assert(&s1 == stxrstrip(&s1, "lxji", 5));
 	ctest_assert(0 == strncmp(s1.mem, teststr5, sizeof(teststr5) - 5));
@@ -232,7 +232,7 @@ void
 test_stxlstrip()
 {
 	stx s1;
-	stxcpy_mem(stxnew(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
+	stxcpy_mem(stxalloc(&s1, sizeof(teststr5)), teststr5, sizeof(teststr5));
 	CTEST_BEGIN;
 	ctest_assert(&s1 == stxlstrip(&s1, "lxji", 4));
 	ctest_assert(0 == strncmp(s1.mem, teststr5 + 4, sizeof(teststr5) - 4));
@@ -249,7 +249,7 @@ main(void)
 
 	test_stxdel();
 	test_stxgrow();
-	test_stxnew();
+	test_stxalloc();
 	test_stxensure_size();
 	test_stxvalid();
 
