@@ -93,12 +93,25 @@ test_stxvalid(void)
 void
 test_stxcpy_mem(void)
 {
-	stx s1 = {0};
-	stxgrow(&s1, sizeof(teststr2));
+	stx s1;
+	stxalloc(&s1, sizeof(teststr2));
 	test_BEGIN;
 	test_assert(stxcpy_mem(&s1, teststr2, sizeof(teststr2)) == &s1);
 	test_assert(sizeof(teststr2) == s1.len);
 	test_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2)));
+	test_END;
+	stxdel(&s1);
+}
+
+void
+test_stxcpy_str(void)
+{
+	stx s1;
+	stxalloc(&s1, sizeof(teststr2) - 1);
+	test_BEGIN;
+	test_assert(stxcpy_str(&s1, teststr2) == &s1);
+	test_assert(sizeof(teststr2) - 1 == s1.len);
+	test_assert(0 == memcmp(s1.mem, teststr2, sizeof(teststr2) - 1));
 	test_END;
 	stxdel(&s1);
 }
@@ -245,6 +258,7 @@ main(void)
 	test_stxvalid();
 
 	test_stxcpy_mem();
+	test_stxcpy_str();
 	test_stxapp_mem();
 	test_stxins_mem();
 

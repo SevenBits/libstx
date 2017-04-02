@@ -6,3 +6,6 @@
 # Packages
 *.tar
 *.gz
+
+# Custom
+test
