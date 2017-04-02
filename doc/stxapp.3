@@ -2,17 +2,26 @@
 .SH NAME
 stxapp, stxappstx, stxapp_uni, stxappdup - append to struct stx.
 .SH SYNOPSIS
-.nf
+
 #include <libstx.h>
 
-int stxapp(stx *\fIsp\fP, const char *\fIsrc\fP, size_t \fIlen\fP);
+stx *stxapp_mem(stx *\fIsp\fP, const char *\fIsrc\fP, size_t \fIlen\fP);
 
-int stxappstx(stx *\fIsp\fP, const stx *\fIsrc\fP);
+stx *stxapp_str(stx *\fIsp\fP, const char *\fIsrc\fP);
 
-int stxappuni(stx *\fIsp\fP, uint32_t \fIwc\fP);
+stx *stxapp_uni(stx *\fIsp\fP, uint32_t \fIwc\fP);
 
-int stxappdup(stx *\fIsp\fP);
-.fi
+stx *stxapp_stx(stx *\fIsp\fP, const stx *\fIsrc\fP);
+
+#include <libstx.hpp>
+
+stx *libstx::app(stx *\fIsp\fP, const char *\fIsrc\fP, size_t \fIlen\fP);
+
+stx *libstx::app(stx *\fIsp\fP, const char *\fIsrc\fP);
+
+stx *libstx::app(stx *\fIsp\fP, uint32_t \fIwc\fP);
+
+stx *libstx::app(stx *\fIsp\fP, const stx *\fIsrc\fP);
 .SH DESCRIPTION
 .B stxapp()
 appends

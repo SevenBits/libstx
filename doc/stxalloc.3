@@ -4,11 +4,11 @@
 .SH SYNOPSIS
 .B #include <libstx.h>
 
-.B void stxalloc(stx *\fIsp\fP, size_t \fIsize\fP);
+.B int stxalloc(stx *\fIsp\fP, size_t \fIsize\fP);
 
 .B #include <libstx.hpp>
 
-.B void libstx::alloc(stx *\fIsp\fP, size_t \fIsize\fP);
+.B int libstx::alloc(stx *\fIsp\fP, size_t \fIsize\fP);
 
 .SH DESCRIPTION
 .B stxalloc()
@@ -25,9 +25,7 @@ to 0.
 .B stxalloc()
 and
 .B libstx::alloc()
-return a pointer to
-.I sp
-upon successful allocation, NULL otherwise.
+return 0 upon a successful allocation, or -1 if the allocation fails.
 .SH SEE ALSO
 .BR libstx (7),
 .BR stxensure_size (3),

@@ -1,28 +1,31 @@
 .TH STXENSURE_SIZE 3 libstx
 .SH NAME
-stxensure_size - Ensure a that a struct stx's mem field is at least a given size.
+stxensure_size - Ensure a that a stx can contain at least a minimum amount of
+bytes.
 .SH SYNOPSIS
-.nf
 #include <libstx.h>
 
-int stxensure_size(stx *s1, size_t size);
+int stxensure_size(stx *sp, size_t size);
 
-.fi
+#include <libstx.hpp>
+
+int libstx::ensure_size(stx *sp, size_t size);
 .SH DESCRIPTION
 .B stxensure_size()
-checks if
-.I s1->mem
+and
+.B libstx::ensure_size()
+check if the memory buffer of
+.I sp
 can contain at least
 .I size
-bytes. If
-.I s1->mem
-cannot contain the requested amount of bytes, it will be resized to hold at
-exactly that many bytes. Otherwise, no action will be performed.
+bytes. If the memory buffer cannot contain the requested amount of bytes, it
+will be resized to hold at exactly that many bytes. Otherwise, no action will
+be performed.
 .SH RETURN VALUE
-.BR stxensure_size() ,
-returns a pointer to
-.I s1
-upon a successful resize, or NULL if resizing would result in an integer
-overflow.
+.B stxensure_size()
+and 
+.B libstx::ensure_size()
+return 0 if the memory reallocation was successful, or -1 if the
+reallocation failed (The memory buffer is untouched in this case).
 .SH SEE ALSO
 .BR liboystr (7)
