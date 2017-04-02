@@ -6,6 +6,8 @@ include config.mk
 CFLAGS := -I .
 
 SRC_DIR = src
+DOC_DIR = doc
+
 FUN =\
 	stxapp\
 	stxcpy\
@@ -27,7 +29,7 @@ FUN =\
 SRC = ${FUN:=.c}
 OBJ = ${FUN:=.o}
 MAN3 = ${FUN:=.3}
-MAN7 = ${TARGET:=.7}
+MAN7 = ${TARGET:.a=.7}
 
 HDR = libstx.h src/internal.h
 TARGET = libstx.a
@@ -95,14 +97,17 @@ install: all
 	@printf "Installing library header to ${DESTDIR}${INCLUDEPREFIX}.\n"
 	@mkdir -p ${DESTDIR}${INCLUDEPREFIX}
 	@cp -f ${HDR} ${DESTDIR}${INCLUDEPREFIX}
+	@printf "Installing man pages to ${DESTDIR}${MANPREFIX}.\n"
+	@mkdir -p ${DESTDIR}${MANPREFIX}/man7
+	@cp -f $(addprefix ${DOC_DIR}/, ${MAN7}) ${DESTDIR}${MANPREFIX}/man7  
+	@mkdir -p ${DESTDIR}${MANPREFIX}/man3
+	@cp -f $(addprefix ${DOC_DIR}/, ${MAN3}) ${DESTDIR}${MANPREFIX}/man3
 
 uninstall:
 	@printf "Removing library archive from ${DESTDIR}${LIBPREFIX}.\n"
 	@rm -f ${DESTDIR}${LIBPREFIX}/${TARGET}
 	@printf "Removing library header from ${DESTDIR}${INCLUDEPREFIX}.\n"
 	@rm -f ${DESTDIR}${PREFIX}/include/${HDR}
-	@printf "Removing manual page from ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}.\n"
-	@rm -f ${DESTDIR}${MANPREFIX}/man3/${MANPAGE}
 
 #man -t $< | ps2pdf - $@.pdf
 
