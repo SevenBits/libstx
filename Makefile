@@ -70,6 +70,9 @@ clean:
 	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz ctest
 	@printf "done.\n"
 
+vcheck:
+	@valgrind ./ctest
+
 dist: clean
 	@printf "Creating dist tarball ... "
 	@mkdir -p ${DIST}
