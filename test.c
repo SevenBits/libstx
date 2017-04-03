@@ -58,15 +58,15 @@ test_stxalloc(void)
 }
 
 void
-test_stxensure_size(void)
+test_stxensuresize(void)
 {
 	stx s1;
 	test_BEGIN;
 	memset(&s1, 0, sizeof(s1));
-	test_assert(0 == stxensure_size(&s1, 65535));
+	test_assert(0 == stxensuresize(&s1, 65535));
 	assert_non_null(&s1, 0, 65535);
 
-	test_assert(0 == stxensure_size(&s1, 64));
+	test_assert(0 == stxensuresize(&s1, 64));
 	assert_non_null(&s1, 0, 65535);
 	test_END;
 	stxdel(&s1);
@@ -254,7 +254,7 @@ main(void)
 
 	test_stxgrow();
 	test_stxalloc();
-	test_stxensure_size();
+	test_stxensuresize();
 	test_stxvalid();
 
 	test_stxcpy_mem();
