@@ -78,7 +78,7 @@ namespace libstx {
 	stx *find(stx *slice, stx *sp, const stx *src)
 	{return stxfind_stx(slice, sp, src);}
 
-	stx *slice(stx *slice, stx *sp, size_t begin, size_t end)
+	stx *slice(stx *slice, const stx *sp, size_t begin, size_t end)
 	{return stxslice(slice, sp, begin, end);}
 
 	stx *rstrip(stx *sp, const char *chs, size_t len)

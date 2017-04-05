@@ -38,7 +38,7 @@ stx *stxapp_stx(stx *sp, const stx *src);
 stx *stxfind_mem(stx *slice, stx *sp, const char *src, size_t len);
 stx *stxfind_str(stx *slice, stx *sp, const char *src);
 stx *stxfind_stx(stx *slice, stx *sp, const stx *src);
-stx *stxslice(stx *slice, stx *sp, size_t begin, size_t end);
+stx *stxslice(stx *slice, const stx *sp, size_t begin, size_t end);
 
 stx *stxrstrip(stx *sp, const char *chs, size_t len);
 stx *stxlstrip(stx *sp, const char *chs, size_t len);

@@ -2,7 +2,7 @@
 #include "internal.h"
 
 stx *
-stxslice(stx *slice, stx *src, size_t begin, size_t end)
+stxslice(stx *slice, const stx *src, size_t begin, size_t end)
 {
 	slice->mem = src->mem + begin;
 	slice->size = src->size - begin;
