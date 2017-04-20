@@ -7,12 +7,18 @@
 #include <stdint.h>
 
 struct stx {
-    char *mem;
-    size_t len;
-    size_t size;
+	char *mem;
+	size_t len;
+	size_t size;
+};
+
+struct spx {
+	char *mem;
+	size_t len;
 };
 
 typedef struct stx stx;
+typedef struct spx spx;
 
 int stxalloc(stx *sp, size_t n);
 void stxdel(const stx *sp);
