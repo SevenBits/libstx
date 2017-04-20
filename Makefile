@@ -9,7 +9,9 @@ SRC_DIR = src
 DOC_DIR = doc
 
 FUN =\
+	stxalloc\
 	stxapp\
+	stxavail\
 	stxcpy\
 	stxdel\
 	stxensuresize\
@@ -17,14 +19,13 @@ FUN =\
 	stxfind\
 	stxgrow\
 	stxins\
-	stxalloc\
 	stxslice\
 	stxstrip\
 	stxswap\
+	stxterm\
 	stxtrunc\
 	stxuni8f32\
 	stxvalid\
-	stxavail\
 
 SRC = ${FUN:=.c}
 OBJ = ${FUN:=.o}

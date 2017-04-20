@@ -2,10 +2,14 @@
 #ifndef LIBSTX_H
 #define LIBSTX_H
 
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
 struct stx {
+    char *mem;
     size_t len;
     size_t size;
-    char *mem;
 };
 
 typedef struct stx stx;
@@ -21,6 +25,8 @@ size_t stxavail(stx *sp);
 bool stxeq(const stx *s1, const stx *s2);
 void stxswap(stx *s1, stx *s2);
 stx *stxtrunc(stx *sp, size_t len);
+stx *stxterm(stx *sp);
+
 stx *stxcpy_mem(stx *sp, const char *src, size_t len);
 stx *stxcpy_str(stx *sp, const char *src);
 stx *stxcpy_stx(stx *sp, const stx *src);
@@ -34,6 +40,10 @@ stx *stxapp_mem(stx *sp, const char *src, size_t len);
 stx *stxapp_str(stx *sp, const char *src);
 stx *stxapp_uni(stx *sp, uint32_t wc);
 stx *stxapp_stx(stx *sp, const stx *src);
+// Note, last argument must be 0 for the function to terminate properly.
+stx *stxvapp_str(stx *sp, const char *args, ...);
+stx *stxvapp_uni(stx *sp, uint32_t args, ...);
+stx *stxvapp_stx(stx *sp, const stx *args, ...);
 
 stx *stxfind_mem(stx *slice, stx *sp, const char *src, size_t len);
 stx *stxfind_str(stx *slice, stx *sp, const char *src);
