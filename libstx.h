@@ -46,10 +46,6 @@ stx *stxapp_mem(stx *sp, const char *src, size_t len);
 stx *stxapp_str(stx *sp, const char *src);
 stx *stxapp_uni(stx *sp, uint32_t wc);
 stx *stxapp_stx(stx *sp, const stx *src);
-// Note, last argument must be 0 for the function to terminate properly.
-stx *stxvapp_str(stx *sp, const char *args, ...);
-stx *stxvapp_uni(stx *sp, uint32_t args, ...);
-stx *stxvapp_stx(stx *sp, const stx *args, ...);
 
 stx *stxfind_mem(stx *slice, stx *sp, const char *src, size_t len);
 stx *stxfind_str(stx *slice, stx *sp, const char *src);
