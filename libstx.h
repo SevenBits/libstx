@@ -32,6 +32,7 @@ bool stxeq(const stx *s1, const stx *s2);
 void stxswap(stx *s1, stx *s2);
 stx *stxtrunc(stx *sp, size_t len);
 stx *stxterm(stx *sp);
+spx stxref(stx *sp);
 
 stx *stxcpy_mem(stx *sp, const char *src, size_t len);
 stx *stxcpy_str(stx *sp, const char *src);
@@ -47,10 +48,10 @@ stx *stxapp_str(stx *sp, const char *src);
 stx *stxapp_uni(stx *sp, uint32_t wc);
 stx *stxapp_stx(stx *sp, const stx *src);
 
-stx *stxfind_mem(stx *slice, stx *sp, const char *src, size_t len);
-stx *stxfind_str(stx *slice, stx *sp, const char *src);
-stx *stxfind_stx(stx *slice, stx *sp, const stx *src);
-stx *stxslice(stx *slice, const stx *sp, size_t begin, size_t end);
+spx stxfind_mem(stx *sp, const char *src, size_t len);
+spx stxfind_str(stx *sp, const char *src);
+spx stxfind_stx(stx *sp, const stx *src);
+spx stxslice(const stx *sp, size_t begin, size_t end);
 
 stx *stxrstrip(stx *sp, const char *chs, size_t len);
 stx *stxlstrip(stx *sp, const char *chs, size_t len);

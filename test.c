@@ -194,10 +194,10 @@ test_stxslice()
 	stxalloc(&s1, sizeof(teststr3));
 	stxcpy_mem(&s1, teststr3, sizeof(teststr3));
 	test_BEGIN;
-	test_assert(&slice == stxslice(&slice, &s1, 4, 6));
-	test_assert(2 == slice.len);
-	test_assert(sizeof(teststr3) - 4 == slice.size);
-	test_assert(s1.mem + 4 == slice.mem);
+	const spx sp1= stxslice(&s1, 4, 6);
+	test_assert(NULL != sp1.mem);
+	test_assert(2 == sp1.len);
+	test_assert(s1.mem + 4 == sp1.mem);
 	test_END;
 	stxdel(&s1);
 }
@@ -205,14 +205,14 @@ test_stxslice()
 void
 test_stxfind_mem()
 {
-	stx s1, slice;
+	stx s1;
 	stxalloc(&s1, sizeof(teststr4));
 	stxcpy_mem(&s1, teststr4, sizeof(teststr4));
 	test_BEGIN;
-	test_assert(&slice == stxfind_mem(&slice, &s1, "world", 5));
-	test_assert(5 == slice.len);
-	test_assert(s1.size >= slice.size);
-	test_assert(0 == strncmp(slice.mem, "world", 5));
+	const spx sp1 = stxfind_mem(&s1, "world", 5);
+	test_assert(NULL != sp1.mem);
+	test_assert(5 == sp1.len);
+	test_assert(0 == strncmp(sp1.mem, "world", 5));
 	test_END;
 	stxdel(&s1);
 }

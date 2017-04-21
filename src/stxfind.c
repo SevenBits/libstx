@@ -1,16 +1,17 @@
 // See LICENSE file for copyright and license details
 #include "internal.h"
 
-stx *
-stxfind_mem(stx *slice, stx *haystack, const char *needle, size_t len)
+spx
+stxfind_mem(stx *haystack, const char *needle, size_t len)
 {
+	spx slice = {0};
 	size_t i, j;
 
 	if (0 == len)
-		return NULL;
+		return slice;
 
 	if (haystack->len < len)
-		return NULL;
+		return slice;
 
 	for (i=0; i<haystack->len; ++i) {
 		for (j=i; j<i+len; ++j) {
@@ -20,21 +21,20 @@ stxfind_mem(stx *slice, stx *haystack, const char *needle, size_t len)
 		}
 
 		if (j-i == len) {
-			stxslice(slice, haystack, i, j);
-			return slice;
+			return stxslice(haystack, i, j);
 		}
 	}
-	return NULL;
+	return slice;
 }
 
-stx *
-stxfind_str(stx *slice, stx *haystack, const char *needle)
+spx
+stxfind_str(stx *haystack, const char *needle)
 {
-	return stxfind_mem(slice, haystack, needle, strlen(needle));
+	return stxfind_mem(haystack, needle, strlen(needle));
 }
 
-stx *
-stxfind_stx(stx *slice, stx *sp, const stx *src)
+spx
+stxfind_spx(stx *sp, const spx src)
 {
-	return stxfind_mem(slice, sp, src->mem, src->len);
+	return stxfind_mem(sp, src.mem, src.len);
 }

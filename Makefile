@@ -19,6 +19,7 @@ FUN =\
 	stxfind\
 	stxgrow\
 	stxins\
+	stxref\
 	stxslice\
 	stxstrip\
 	stxswap\
