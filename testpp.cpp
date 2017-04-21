@@ -32,9 +32,9 @@ int main(void)
 	libstx::app(&s1, " ", 1);
 	libstx::app(&s1, &s2);
 
-	libstx::find(&slice, &s1, "world");
-	libstx::find(&slice, &s1, "hello", 5);
-	libstx::find(&slice, &s1, &s2);
+	libstx::find(&s1, "world");
+	libstx::find(&s1, "hello", 5);
+	libstx::find(&s1, stxref(&s2));
 
 	libstx::eq(&s1, &s2);
 	printf("success!\n");

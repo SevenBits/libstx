@@ -36,6 +36,9 @@ namespace libstx {
 	stx *trunc(stx *sp, size_t len)
 	{return stxtrunc(sp, len);}
 
+	spx ref(const stx *sp)
+	{return stxref(sp);}
+
 	stx *cpy(stx *sp, const char *src, size_t len)
 	{return stxcpy_mem(sp, src, len);}
 
@@ -69,17 +72,17 @@ namespace libstx {
 	stx *app(stx *sp, const stx *src)
 	{return stxapp_stx(sp, src);}
 
-	stx *find(stx *slice, stx *sp, const char *src, size_t len)
-	{return stxfind_mem(slice, sp, src, len);}
+	spx find(stx *sp, const char *src, size_t len)
+	{return stxfind_mem(sp, src, len);}
 
-	stx *find(stx *slice, stx *sp, const char *src)
-	{return stxfind_str(slice, sp, src);}
+	spx find(stx *sp, const char *src)
+	{return stxfind_str(sp, src);}
 
-	stx *find(stx *slice, stx *sp, const stx *src)
-	{return stxfind_stx(slice, sp, src);}
+	spx find(stx *sp, const spx src)
+	{return stxfind_spx(sp, src);}
 
-	stx *slice(stx *slice, const stx *sp, size_t begin, size_t end)
-	{return stxslice(slice, sp, begin, end);}
+	spx slice(const stx *sp, size_t begin, size_t end)
+	{return stxslice(sp, begin, end);}
 
 	stx *rstrip(stx *sp, const char *chs, size_t len)
 	{return stxrstrip(sp, chs, len);}
