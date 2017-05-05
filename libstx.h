@@ -28,7 +28,9 @@ int stxensuresize(stx *sp, size_t n);
 int stxvalid(stx *sp);
 
 size_t stxavail(stx *sp);
-bool stxeq(const stx *s1, const stx *s2);
+
+bool stxeq(spx s1, spx s2);
+
 void stxswap(stx *s1, stx *s2);
 stx *stxtrunc(stx *sp, size_t len);
 stx *stxterm(stx *sp);
@@ -36,22 +38,23 @@ spx stxref(const stx *sp);
 
 stx *stxcpy_mem(stx *sp, const char *src, size_t len);
 stx *stxcpy_str(stx *sp, const char *src);
-stx *stxcpy_stx(stx *sp, const stx *src);
+stx *stxcpy_spx(stx *sp, const spx src);
 
 stx *stxins_mem(stx *sp, size_t pos, const char *src, size_t len);
 stx *stxins_str(stx *sp, size_t pos, const char *src);
 stx *stxins_uni(stx *sp, size_t pos, uint32_t wc);
-stx *stxins_stx(stx *sp, size_t pos, const stx *src);
+stx *stxins_spx(stx *sp, size_t pos, const spx src);
 
 stx *stxapp_mem(stx *sp, const char *src, size_t len);
 stx *stxapp_str(stx *sp, const char *src);
 stx *stxapp_uni(stx *sp, uint32_t wc);
-stx *stxapp_stx(stx *sp, const stx *src);
+stx *stxapp_spx(stx *sp, const spx src);
 
-spx stxfind_mem(stx *sp, const char *src, size_t len);
-spx stxfind_str(stx *sp, const char *src);
-spx stxfind_spx(stx *sp, const spx src);
-spx stxslice(const stx *sp, size_t begin, size_t end);
+spx stxfind_mem(const spx haystack, const char *needle, size_t len);
+spx stxfind_str(const spx haystack, const char *needle);
+spx stxfind_spx(const spx haystack, const spx needle);
+
+spx stxslice(const spx sp, size_t begin, size_t end);
 
 stx *stxrstrip(stx *sp, const char *chs, size_t len);
 stx *stxlstrip(stx *sp, const char *chs, size_t len);

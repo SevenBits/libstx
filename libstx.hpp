@@ -27,7 +27,7 @@ namespace libstx {
 	int valid(stx *sp)
 	{return stxvalid(sp);}
 
-	bool eq(const stx *s1, const stx *s2)
+	bool eq(const spx s1, const spx s2)
 	{return stxeq(s1, s2);}
 
 	void swap(stx *s1, stx *s2)
@@ -41,55 +41,43 @@ namespace libstx {
 
 	stx *cpy(stx *sp, const char *src, size_t len)
 	{return stxcpy_mem(sp, src, len);}
-
 	stx *cpy(stx *sp, const char *src)
 	{return stxcpy_str(sp, src);}
-
-	stx *cpy(stx *sp, const stx *src)
-	{return stxcpy_stx(sp, src);}
+	stx *cpy(stx *sp, const spx src)
+	{return stxcpy_spx(sp, src);}
 
 	stx *ins(stx *sp, size_t pos, const char *src, size_t len)
 	{return stxins_mem(sp, pos, src, len);}
-
 	stx *ins(stx *sp, size_t pos, const char *src)
 	{return stxins_str(sp, pos, src);}
-
 	stx *ins(stx *sp, size_t pos, uint32_t wc)
 	{return stxins_uni(sp, pos, wc);}
-
-	stx *ins(stx *sp, size_t pos, const stx *src)
-	{return stxins_stx(sp, pos, src);}
+	stx *ins(stx *sp, size_t pos, const spx src)
+	{return stxins_spx(sp, pos, src);}
 
 	stx *app(stx *sp, const char *src, size_t len)
 	{return stxapp_mem(sp, src, len);}
-
 	stx *app(stx *sp, const char *src)
 	{return stxapp_str(sp, src);}
-
 	stx *app(stx *sp, uint32_t wc)
 	{return stxapp_uni(sp, wc);}
+	stx *app(stx *sp, const spx src)
+	{return stxapp_spx(sp, src);}
 
-	stx *app(stx *sp, const stx *src)
-	{return stxapp_stx(sp, src);}
+	spx find(spx haystack, const char *needle, size_t len)
+	{return stxfind_mem(haystack, needle, len);}
+	spx find(spx haystack, const char *needle)
+	{return stxfind_str(haystack, needle);}
+	spx find(spx haystack, const spx needle)
+	{return stxfind_spx(haystack, needle);}
 
-	spx find(stx *sp, const char *src, size_t len)
-	{return stxfind_mem(sp, src, len);}
-
-	spx find(stx *sp, const char *src)
-	{return stxfind_str(sp, src);}
-
-	spx find(stx *sp, const spx src)
-	{return stxfind_spx(sp, src);}
-
-	spx slice(const stx *sp, size_t begin, size_t end)
+	spx slice(const spx sp, size_t begin, size_t end)
 	{return stxslice(sp, begin, end);}
 
 	stx *rstrip(stx *sp, const char *chs, size_t len)
 	{return stxrstrip(sp, chs, len);}
-
 	stx *lstrip(stx *sp, const char *chs, size_t len)
 	{return stxlstrip(sp, chs, len);}
-
 	stx *strip(stx *sp, const char *chs, size_t len)
 	{return stxstrip(sp, chs, len);}
 

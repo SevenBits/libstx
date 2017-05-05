@@ -2,7 +2,7 @@
 #include "internal.h"
 
 spx
-stxfind_mem(stx *haystack, const char *needle, size_t len)
+stxfind_mem(const spx haystack, const char *needle, size_t len)
 {
 	spx slice = {0};
 	size_t i, j;
@@ -10,12 +10,12 @@ stxfind_mem(stx *haystack, const char *needle, size_t len)
 	if (0 == len)
 		return slice;
 
-	if (haystack->len < len)
+	if (haystack.len < len)
 		return slice;
 
-	for (i=0; i<haystack->len; ++i) {
+	for (i=0; i<haystack.len; ++i) {
 		for (j=i; j<i+len; ++j) {
-			if (haystack->mem[j] != needle[j-i]) {
+			if (haystack.mem[j] != needle[j-i]) {
 				break;
 			}
 		}
@@ -28,13 +28,19 @@ stxfind_mem(stx *haystack, const char *needle, size_t len)
 }
 
 spx
-stxfind_str(stx *haystack, const char *needle)
+stxfind_str(const spx haystack, const char *needle)
 {
 	return stxfind_mem(haystack, needle, strlen(needle));
 }
 
 spx
-stxfind_spx(stx *sp, const spx src)
+stxfind_stx(const spx haystack, const stx *needle)
 {
-	return stxfind_mem(sp, src.mem, src.len);
+	return stxfind_mem(haystack, needle->mem, needle->len);
+}
+
+spx
+stxfind_spx(const spx haystack, const spx needle)
+{
+	return stxfind_mem(haystack, needle.mem, needle.len);
 }

@@ -26,16 +26,16 @@ int main(void)
 
 	libstx::cpy(&s2, "world");
 	libstx::cpy(&s1, "hello", 6);
-	libstx::cpy(&s1, &s2);
+	libstx::cpy(&s1, libstx::ref(&s2));
 
 	libstx::app(&s1, " ");
 	libstx::app(&s1, " ", 1);
-	libstx::app(&s1, &s2);
+	libstx::app(&s1, libstx::ref(&s2));
 
-	libstx::find(&s1, "world");
-	libstx::find(&s1, "hello", 5);
-	libstx::find(&s1, stxref(&s2));
+	libstx::find(libstx::ref(&s1), "world");
+	libstx::find(libstx::ref(&s1), "hello", 5);
+	libstx::find(libstx::ref(&s1), stxref(&s2));
 
-	libstx::eq(&s1, &s2);
+	libstx::eq(libstx::ref(&s1), libstx::ref(&s2));
 	printf("success!\n");
 }

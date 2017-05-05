@@ -164,8 +164,8 @@ test_stxeq()
 	stxcpy_mem(&s2, teststr4, sizeof(teststr4));
 	stxcpy_mem(&s3, teststr2, sizeof(teststr2));
 	test_BEGIN;
-	test_assert(true == stxeq(&s1, &s2));
-	test_assert(false == stxeq(&s1, &s3));
+	test_assert(true == stxeq(stxref(&s1), stxref(&s2)));
+	test_assert(false == stxeq(stxref(&s1), stxref(&s3)));
 	test_END;
 	stxdel(&s1);
 	stxdel(&s2);
@@ -194,7 +194,7 @@ test_stxslice()
 	stxalloc(&s1, sizeof(teststr3));
 	stxcpy_mem(&s1, teststr3, sizeof(teststr3));
 	test_BEGIN;
-	const spx sp1= stxslice(&s1, 4, 6);
+	const spx sp1 = stxslice(stxref(&s1), 4, 6);
 	test_assert(NULL != sp1.mem);
 	test_assert(2 == sp1.len);
 	test_assert(s1.mem + 4 == sp1.mem);
@@ -209,7 +209,7 @@ test_stxfind_mem()
 	stxalloc(&s1, sizeof(teststr4));
 	stxcpy_mem(&s1, teststr4, sizeof(teststr4));
 	test_BEGIN;
-	const spx sp1 = stxfind_mem(&s1, "world", 5);
+	const spx sp1 = stxfind_mem(stxref(&s1), "world", 5);
 	test_assert(NULL != sp1.mem);
 	test_assert(5 == sp1.len);
 	test_assert(0 == strncmp(sp1.mem, "world", 5));

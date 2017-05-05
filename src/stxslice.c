@@ -2,8 +2,12 @@
 #include "internal.h"
 
 spx
-stxslice(const stx *src, size_t begin, size_t end)
+stxslice(const spx src, size_t begin, size_t end)
 {
-	spx slice = {.mem = src->mem + begin, .len = end - begin};
+	spx slice = {
+		.mem = src.mem + begin,
+		.len = end - begin
+	};
+
 	return slice;
 }

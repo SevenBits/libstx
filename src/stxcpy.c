@@ -18,7 +18,7 @@ stxcpy_str(stx *sp, const char *src)
 }
 
 stx *
-stxcpy_stx(stx *dst, const stx *src)
+stxcpy_spx(stx *dst, const spx src)
 {
-	return stxcpy_mem(dst, src->mem, src->len);
+	return stxcpy_mem(dst, src.mem, src.len);
 }

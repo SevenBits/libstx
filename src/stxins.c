@@ -33,7 +33,7 @@ stxins_uni(stx *sp, size_t pos, uint32_t wc)
 }
 
 stx *
-stxins_stx(stx *s1, size_t pos, const stx *s2)
+stxins_spx(stx *s1, size_t pos, const spx s2)
 {
-	return stxins_mem(s1, pos, s2->mem, s2->len);
+	return stxins_mem(s1, pos, s2.mem, s2.len);
 }

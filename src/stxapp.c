@@ -28,7 +28,7 @@ stxapp_uni(stx *sp, uint32_t wc)
 }
 
 stx *
-stxapp_stx(stx *s1, const stx *s2)
+stxapp_spx(stx *s1, const spx s2)
 {
-	return stxapp_mem(s1, s2->mem, s2->len);
+	return stxapp_mem(s1, s2.mem, s2.len);
 }
