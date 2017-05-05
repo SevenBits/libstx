@@ -35,8 +35,8 @@ struct stx {
 };
 
 struct spx {
-	char *mem;
-	size_t len;
+	const char *mem;
+	const size_t len;
 };
 
 typedef struct stx stx;
