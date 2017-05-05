@@ -31,16 +31,26 @@ string handling operations that might either need to grow the memory to a large
 size or validate the string since the caller should know where it is most
 optimal to perform these operations.
 .SS libstx format
-The libstx string struct is a simple one, and all of it's fields are open to
-direct modification as long as the libstx remains valid after doing so.
+provided with libstx are two structures, stx and spx. A struct stx is for
+referencing dynamically resizable and mutable character array, while a struct
+spx is used for constantly referencing a another stx or spx. All member fields
+are defined as part of the API.
 .P
 .in +4n
 .nf
-typedef struct stx {
+struct stx {
+	char *mem;   // Character memory.
 	size_t len;  // Length of used bytes in \fImem\fP.
 	size_t size; // Size of the \fImem\fP field.
-	char *mem;   // Character memory.
-} stx;
+};
+
+struct spx {
+	const char *mem;   // Character memory.
+	const size_t len;  // Length of used bytes in \fImem\fP.
+};
+
+typedef struct stx stx;
+typedef struct spx spx;
 .fi
 .in
 .P
