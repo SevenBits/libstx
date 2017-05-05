@@ -6,6 +6,28 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __STDC__
+#if (__STDC_VERSION__ == 201112L)
+#define stxcpy(sp, src) _Generic((src), \
+		char *: stxcpy_str \
+		spx: stxcpy_spx)(sp, src)
+
+#define stxins(sp, src) _Generic((src), \
+		char *: stxins_str \
+		uint32_t: stxins_uni \
+		spx: stxins_spx)(sp, src)
+
+#define stxapp(sp, src) _Generic((src), \
+		char *: stxapp_str \
+		uint32_t: stxapp_uni \
+		spx: stxapp_spx)(sp, src)
+
+#define stxfind(sp, src) _Generic((src), \
+		char *: stxfind_str \
+		spx: stxfind_spx)(sp, src)
+#endif
+#endif
+
 struct stx {
 	char *mem;
 	size_t len;
