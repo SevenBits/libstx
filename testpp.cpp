@@ -37,5 +37,8 @@ int main(void)
 	libstx::find(libstx::ref(&s1), stxref(&s2));
 
 	libstx::eq(libstx::ref(&s1), libstx::ref(&s2));
+
+	libstx::del(&s1);
+	libstx::del(&s2);
 	printf("success!\n");
 }
