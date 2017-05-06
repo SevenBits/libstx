@@ -116,6 +116,25 @@ test_stxcpy_str(void)
 }
 
 void
+test_stxdup(void)
+{
+	stx s1, s2, s3;
+
+	TEST_BEGIN {
+		TEST_ASSERT(0 == stxdup_mem(&s1, teststr4, sizeof(teststr4)));
+		TEST_ASSERT(0 == stxdup_str(&s2, teststr3));
+		TEST_ASSERT(0 == stxdup_spx(&s3, stxref(&s1)));
+		TEST_ASSERT(0 == memcmp(s1.mem, teststr4, s1.len));
+		TEST_ASSERT(0 == memcmp(s2.mem, teststr3, s2.len));
+		TEST_ASSERT(0 == memcmp(s3.mem, teststr4, s3.len));
+	} TEST_END;
+
+	stxdel(&s1);
+	stxdel(&s2);
+	stxdel(&s3);
+}
+
+void
 test_stxapp_mem(void)
 {
 	stx s1 = {0};
@@ -257,6 +276,7 @@ main(void)
 
 	test_stxcpy_mem();
 	test_stxcpy_str();
+	test_stxdup();
 	test_stxapp_mem();
 	test_stxins_mem();
 
