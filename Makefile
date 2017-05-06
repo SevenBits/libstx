@@ -1,4 +1,3 @@
-# stx - stxing library
 # See LICENSE file for copyright and license details.
 
 include config.mk
@@ -33,12 +32,13 @@ OBJ = ${FUN:=.o}
 MAN3 = ${FUN:=.3}
 MAN7 = ${TARGET:.a=.7}
 
-HDR = libstx.h src/internal.h
+HDR = libstx.h
+HDRPP = libstx.hpp
 TARGET = libstx.a
-TARGETPP = libstxpp.a
 
 DIST = $(basename ${TARGET})-${VERSION}
-DIST_FILES = ${SRC_DIR} ${MAN_DIR} ${HDR} Makefile README config.mk test.c
+DIST_FILES = ${SRC_DIR} ${MAN_DIR} ${HDR} {HDRPP} Makefile README config.mk\
+	     test.c testpp.cpp
 
 all: ${TARGET}
 
@@ -48,7 +48,7 @@ options: config.mk
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "CC      = ${CC}\n"
 
-%.o: ${SRC_DIR}/%.c ${HDR} config.mk
+%.o: ${SRC_DIR}/%.c ${HDR} src/internal.h config.mk
 	@printf "CC $<\n"
 	@${CC} ${CFLAGS} -c $<
 
@@ -57,31 +57,22 @@ ${TARGET}: ${OBJ}
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
-${TARGETPP}: ${OBJ}
-	@printf "Creating library archive ... "
-	@ar -cq $@ ${OBJ}
-	@printf "done.\n"
-
 test: test.c ${TARGET} ${OBJ}
 	@printf "CC $<\n"
 	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
 
-testpp: testpp.cpp ${TARGET} ${OBJ}
+testpp: testpp.cpp ${HDRPP} ${TARGET} ${OBJ}
 	@printf "CC $<\n"
 	@${CPP} ${CPPFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
 
 check: test testpp
-	@./test
-	@./testpp
+	@valgrind ./test
+	@valgrind ./testpp
 
 clean:
 	@printf "Cleaning ... "
 	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz test testpp
 	@printf "done.\n"
-
-vcheck:
-	@valgrind ./test
-	@valgrind ./testpp
 
 dist: clean
 	@printf "Creating dist tarball ... "
