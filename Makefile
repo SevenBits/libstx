@@ -1,4 +1,4 @@
-# See LICENSE file for copyright and license details.
+# see license file for copyright and license details.
 
 include config.mk
 
@@ -6,6 +6,7 @@ CFLAGS := -I .
 
 SRC_DIR = src
 DOC_DIR = doc
+TEST_DIR = test
 
 FUN =\
 	stxalloc\
@@ -32,14 +33,13 @@ SRC = ${FUN:=.c}
 OBJ = ${FUN:=.o}
 MAN3 = ${FUN:=.3}
 MAN7 = ${TARGET:.a=.7}
+TEST = ${TEST_DIR}/test ${TEST_DIR}/test11
 
 HDR = libstx.h
-HDRPP = libstx.hpp
 TARGET = libstx.a
 
 DIST = $(basename ${TARGET})-${VERSION}
-DIST_FILES = ${SRC_DIR} ${MAN_DIR} ${HDR} {HDRPP} Makefile README config.mk\
-	     test.c testpp.cpp
+DIST_FILES = ${TEST_DIR} ${SRC_DIR} ${MAN_DIR} ${HDR} Makefile README config.mk\
 
 all: ${TARGET}
 
@@ -58,21 +58,19 @@ ${TARGET}: ${OBJ}
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
-test: test.c ${TARGET} ${OBJ}
+${TEST_DIR}/%: ${TEST_DIR}/%.c ${TARGET}
 	@printf "CC $<\n"
 	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
 
-testpp: testpp.cpp ${HDRPP} ${TARGET} ${OBJ}
-	@printf "CC $<\n"
-	@${CPP} ${CPPFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
-
-check: test testpp
-	@valgrind ./test
-	@valgrind ./testpp
+check: ${TEST}
+	@for i in ${TEST}; do \
+		printf -- "----------------------------------------\n./$$i\n"; \
+		./"$$i"; \
+	done
 
 clean:
 	@printf "Cleaning ... "
-	@rm -f ${TARGET} ${OBJ} ${DIST}.tar.gz test testpp
+	@rm -f ${TARGET} ${OBJ} ${TEST} ${DIST}.tar.gz
 	@printf "done.\n"
 
 dist: clean
@@ -105,4 +103,4 @@ uninstall:
 
 #man -t $< | ps2pdf - $@.pdf
 
-.PHONY: all options clean dist install uninstall
+.PHONY: all options check clean dist install uninstall

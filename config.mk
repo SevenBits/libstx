@@ -12,7 +12,3 @@ LDFLAGS = -s
 # C Compiler settings
 CC = cc
 CFLAGS = -std=c11 -pedantic -O2 -Wall -Wextra
-
-# C++ compiler settings
-CPP = g++
-CPFLAGS = -std=c++98 -pedantic -O2 -Wall -Wextra
