@@ -29,6 +29,11 @@
 		const char *: stxfind_str \
 		char *: stxfind_str \
 		spx: stxfind_spx)(sp, src)
+
+#define stxdup(sp, src) _Generic((src), \
+		const char *: stxdup_str \
+		char *: stxdup_str \
+		spx: stxdup_spx)(sp, src)
 #endif
 #endif
 
@@ -82,6 +87,11 @@ stx *stxterm(stx *sp);
 
 // Create a spx reference from a stx.
 spx stxref(const stx *sp);
+
+// Allocte a stx and copy the context of "src" into it.
+int stxdup_mem(stx *sp, const char *src, size_t len);
+int stxdup_str(stx *sp, const char *src);
+int stxdup_spx(stx *sp, const spx src);
 
 // Copy bytes from "src" into a stx.
 stx *stxcpy_mem(stx *sp, const char *src, size_t len);

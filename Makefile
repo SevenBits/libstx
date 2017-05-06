@@ -13,6 +13,7 @@ FUN =\
 	stxavail\
 	stxcpy\
 	stxdel\
+	stxdup\
 	stxensuresize\
 	stxeq\
 	stxfind\
