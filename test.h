@@ -4,15 +4,15 @@
 #include <stdio.h>
 
 static int test_ok = 1;
-#define test_assert(x) _test_assert(__func__, __LINE__, (x))
-#define test_BEGIN test_begin(__func__)
-#define test_END test_end()
+#define TEST_ASSERT(x) test_assert(__func__, __LINE__, (x))
+#define TEST_BEGIN test_begin(__func__); do 
+#define TEST_END while(0); test_end()
 
 static int test_passed = 0;
 static int test_total = 0;
 
 static int
-_test_assert(const char *func, int line, int x)
+test_assert(const char *func, int line, int x)
 {
 	test_ok = test_ok && x;
 	if (!test_ok)
