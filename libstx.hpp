@@ -33,21 +33,28 @@ namespace libstx {
 	void swap(stx *s1, stx *s2)
 	{return stxswap(s1, s2);}
 
-	stx *trunc(stx *sp, size_t len)
-	{return stxtrunc(sp, len);}
+	stx *trunc(stx *sp, size_t n)
+	{return stxtrunc(sp, n);}
 
 	spx ref(const stx *sp)
 	{return stxref(sp);}
 
-	stx *cpy(stx *sp, const char *src, size_t len)
-	{return stxcpy_mem(sp, src, len);}
+	int dup(stx *sp, const char *src, size_t n)
+	{return stxdup_mem(sp, src, n);}
+	int dup(stx *sp, const char *src)
+	{return stxdup_str(sp, src);}
+	int dup(stx *sp, const spx src)
+	{return stxdup_spx(sp, src);}
+
+	stx *cpy(stx *sp, const char *src, size_t n)
+	{return stxcpy_mem(sp, src, n);}
 	stx *cpy(stx *sp, const char *src)
 	{return stxcpy_str(sp, src);}
 	stx *cpy(stx *sp, const spx src)
 	{return stxcpy_spx(sp, src);}
 
-	stx *ins(stx *sp, size_t pos, const char *src, size_t len)
-	{return stxins_mem(sp, pos, src, len);}
+	stx *ins(stx *sp, size_t pos, const char *src, size_t n)
+	{return stxins_mem(sp, pos, src, n);}
 	stx *ins(stx *sp, size_t pos, const char *src)
 	{return stxins_str(sp, pos, src);}
 	stx *ins(stx *sp, size_t pos, uint32_t wc)
@@ -55,8 +62,8 @@ namespace libstx {
 	stx *ins(stx *sp, size_t pos, const spx src)
 	{return stxins_spx(sp, pos, src);}
 
-	stx *app(stx *sp, const char *src, size_t len)
-	{return stxapp_mem(sp, src, len);}
+	stx *app(stx *sp, const char *src, size_t n)
+	{return stxapp_mem(sp, src, n);}
 	stx *app(stx *sp, const char *src)
 	{return stxapp_str(sp, src);}
 	stx *app(stx *sp, uint32_t wc)
@@ -64,8 +71,8 @@ namespace libstx {
 	stx *app(stx *sp, const spx src)
 	{return stxapp_spx(sp, src);}
 
-	spx find(spx haystack, const char *needle, size_t len)
-	{return stxfind_mem(haystack, needle, len);}
+	spx find(spx haystack, const char *needle, size_t n)
+	{return stxfind_mem(haystack, needle, n);}
 	spx find(spx haystack, const char *needle)
 	{return stxfind_str(haystack, needle);}
 	spx find(spx haystack, const spx needle)
@@ -74,12 +81,12 @@ namespace libstx {
 	spx slice(const spx sp, size_t begin, size_t end)
 	{return stxslice(sp, begin, end);}
 
-	stx *rstrip(stx *sp, const char *chs, size_t len)
-	{return stxrstrip(sp, chs, len);}
-	stx *lstrip(stx *sp, const char *chs, size_t len)
-	{return stxlstrip(sp, chs, len);}
-	stx *strip(stx *sp, const char *chs, size_t len)
-	{return stxstrip(sp, chs, len);}
+	stx *rstrip(stx *sp, const char *chs, size_t n)
+	{return stxrstrip(sp, chs, n);}
+	stx *lstrip(stx *sp, const char *chs, size_t n)
+	{return stxlstrip(sp, chs, n);}
+	stx *strip(stx *sp, const char *chs, size_t n)
+	{return stxstrip(sp, chs, n);}
 
 	int uni8f32(char *dst, uint32_t wc)
 	{return stxuni8f32(dst, wc);}
