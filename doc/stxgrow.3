@@ -5,25 +5,19 @@ stxgrow - Grow the amount of bytes a stx can contain exactly by a given number.
 #include <libstx.h>
 
 int stxgrow(stx *sp, size_t n);
-
-#include <libstx.hpp>
-
-int libstx::grow(stx *sp, size_t n);
 .SH DESCRIPTION
 .B stxgrow()
-and
-.B libstx::grow()
-grow the memory buffer of
-.I sp
+reallocates
+.I sp->mem
 by
 .I n
 bytes. If the size of the the buffer would overflow SIZE_MAX, an attempt is made
-to reallocate the memory buffer to SIZE_MAX, and set the size accordingly.
+to reallocate the memory buffer to SIZE_MAX instead, and set the size accordingly.
 .SH RETURN VALUE
-.B stxensure_size()
-and
-.Blibstx::grow()
-return 0 if the memory reallocation was successful, or -1 if the
-reallocation failed (The memory buffer is untouched in this case).
+.B stxgrow()
+returns 0 if the memory reallocation was successful. Returns -1 if the
+reallocation fails (
+.I sp
+was unmodified in this case).
 .SH SEE ALSO
 .BR liboystr (7)

@@ -5,26 +5,19 @@
 .B #include <libstx.h>
 
 .B int stxalloc(stx *\fIsp\fP, size_t \fIsize\fP);
-
-.B #include <libstx.hpp>
-
-.B int libstx::alloc(stx *\fIsp\fP, size_t \fIsize\fP);
 .SH DESCRIPTION
 .B stxalloc()
-and
-.B libstx::alloc()
-allocate memory for
+allocates memory for
 .I sp->mem
-then set
+then sets
 .I sp->len
-and 
+to 0, and
 .I sp->size
-to 0.
+to
+.IR size .
 .SH RETURN VALUE
 .B stxalloc()
-and
-.B libstx::alloc()
-return 0 upon a successful allocation, or -1 if the allocation fails.
+returns s0 upon a successful allocation. Returns -1 if the allocation fails.
 .SH SEE ALSO
 .BR libstx (7),
 .BR stxensure_size (3),

@@ -5,17 +5,9 @@
 .B #include <libstx.h>
 
 .B void stxdel(const stx *\fIsp\fP);
-
-.B #include <libstx.hpp>
-
-.B void libstx::del(const stx *\fIsp\fP);
 .SH DESCRIPTION
 .B stxdel()
-and
-.B libstx::del()
-free all memory allocated to
-.I sp
-and do not modify any memory pointed to by
+frees all memory allocated to
 .IR sp .
 .SH SEE ALSO
 .B libstx (7)

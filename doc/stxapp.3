@@ -1,6 +1,6 @@
 .TH STXAPP 3 libstx
 .SH NAME
-stxapp, stxappstx, stxapp_uni, stxappdup - append to struct stx.
+stxapp_mem, stxapp_str, stxapp_uni, stxapp_spx - append to struct stx.
 .SH SYNOPSIS
 
 #include <libstx.h>
@@ -11,49 +11,46 @@ stx *stxapp_str(stx *\fIsp\fP, const char *\fIsrc\fP);
 
 stx *stxapp_uni(stx *\fIsp\fP, uint32_t \fIwc\fP);
 
-stx *stxapp_stx(stx *\fIsp\fP, const stx *\fIsrc\fP);
-
-#include <libstx.hpp>
-
-stx *libstx::app(stx *\fIsp\fP, const char *\fIsrc\fP, size_t \fIlen\fP);
-
-stx *libstx::app(stx *\fIsp\fP, const char *\fIsrc\fP);
-
-stx *libstx::app(stx *\fIsp\fP, uint32_t \fIwc\fP);
-
-stx *libstx::app(stx *\fIsp\fP, const stx *\fIsrc\fP);
+stx *stxapp_spx(stx *\fIsp\fP, const spx \fIsrc\fP);
 .SH DESCRIPTION
-.B stxapp()
+.B stxapp_mem()
 appends
 .I len
 bytes from
 .I src
 to
-.IR sp .
+.IR sp->mem .
 .P
-.B stxappstx()
+.B stxapp_str()
 appends
 .I src
 to
-.IR sp .
+.IR sp->mem .
+until a null byte is reached.
 .P
-.B stxappuni()
+.B stxapp_uni()
 converts
 .I wc
 from a utf32 unicode point character to it's corresponding utf8 byte sequence.
 It then appends that utf8 byte sequence to
-.IR sp .
+.IR sp->mem .
+.B stxapp_spx()
+appends
+.I src.mem 
+to
+.IR sp->mem .
 .SH RETURN VALUE
-.BR stxapp() ,
-.BR stxapp_libstx() ,
+.BR stxapp_mem() ,
+.BR stxapp_str() ,
 and
-.B stxapp_dup()
-return a pointer to
-.I sp
-to allow for function composition.
+.BR stxapp_spx()
+always return a pointer to
+.I sp to allow for function composition.
 .P
 .BR stxapp_uni() ,
 can fail if the unicode point is outside the largest value of unicode possible,
-and will return NULL if that is the case.
+and will return NULL if that is the case. Otherwise a pointer to
+.I sp
+is returned.
 .SH SEE ALSO
 .BR libstx (7)
