@@ -80,8 +80,8 @@ functions which do not follow this style are functions that could potentially
 fail, such as functions that allocate or resize memory.
 .P
 .B libstx
-functions do no input validation, but there is a validation function provided.
-This allows the caller to validate a struct stx when it is most 
+functions do no input validation on their own, but there is a validation
+function provided for the caller of the library validate stx when it is most 
 appropriate, rather than penalize the caller by unnecessarily checking in every 
 single call into the library. Be warned that the user MUST validate any
 function that changes the allocated memory of struct stx, as that relies on
