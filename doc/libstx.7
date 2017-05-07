@@ -2,14 +2,7 @@
 .SH NAME
 libstx - Dynamic string handling library.
 .SH SYNOPSIS
-
 .B #include <libstx.h>
-
-stx mystx;
-
-.B #include <libstx.hpp>
-
-libstx::stx mystx;
 .SH Description
 .B libstx
 is a C library for enhanced string handling. The goals of this library are to be 
@@ -17,24 +10,23 @@ small, fast, and to handle heap-allocated strings just as well as stack
 allocated strings.
 .P
 .B libstx
-approaches C string handling in a rather traditional way, using a C structure to
-contains the memory for the string, and two additional fields for
-keeping track of thow many bytes were allocated, and one more to keep track of
-how many of those bytes are actually being used.
+approaches C string handling in a rather traditional way, using a C struct to
+contain a pointer to the character buffer and two additional integers for
+keeping track of the size of the character buffer and how much of it is in use.
 .P
 However,
 .B libstx
-does not automatically grow this
-memory, and does not perform validation checks every single function
-call. Instead this is left up to the user of the library, to call inbetween
-string handling operations that might either need to grow the memory to a large 
-size or validate the string since the caller should know where it is most
-optimal to perform these operations.
+functions do not automatically manage memory allocation or reallocation. This
+means, for example, that if a string is going to be appended to, it must first
+be grow to accomodate the characters being appended to it. If this is not done,
+the appendation will result in a buffer overflow. It is up to the user of the
+library to make sure a stx has enough memory in the character buffer before
+operating on it.
 .SS libstx format
-provided with libstx are two structures, stx and spx. A struct stx is for
-referencing dynamically resizable and mutable character array, while a struct
-spx is used for constantly referencing a another stx or spx. All member fields
-are defined as part of the API.
+libstx provides two typedef'd  C structs, the stx and the spx. A stx is used for
+referencing a dynamically resizable and mutable character array, while a spx 
+is used for constantly referencing to a character buffer. All member fields of
+each struct can be considered "public" by the user of the library.
 .P
 .in +4n
 .nf
@@ -46,7 +38,7 @@ struct stx {
 
 struct spx {
 	const char *mem;   // Character memory.
-	const size_t len;  // Length of used bytes in \fImem\fP.
+	size_t len;  // Number of bytes in \fImem\fP.
 };
 
 typedef struct stx stx;
@@ -63,11 +55,12 @@ A valid struct stx is defined as one where
 .I size
 != 0.
 An example of an inconsistent modification that will break many libstx
-functions is something like changing the \fIsize\fP field without changing 
-the actually allocated size of \fImem\fP.
+functions would be changing the \fIsize\fP field without changing 
+the actually allocated size of \fImem\fP. This is a hard error to detect, and
+will commonly result in memory access violations.
 .P
 .B libstx
-functions that write to the struct stx in any way will always
+functions that write to a stx in any way will always
 update the
 .I len
 field of the struct stx. This is implied functionality of the library that will
@@ -77,41 +70,44 @@ behavior.
 Many string library unnecessarily force the user to allocate memory they don't
 plan on using (GLib GString), don't properly check for unsigned integer
 overflows (bstrlib), or repeatedly validate function input over and over
-(bstrlib) causing needless overhead.
+(bstrlib) causing needless overhead and branching.
 .P
 .B libstx
-functions are designed to be able to be composed together, allowing
-functions to be composed in an elegant way that doesn't require naming new
-functions that simply call one or more other functions.
+functions are designed to be able to be composed together. Many functions allow
+their return value to be fed into another function as the first parameter which
+allows for function calls to be easily chained in an expressive manner. The only
+functions which do not follow this style are functions that could potentially
+fail, such as functions that allocate or resize memory.
 .P
 .B libstx
-functions do no input validation, but there is a provided validation function
-provided. This allows the caller to validate a struct stx when it is most 
+functions do no input validation, but there is a validation function provided.
+This allows the caller to validate a struct stx when it is most 
 appropriate, rather than penalize the caller by unnecessarily checking in every 
 single call into the library. Be warned that the user MUST validate any
 function that changes the allocated memory of struct stx, as that relies on
 malloc() which should always be checked.
 .SH COMPATIBILITY
 .B libstx
-is compatible with pure C99 onwards, and provides a wrapper for C++,
-included with <libstx.hpp>, that provides conveience features such as operator
-overloading, and a single namespace of 'libstx' to contain all of the libraries
-functions instead of a prefix of 'stx' on each function name (Although pure C
-versions of all functions are still available within that namespace).
+is compatible with the C99 standard and onwards. C11 _Generic macros are
+provided for certain functions as well if C11 is being used.
 .SH AUTHOR
 Written by Todd O. Gaunt.
 .SH SEE ALSO
+.BR stxalloc (3),
 .BR stxapp (3),
-.BR stxcpy (3),
 .BR stxavail (3),
+.BR stxcpy (3),
 .BR stxdel (3),
-.BR stxensure_size (3),
+.BR stxdup (3),
+.BR stxensuresize (3),
 .BR stxeq (3),
 .BR stxfind (3),
-.BR stxnew (3),
 .BR stxins (3),
+.BR stxref (3),
 .BR stxslice (3),
 .BR stxstrip (3),
+.BR stxswap (3),
+.BR stxterm (3),
 .BR stxtrunc (3),
 .BR stxuni8f32 (3),
-.BR stxval (3),
+.BR stxvalid (3)
