@@ -1,0 +1,34 @@
+.TH STXALLOC 3 libstx
+.SH NAME
+ stxdup - Allocate memory in a stx and initialize it with a provided source.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B int stxdup_mem(stx *\fIsp\fP, const char *\fIsrc\fP, size_t \fIn\fP);
+.B int stxdup_str(stx *\fIsp\fP, const char *\fIsrc\fP);
+.B int stxdup_spx(stx *\fIsp\fP, const spx\fIsrc\fP);
+.SH DESCRIPTION
+.BR stxdup_mem() ,
+.BR stxdup_str() ,
+and
+.B stxdup_spx()
+allocates enough memory in
+.I sp->mem
+to hold the contents of
+.I src
+and then copies the contents of
+.I src
+to
+.IR sp->mem .
+.SH RETURN VALUE
+.BR stxdup_mem() ,
+.BR stxdup_str() ,
+and
+.B stxdup_spx()
+return 0 upon a successful allocation and copy. Returns -1 if the allocation fails.
+.SH SEE ALSO
+.BR libstx (7),
+.BR stxalloc (3),
+.BR stxcpy (3),
+.BR stxensure_size (3),
+.BR stxgrow (3)
