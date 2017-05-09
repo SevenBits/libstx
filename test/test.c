@@ -80,9 +80,9 @@ test_stxvalid(void)
 	stxalloc(&s3, 10);
 
 	TEST_BEGIN {
-		TEST_ASSERT(-1 == stxvalid(&s1));
-		TEST_ASSERT(-1 == stxvalid(&s2));
-		TEST_ASSERT(0 == stxvalid(&s3));
+		TEST_ASSERT(false == stxvalid(&s1));
+		TEST_ASSERT(false == stxvalid(&s2));
+		TEST_ASSERT(true == stxvalid(&s3));
 		stxdel(&s1);
 		stxdel(&s2);
 		stxdel(&s3);

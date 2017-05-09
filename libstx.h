@@ -41,7 +41,7 @@ int stxgrow(stx *sp, size_t n);
 int stxensuresize(stx *sp, size_t n);
 // Validate a stx in the case where some of it's internal data might have been
 // changed incorrectly.
-int stxvalid(stx *sp);
+bool stxvalid(stx *sp);
 
 // Get the amount of unused space left in a stx.
 size_t stxavail(stx *sp);
