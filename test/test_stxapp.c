@@ -7,7 +7,8 @@
 #define bytes1 "--testbytes\0\nbc\rfghij\12\0\0\n"
 #define bytes2 "hello\0world\n9"
 
-TEST_DEFINE(stxapp_mem_empty_to_full) {
+TEST_DEFINE(stxapp_mem_empty_to_full)
+{
 	stx s1;
 	stxalloc(&s1, sizeof(bytes1));
 
@@ -22,7 +23,8 @@ TEST_DEFINE(stxapp_mem_empty_to_full) {
 	TEST_END;
 }
 
-TEST_DEFINE(stxapp_mem_concatenate) {
+TEST_DEFINE(stxapp_mem_concatenate)
+{
 	stx s1;
 	char tstr[sizeof(bytes1) + sizeof(bytes2)];
 
@@ -47,7 +49,8 @@ TEST_DEFINE(stxapp_mem_concatenate) {
 	TEST_END;
 }
 
-TEST_DEFINE(stxapp_mem_bytes_seperately) {
+TEST_DEFINE(stxapp_mem_bytes_seperately)
+{
 	stx s1;
 	stxalloc(&s1, sizeof(bytes1));
 
@@ -64,7 +67,8 @@ TEST_DEFINE(stxapp_mem_bytes_seperately) {
 	TEST_END;
 }
 
-TEST_DEFINE(stxapp_str_empty) {
+TEST_DEFINE(stxapp_str_empty)
+{
 	stx s1;
 	stxalloc(&s1, strlen(bytes1));
 
@@ -79,7 +83,8 @@ TEST_DEFINE(stxapp_str_empty) {
 	TEST_END;
 }
 
-TEST_DEFINE(stxapp_str_concatenate) {
+TEST_DEFINE(stxapp_str_concatenate)
+{
 	stx s1;
 	char tstr[strlen(bytes1) + strlen(bytes2)];
 
@@ -108,10 +113,10 @@ int
 main(void)
 {
 	TEST_INIT(ts);
-	TEST_ADD(ts, stxapp_mem_empty_to_full);
-	TEST_ADD(ts, stxapp_mem_concatenate);
-	TEST_ADD(ts, stxapp_mem_bytes_seperately);
-	TEST_ADD(ts, stxapp_str_empty);
-	TEST_ADD(ts, stxapp_str_concatenate);
-	TEST_RUN(ts);
+	TEST_RUN(ts, stxapp_mem_empty_to_full);
+	TEST_RUN(ts, stxapp_mem_concatenate);
+	TEST_RUN(ts, stxapp_mem_bytes_seperately);
+	TEST_RUN(ts, stxapp_str_empty);
+	TEST_RUN(ts, stxapp_str_concatenate);
+	TEST_PRINT(ts);
 }

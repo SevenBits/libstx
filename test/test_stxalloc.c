@@ -46,7 +46,7 @@ int
 main(void)
 {
 	TEST_INIT(ts);
-	TEST_ADD(ts, stxalloc_zero);
-	TEST_ADD(ts, stxalloc_twice);
-	TEST_RUN(ts);
+	TEST_RUN(ts, stxalloc_zero);
+	TEST_RUN(ts, stxalloc_twice);
+	TEST_PRINT(ts);
 }
