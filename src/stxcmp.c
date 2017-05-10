@@ -2,7 +2,7 @@
 #include "internal.h"
 
 bool
-stxeq(const spx s1, const spx s2)
+stxcmp(const spx s1, const spx s2)
 {
 	size_t i;
 

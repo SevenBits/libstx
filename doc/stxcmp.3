@@ -1,19 +1,19 @@
-.TH STXEQ 3 libstx
+.TH stxcmp 3 libstx
 .SH NAME
- stxeq - Check for equality between with two spx structs.
+ stxcmp - Check for equality between with two spx structs.
 .SH SYNOPSIS
 .B #include <libstx.h>
 
-.B bool stxeq(spx \fIs1\fP, spx \fIs2\fP);
+.B bool stxcmp(spx \fIs1\fP, spx \fIs2\fP);
 .SH DESCRIPTION
-.B stxeq()
+.B stxcmp()
 compares the contents of 
 .I s1
 and
 .I s2
 to eachother for equality. This means that s1.len = s2.len, and s1.mem = s2.mem.
 .SH RETURN VALUE
-.B stxeq()
+.B stxcmp()
 returns true if both spx structs contain equivalent lengths, and their memory
 buffers contain equivalent characters up to that length. Returns false if any of
 the prior criteria don't hold.
