@@ -58,7 +58,7 @@ ${TARGET}: ${OBJ}
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
-${TEST_DIR}/%.test: ${TEST_DIR}/%.c ${TARGET}
+${TEST_DIR}/%.test: ${TEST_DIR}/%.c ${TEST_DIR}/test.h ${TARGET}
 	@printf "CC $<\n"
 	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
 
