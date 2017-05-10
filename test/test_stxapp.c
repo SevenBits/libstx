@@ -20,7 +20,7 @@ TEST_DEFINE(stxapp_mem_empty_to_full)
 
 	stxfree(&s1);
 
-	TEST_END;
+	return 0;
 }
 
 TEST_DEFINE(stxapp_mem_concatenate)
@@ -46,7 +46,7 @@ TEST_DEFINE(stxapp_mem_concatenate)
 
 	stxfree(&s1);
 
-	TEST_END;
+	return 0;
 }
 
 TEST_DEFINE(stxapp_mem_bytes_seperately)
@@ -64,7 +64,7 @@ TEST_DEFINE(stxapp_mem_bytes_seperately)
 
 	stxfree(&s1);
 
-	TEST_END;
+	return 0;
 }
 
 TEST_DEFINE(stxapp_str_empty)
@@ -80,7 +80,7 @@ TEST_DEFINE(stxapp_str_empty)
 
 	stxfree(&s1);
 
-	TEST_END;
+	return 0;
 }
 
 TEST_DEFINE(stxapp_str_concatenate)
@@ -106,7 +106,7 @@ TEST_DEFINE(stxapp_str_concatenate)
 
 	stxfree(&s1);
 
-	TEST_END;
+	return 0;
 }
 
 int

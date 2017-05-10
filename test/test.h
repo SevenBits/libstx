@@ -45,8 +45,6 @@ test_run(struct test_stat *ts, const char *name, int (*call)(void)) {
 
 #define TEST_DEFINE(name) int name (void)
 
-#define TEST_END return 0
-
 #define TEST_ASSERT(expr) \
 	do { \
 		if (!(expr)) { \
