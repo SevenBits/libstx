@@ -33,7 +33,7 @@ SRC = ${FUN:=.c}
 OBJ = ${FUN:=.o}
 MAN3 = ${FUN:=.3}
 MAN7 = ${TARGET:.a=.7}
-TEST = $(addprefix ${TEST_DIR}/test_, ${FUN})
+TEST = $(addprefix ${TEST_DIR}/test_, ${FUN:=.test})
 
 HDR = libstx.h
 TARGET = libstx.a
@@ -58,7 +58,7 @@ ${TARGET}: ${OBJ}
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
-${TEST_DIR}/%: ${TEST_DIR}/%.c ${TARGET}
+${TEST_DIR}/%.test: ${TEST_DIR}/%.c ${TARGET}
 	@printf "CC $<\n"
 	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
 
