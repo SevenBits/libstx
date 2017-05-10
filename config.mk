@@ -11,4 +11,4 @@ LDFLAGS = -s
 
 # C Compiler settings
 CC = cc
-CFLAGS = -std=c11 -pedantic -O2 -Wall -Wextra
+CFLAGS = -g -std=c11 -pedantic -O2 -Wall -Wextra
