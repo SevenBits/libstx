@@ -3,11 +3,11 @@
 stxensure_size - Ensure a that a stx can contain at least a minimum amount of
 bytes.
 .SH SYNOPSIS
-#include <libstx.h>
+.B #include <libstx.h>
 
-int stxensure_size(stx *sp, size_t size);
+.B int stxensure_size(stx *sp, size_t size);
 .SH DESCRIPTION
-.B stxensure_size()
+.BR stxensure_size ()
 checks if
 .I sp->mem
 can contain at least
@@ -15,11 +15,16 @@ can contain at least
 bytes. If the memory buffer cannot contain the requested amount of bytes, it
 is resized to hold exactly that many bytes. Otherwise, no action will
 be performed.
+.P
+If
+.I size
+is 0, no modifcation is done to
+.IR sp .
 .SH RETURN VALUE
-.B stxensure_size()
+.BR stxensure_size ()
 returns 0 if the memory reallocation was successful. Returns -1 if the
 reallocation failed (
 .I sp
 was unmodified in this case).
 .SH SEE ALSO
-.BR liboystr (7)
+.BR libstx (7)

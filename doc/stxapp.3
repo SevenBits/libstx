@@ -2,53 +2,61 @@
 .SH NAME
 stxapp_mem, stxapp_str, stxapp_uni, stxapp_spx - append to struct stx.
 .SH SYNOPSIS
+.B #include <libstx.h>
 
-#include <libstx.h>
+.B stx *stxapp_mem(stx *\fIsp\fP, const char *\fIsrc\fP, size_t \fIn\fP);
 
-stx *stxapp_mem(stx *\fIsp\fP, const char *\fIsrc\fP, size_t \fIlen\fP);
+.B stx *stxapp_str(stx *\fIsp\fP, const char *\fIsrc\fP);
 
-stx *stxapp_str(stx *\fIsp\fP, const char *\fIsrc\fP);
+.B stx *stxapp_uni(stx *\fIsp\fP, uint32_t \fIwc\fP);
 
-stx *stxapp_uni(stx *\fIsp\fP, uint32_t \fIwc\fP);
-
-stx *stxapp_spx(stx *\fIsp\fP, const spx \fIsrc\fP);
+.B stx *stxapp_spx(stx *\fIsp\fP, const spx \fIsrc\fP);
 .SH DESCRIPTION
-.B stxapp_mem()
+.BR stxapp_mem ()
 appends
-.I len
+.I n
 bytes from
 .I src
 to
 .IR sp->mem .
 .P
-.B stxapp_str()
+.BR stxapp_str ()
 appends
 .I src
 to
 .IR sp->mem .
 until a null byte is reached.
 .P
-.B stxapp_uni()
+.BR stxapp_uni ()
 converts
 .I wc
-from a utf32 unicode point character to it's corresponding utf8 byte sequence.
+from a utf32 unicode code point character to it's corresponding utf8 byte sequence.
 It then appends that utf8 byte sequence to
 .IR sp->mem .
-.B stxapp_spx()
+.BR stxapp_spx ()
 appends
 .I src.mem 
 to
 .IR sp->mem .
-.SH RETURN VALUE
-.BR stxapp_mem() ,
-.BR stxapp_str() ,
-and
-.B stxapp_spx()
-always return a pointer to
-.I sp to allow for function composition.
 .P
-.BR stxapp_uni() ,
-can fail if the unicode point is outside the largest value of unicode possible,
+If
+.I src
+is NULL or
+.I n
+is 0, then
+.IR sp
+is zero initialized. This is considered a successful appendation.
+.SH RETURN VALUE
+.BR stxapp_mem (),
+.BR stxapp_str (),
+and
+.BR stxapp_spx ()
+always return a pointer to
+.I sp
+to allow for function composition.
+.P
+.BR stxapp_uni (),
+can fail if the unicode code point is outside the largest value of unicode possible,
 and will return NULL if that is the case. Otherwise a pointer to
 .I sp
 is returned.

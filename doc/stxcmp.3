@@ -6,14 +6,14 @@
 
 .B bool stxcmp(spx \fIs1\fP, spx \fIs2\fP);
 .SH DESCRIPTION
-.B stxcmp()
+.BR stxcmp ()
 compares the contents of 
 .I s1
 and
 .I s2
 to eachother for equality. This means that s1.len = s2.len, and s1.mem = s2.mem.
 .SH RETURN VALUE
-.B stxcmp()
+.BR stxcmp ()
 returns true if both spx structs contain equivalent lengths, and their memory
 buffers contain equivalent characters up to that length. Returns false if any of
 the prior criteria don't hold.

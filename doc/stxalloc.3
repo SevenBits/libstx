@@ -4,20 +4,26 @@
 .SH SYNOPSIS
 .B #include <libstx.h>
 
-.B int stxalloc(stx *\fIsp\fP, size_t \fIsize\fP);
+.B int stxalloc(stx *\fIsp\fP, size_t \fIn\fP);
 .SH DESCRIPTION
-.B stxalloc()
+.BR stxalloc ()
 allocates memory for
 .I sp->mem
 then sets
-.I sp->len
+.I sp-len>
 to 0, and
 .I sp->size
 to
-.IR size .
+.IR n .
+.P
+If
+.I n
+is 0, then
+.I sp
+are zero initialized. This is considered a successful allocation.
 .SH RETURN VALUE
-.B stxalloc()
-returns s0 upon a successful allocation. Returns -1 if the allocation fails.
+.BR stxalloc ()
+returns 0 upon a successful allocation. Returns -1 if the allocation fails.
 .SH SEE ALSO
 .BR libstx (7),
 .BR stxensure_size (3),
