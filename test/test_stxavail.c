@@ -8,7 +8,8 @@ TEST_DEFINE(stxavail_none)
 {
 	stx s1 = {0};
 	TEST_ASSERT(0 == stxavail(&s1));
-	return 0;
+
+	TEST_END;
 }
 
 TEST_DEFINE(stxavail_full) {
@@ -20,7 +21,7 @@ TEST_DEFINE(stxavail_full) {
 
 	TEST_ASSERT(0 == stxavail(&s1));
 
-	return 0;
+	TEST_END;
 }
 
 TEST_DEFINE(stxavail_half) {
@@ -32,7 +33,7 @@ TEST_DEFINE(stxavail_half) {
 
 	TEST_ASSERT(512 == stxavail(&s1));
 
-	return 0;
+	TEST_END;
 }
 
 TEST_DEFINE(stxavail_non_powerof_two) {
@@ -44,7 +45,7 @@ TEST_DEFINE(stxavail_non_powerof_two) {
 
 	TEST_ASSERT(745 - 238 == stxavail(&s1));
 
-	return 0;
+	TEST_END;
 }
 
 int

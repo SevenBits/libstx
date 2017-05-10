@@ -15,7 +15,7 @@ TEST_DEFINE(stxalloc_zero)
 
 	stxfree(&s1);
 
-	return 0;
+	TEST_END;
 }
 
 TEST_DEFINE(stxalloc_non_powerof_two)
@@ -29,7 +29,7 @@ TEST_DEFINE(stxalloc_non_powerof_two)
 
 	stxfree(&s1);
 
-	return 0;
+	TEST_END;
 }
 
 TEST_DEFINE(stxalloc_twice) {
@@ -53,7 +53,7 @@ TEST_DEFINE(stxalloc_twice) {
 	stxfree(&s1);
 	free(p);
 
-	return 0;
+	TEST_END;
 }
 
 int

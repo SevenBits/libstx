@@ -56,6 +56,8 @@ test_run(struct test_stat *ts, const char *name, int (*call)(void)) {
 
 #define TEST_RUN(handle, name) test_run(&(handle), #name, name)
 
+#define TEST_END return 0
+
 #define TEST_PRINT(handle) \
 	do { \
 		if ((handle).passed || (handle).failed) { \
@@ -63,6 +65,7 @@ test_run(struct test_stat *ts, const char *name, int (*call)(void)) {
 			printf("Failed: %d\n", (handle).failed); \
 			printf("Total:  %d\n", (handle).passed + (handle).failed); \
 		} \
+		return (handle).failed; \
 	} while (0)
 
 #endif
