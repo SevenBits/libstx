@@ -4,19 +4,23 @@
 int
 stxgrow(stx *sp, size_t n)
 {
-	char *tmp;
-
 	if (internal_size_add_overflows(sp->size, n)) {
 		n = SIZE_MAX;
 	} else {
 		n = sp->size + n;
 	}
 
-	tmp = realloc(sp->mem, n);
-	if (!tmp)
-		return -1;
+	if (!sp->mem && !n) {
+		memset(sp, 0, sizeof(*sp));
+	} else {
+		char *tmp = realloc(sp->mem, n);
 
-	sp->mem = tmp;
-	sp->size = n;
+		if (!tmp)
+			return -1;
+
+		sp->mem = tmp;
+		sp->size = n;
+	}
+
 	return 0;
 }

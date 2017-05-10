@@ -2,18 +2,22 @@
 #include "internal.h"
 
 int
-stxensuresize(stx *s1, size_t size)
+stxensuresize(stx *sp, size_t n)
 {
-	char *tmp;
-
-	if (s1->size >= size)
+	if (sp->size >= n)
 		return 0;
 
-	tmp = realloc(s1->mem, size);
-	if (!tmp)
-		return -1;
+	if (!sp->mem && !n) {
+		memset(sp, 0, sizeof(*sp));
+	} else {
+		char *tmp = realloc(sp->mem, n);
 
-	s1->mem = tmp;
-	s1->size = size;
+		if (!tmp)
+			return -1;
+
+		sp->mem = tmp;
+		sp->size = n;
+	}
+
 	return 0;
 }
