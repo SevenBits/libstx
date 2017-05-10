@@ -15,6 +15,9 @@ stxdup_mem(stx *sp, const void *src, size_t n)
 int
 stxdup_str(stx *sp, const char *src)
 {
+	if (!src)
+		return 0;
+
 	if (0 < stxalloc(sp, strlen(src)))
 		return -1;
 

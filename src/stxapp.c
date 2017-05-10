@@ -5,6 +5,8 @@
 stx *
 stxapp_mem(stx *sp, const void *src, size_t n)
 {
+	n = internal_min(sp->size, n);
+
 	memcpy(sp->mem + sp->len, src, n);
 	sp->len += n;
 

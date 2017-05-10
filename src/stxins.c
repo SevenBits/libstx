@@ -4,6 +4,8 @@
 stx *
 stxins_mem(stx *sp, size_t pos, const void *src, size_t n)
 {
+	n = internal_min(sp->size, n);
+
 	// Create some space if inserting before the end of the buffer.
 	if (pos < sp->len)
 		memmove(sp->mem + pos + n, sp->mem + pos, sp->len - pos);
