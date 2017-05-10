@@ -61,14 +61,16 @@ options: config.mk
 
 ${OBJ}: libstx.h ${SRC_DIR}/internal.h
 
-${TEST}: libstx.h ${TEST_DIR}/test.h
-
 ${TARGET}: ${OBJ}
 	@printf "Creating library archive ... "
 	@ar -cq $@ ${OBJ}
 	@printf "done.\n"
 
-check: ${TEST}
+${TEST}: libstx.h ${TEST_DIR}/test.h
+
+test: ${TEST}
+
+check: test
 	@for i in ${TEST}; do \
 		printf -- "------------------------------------------------------------------------------\n./$$i\n"; \
 		./"$$i"; \
@@ -76,7 +78,7 @@ check: ${TEST}
 
 clean:
 	@printf "Cleaning ... "
-	@rm -f ${TARGET} ${OBJ} ${TEST_DIR}/${TEST} ${DIST}.tar.gz
+	@rm -f ${OBJ} ${TARGET} ${TEST} ${DIST}.tar.gz
 	@printf "done.\n"
 
 dist: clean
