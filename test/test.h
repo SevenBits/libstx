@@ -41,10 +41,29 @@ test_run(struct test_stat *ts, const char *name, int (*call)(void)) {
 	}
 }
 
+void
+test_rand_str(char *str, size_t n)
+{
+	for (size_t i=0; i<n - 1; ++i) {
+		str[i] = 1 + (rand() % 255);
+	}
+	str[n-1] = '\0';
+}
+
+void
+test_rand_bytes(void *mem, size_t n)
+{
+	char *bytes = mem;
+	for (size_t i=0; i<n; ++i) {
+		bytes[i] = (rand() % 256);
+	}
+}
+
+// NOTE: Not a truly random range, but good enough.
 size_t
 test_rand(size_t start, size_t end)
 {
-	return (start + rand()) % end;
+	return start + (rand() % (end - start + 1));
 }
 
 #define TEST_INIT(handle) struct test_stat handle = {0}
