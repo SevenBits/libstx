@@ -1,9 +1,9 @@
 #include "internal.h"
 
 stx *
-stxterm(stx *sp)
+stxterm(stx *sp, size_t len)
 {
-	sp->mem[sp->len] = '\0';
-	++sp->len;
+	sp->mem[len] = '\0';
+	sp->len = len;
 	return sp;
 }
