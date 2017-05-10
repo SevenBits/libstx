@@ -2,14 +2,14 @@
 #include "internal.h"
 
 stx *
-stxins_mem(stx *sp, size_t pos, const char *src, size_t len)
+stxins_mem(stx *sp, size_t pos, const void *src, size_t n)
 {
 	// Create some space if inserting before the end of the buffer.
 	if (pos < sp->len)
-		memmove(sp->mem + pos + len, sp->mem + pos, sp->len - pos);
+		memmove(sp->mem + pos + n, sp->mem + pos, sp->len - pos);
 
-	memcpy(sp->mem + pos, src, len);
-	sp->len += len;
+	memcpy(sp->mem + pos, src, n);
+	sp->len += n;
 
 	return sp; 
 }
@@ -21,15 +21,15 @@ stxins_str(stx *sp, size_t pos, const char *src)
 }
 
 stx *
-stxins_uni(stx *sp, size_t pos, uint32_t wc)
+stxins_u32(stx *sp, size_t pos, uint32_t wc)
 {
-	int len;
+	int n;
 	char uni8[4];
-	len = stxuni8f32(uni8, wc);
-	if (0 >= len)
+	n = stxuni8f32(uni8, wc);
+	if (0 >= n)
 		return NULL;
 
-	return stxins_mem(sp, pos, uni8, len);
+	return stxins_mem(sp, pos, uni8, n);
 }
 
 stx *

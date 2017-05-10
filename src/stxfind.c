@@ -2,7 +2,7 @@
 #include "internal.h"
 
 spx
-stxfind_mem(const spx haystack, const char *needle, size_t len)
+stxfind_mem(const spx haystack, const void *needle, size_t len)
 {
 	spx slice = {0};
 	size_t i, j;
@@ -15,7 +15,7 @@ stxfind_mem(const spx haystack, const char *needle, size_t len)
 
 	for (i=0; i<haystack.len; ++i) {
 		for (j=i; j<i+len; ++j) {
-			if (haystack.mem[j] != needle[j-i]) {
+			if (haystack.mem[j] != ((const char *)needle)[j-i]) {
 				break;
 			}
 		}

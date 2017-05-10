@@ -2,10 +2,10 @@
 #include "internal.h"
 
 stx *
-stxcpy_mem(stx *sp, const char *src, size_t len)
+stxcpy_mem(stx *sp, const void *src, size_t n)
 {
-	memcpy(sp->mem, src, len);
-	sp->len = len;
+	memcpy(sp->mem, src, n);
+	sp->len = n;
 
 	return sp;
 }
@@ -14,6 +14,7 @@ stx *
 stxcpy_str(stx *sp, const char *src)
 {
 	sp->len += internal_strncpy(sp->mem, src, sp->size);
+
 	return sp;
 }
 

@@ -2,7 +2,7 @@
 #include "internal.h"
 
 int
-stxdup_mem(stx *sp, const char *src, size_t n)
+stxdup_mem(stx *sp, const void *src, size_t n)
 {
 	if (0 < stxalloc(sp, n))
 		return -1;

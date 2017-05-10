@@ -3,10 +3,10 @@
 #include <stdarg.h>
 
 stx *
-stxapp_mem(stx *sp, const char *src, size_t len)
+stxapp_mem(stx *sp, const void *src, size_t n)
 {
-	memcpy(sp->mem + sp->len, src, len);
-	sp->len += len;
+	memcpy(sp->mem + sp->len, src, n);
+	sp->len += n;
 
 	return sp;
 }
@@ -19,7 +19,7 @@ stxapp_str(stx *sp, const char *src)
 }
 
 stx *
-stxapp_uni(stx *sp, uint32_t wc)
+stxapp_u32(stx *sp, uint32_t wc)
 {
 	if (0 >= stxuni8f32(sp->mem + sp->len, wc))
 		return NULL;
