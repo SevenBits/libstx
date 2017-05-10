@@ -12,12 +12,12 @@ FUN =\
 	stxalloc\
 	stxapp\
 	stxavail\
+	stxcmp\
 	stxcpy\
-	stxdel\
 	stxdup\
 	stxensuresize\
-	stxeq\
 	stxfind\
+	stxfree\
 	stxgrow\
 	stxins\
 	stxref\
@@ -33,7 +33,7 @@ SRC = ${FUN:=.c}
 OBJ = ${FUN:=.o}
 MAN3 = ${FUN:=.3}
 MAN7 = ${TARGET:.a=.7}
-TEST = ${TEST_DIR}/test ${TEST_DIR}/test11
+TEST = $(addprefix ${TEST_DIR}/test_, ${FUN})
 
 HDR = libstx.h
 TARGET = libstx.a
@@ -63,14 +63,14 @@ ${TEST_DIR}/%: ${TEST_DIR}/%.c ${TARGET}
 	@${CC} ${CFLAGS} ${LDFLAGS} -o $@ $< ${OBJ}
 
 check: ${TEST}
-	@for i in ${TEST}; do \
+	@for i in ${TEST_DIR}/${TEST}; do \
 		printf -- "----------------------------------------\n./$$i\n"; \
 		./"$$i"; \
 	done
 
 clean:
 	@printf "Cleaning ... "
-	@rm -f ${TARGET} ${OBJ} ${TEST} ${DIST}.tar.gz
+	@rm -f ${TARGET} ${OBJ} ${TEST_DIR}/${TEST} ${DIST}.tar.gz
 	@printf "done.\n"
 
 dist: clean
