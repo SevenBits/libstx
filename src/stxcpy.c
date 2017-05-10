@@ -13,7 +13,7 @@ stxcpy_mem(stx *sp, const void *src, size_t n)
 stx *
 stxcpy_str(stx *sp, const char *src)
 {
-	sp->len += internal_strncpy(sp->mem, src, sp->size);
+	sp->len = internal_strncpy(sp->mem, src, sp->size);
 
 	return sp;
 }
