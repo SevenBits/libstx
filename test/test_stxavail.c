@@ -12,11 +12,13 @@ TEST_DEFINE(stxavail_none)
 	TEST_END;
 }
 
-TEST_DEFINE(stxavail_full) {
+TEST_DEFINE(stxavail_max) {
+	size_t n = test_rand(0, 65535);
+
 	stx s1 = {
 		.mem = NULL,
-		.len = 1024,
-		.size = 1024,
+		.len = n,
+		.size = n,
 	};
 
 	TEST_ASSERT(0 == stxavail(&s1));
@@ -25,25 +27,33 @@ TEST_DEFINE(stxavail_full) {
 }
 
 TEST_DEFINE(stxavail_half) {
+	size_t n = test_rand(0, 65535);
+
+	if (n % 2)
+		++n;
+
 	stx s1 = {
 		.mem = NULL,
-		.len = 512,
-		.size = 1024,
+		.len = n / 2,
+		.size = n,
 	};
 
-	TEST_ASSERT(512 == stxavail(&s1));
+	TEST_ASSERT(n / 2 == stxavail(&s1));
 
 	TEST_END;
 }
 
-TEST_DEFINE(stxavail_non_powerof_two) {
+TEST_DEFINE(stxavail_rand) {
+	size_t n1 = test_rand(0, 65535);
+	size_t n2 = test_rand(n1, 65535);
+
 	stx s1 = {
 		.mem = NULL,
-		.len = 238,
-		.size = 745,
+		.len = n1,
+		.size = n2,
 	};
 
-	TEST_ASSERT(745 - 238 == stxavail(&s1));
+	TEST_ASSERT(s1.size - s1.len == stxavail(&s1));
 
 	TEST_END;
 }
@@ -53,8 +63,8 @@ main(void)
 {
 	TEST_INIT(ts);
 	TEST_RUN(ts, stxavail_none);
-	TEST_RUN(ts, stxavail_full);
+	TEST_RUN(ts, stxavail_max);
 	TEST_RUN(ts, stxavail_half);
-	TEST_RUN(ts, stxavail_non_powerof_two);
+	TEST_RUN(ts, stxavail_rand);
 	TEST_PRINT(ts);
 }

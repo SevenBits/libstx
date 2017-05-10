@@ -41,6 +41,12 @@ test_run(struct test_stat *ts, const char *name, int (*call)(void)) {
 	}
 }
 
+size_t
+test_rand(size_t start, size_t end)
+{
+	return (start + rand()) % end;
+}
+
 #define TEST_INIT(handle) struct test_stat handle = {0}
 
 #define TEST_DEFINE(name) int name (void)
