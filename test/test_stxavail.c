@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "../libstx.h"
 #include "test.h"
 
@@ -61,6 +62,7 @@ TEST_DEFINE(stxavail_rand) {
 int
 main(void)
 {
+	srand(time(NULL));
 	TEST_INIT(ts);
 	TEST_RUN(ts, stxavail_none);
 	TEST_RUN(ts, stxavail_max);

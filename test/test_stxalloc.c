@@ -48,10 +48,10 @@ TEST_DEFINE(stxalloc_twice_rand) {
 	p = s1.mem;
 
 	TEST_ASSERT(0 == stxalloc(&s1, n2));
+	TEST_ASSERT(p != s1.mem);
 	TEST_ASSERT(NULL != s1.mem);
 	TEST_ASSERT(0 == s1.len);
 	TEST_ASSERT(n2 == s1.size);
-	TEST_ASSERT(p != s1.mem);
 
 	stxfree(&s1);
 	free(p);
