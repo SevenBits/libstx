@@ -19,6 +19,9 @@ stxins_mem(stx *sp, size_t pos, const void *src, size_t n)
 stx *
 stxins_str(stx *sp, size_t pos, const char *src)
 {
+	if (!src)
+		return sp;
+
 	return stxins_mem(sp, pos, src, strlen(src));
 }
 
