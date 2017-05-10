@@ -1,9 +1,10 @@
 #include "internal.h"
 
 stx *
-stxterm(stx *sp, size_t len)
+stxterm(stx *sp)
 {
-	sp->mem[len] = '\0';
-	sp->len = len;
+	if (sp->len < sp->size)
+		sp->mem[sp->len] = '\0';
+
 	return sp;
 }
