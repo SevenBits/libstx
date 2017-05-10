@@ -23,7 +23,7 @@ TEST_DEFINE(stxalloc_non_powerof_two)
 	stx s1;
 
 	TEST_ASSERT(0 == stxalloc(&s1, 7));
-	TEST_ASSERT(NULL == s1.mem);
+	TEST_ASSERT(NULL != s1.mem);
 	TEST_ASSERT(0 == s1.len);
 	TEST_ASSERT(7 == s1.size);
 
