@@ -13,4 +13,7 @@ for i in "$TEST_DIR"/*.test; do
 	fi
 done
 
+printf -- "%0.s-" {1..78}
+printf -- "\nAll tests passed!\n"
+
 exit 0
