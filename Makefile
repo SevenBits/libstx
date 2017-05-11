@@ -72,12 +72,7 @@ ${TEST}: libstx.h ${TEST_DIR}/test.h
 test: ${TEST}
 
 check: test
-	@for i in ${TEST}; do \
-		if [[ -f "$$i" ]]; then \
-			printf -- "------------------------------------------------------------------------------\n./$$i\n"; \
-			./"$$i"; \
-		fi; \
-	done
+	./test/run_all.sh
 
 clean:
 	@printf "Cleaning ... "
