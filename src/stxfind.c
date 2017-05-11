@@ -24,6 +24,7 @@ stxfind_mem(const spx haystack, const void *needle, size_t len)
 			return stxslice(haystack, i, j);
 		}
 	}
+
 	return slice;
 }
 
