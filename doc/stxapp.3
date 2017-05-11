@@ -1,6 +1,6 @@
 .TH STXAPP 3 libstx
 .SH NAME
-stxapp_mem, stxapp_str, stxapp_uni, stxapp_spx - append to struct stx.
+stxapp_mem, stxapp_str, stxapp_uni, stxapp_spx - append byts to a stx.
 .SH SYNOPSIS
 .B #include <libstx.h>
 
@@ -8,7 +8,7 @@ stxapp_mem, stxapp_str, stxapp_uni, stxapp_spx - append to struct stx.
 
 .B stx *stxapp_str(stx *\fIsp\fP, const char *\fIsrc\fP);
 
-.B stx *stxapp_uni(stx *\fIsp\fP, uint32_t \fIwc\fP);
+.B stx *stxapp_utf8f32(stx *\fIsp\fP, uint32_t \fIwc\fP);
 
 .B stx *stxapp_spx(stx *\fIsp\fP, const spx \fIsrc\fP);
 .SH DESCRIPTION
@@ -30,9 +30,10 @@ until a null byte is reached.
 .BR stxapp_uni ()
 converts
 .I wc
-from a utf32 unicode code point character to it's corresponding utf8 byte sequence.
-It then appends that utf8 byte sequence to
+from a utf32 unicode code point character to it's corresponding utf8 byte
+sequence, then appends that utf8 byte sequence to the end of
 .IR sp->mem .
+.P
 .BR stxapp_spx ()
 appends
 .I src.mem 
@@ -49,16 +50,12 @@ is zero initialized. This is considered a successful appendation.
 .SH RETURN VALUE
 .BR stxapp_mem (),
 .BR stxapp_str (),
+.BR stxapp_utf8f32 (),
 and
 .BR stxapp_spx ()
 always return a pointer to
 .I sp
 to allow for function composition.
-.P
-.BR stxapp_uni (),
-can fail if the unicode code point is outside the largest value of unicode possible,
-and will return NULL if that is the case. Otherwise a pointer to
-.I sp
-is returned.
 .SH SEE ALSO
 .BR libstx (7)
+.BR stxutf (3)
