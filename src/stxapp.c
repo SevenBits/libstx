@@ -7,7 +7,7 @@ stxapp_mem(stx *sp, const void *src, size_t n)
 {
 	n = internal_min(sp->size, n);
 
-	memcpy(sp->mem + sp->len, src, n);
+	memmove(sp->mem + sp->len, src, n);
 	sp->len += n;
 
 	return sp;
@@ -21,12 +21,17 @@ stxapp_str(stx *sp, const char *src)
 }
 
 stx *
-stxapp_u32(stx *sp, uint32_t wc)
+stxapp_utf8f32(stx *sp, uint32_t wc)
 {
-	if (0 >= stxuni8f32(sp->mem + sp->len, wc))
-		return NULL;
+	int n = stxutf8n32(wc);
+	char uni8[n];
 
-	return sp;
+	if (0 >= n)
+		return sp;
+
+	stxutf8f32(uni8, wc, n);
+
+	return stxapp_mem(sp, uni8, n);
 }
 
 stx *

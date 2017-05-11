@@ -10,7 +10,7 @@ stxins_mem(stx *sp, size_t pos, const void *src, size_t n)
 	if (pos < sp->len)
 		memmove(sp->mem + pos + n, sp->mem + pos, sp->len - pos);
 
-	memcpy(sp->mem + pos, src, n);
+	memmove(sp->mem + pos, src, n);
 	sp->len += n;
 
 	return sp; 
@@ -26,13 +26,15 @@ stxins_str(stx *sp, size_t pos, const char *src)
 }
 
 stx *
-stxins_u32(stx *sp, size_t pos, uint32_t wc)
+stxins_utf8f32(stx *sp, size_t pos, uint32_t wc)
 {
-	int n;
-	char uni8[4];
-	n = stxuni8f32(uni8, wc);
+	int n = stxutf8n32(wc);
+	char uni8[n];
+
 	if (0 >= n)
-		return NULL;
+		return sp;
+
+	stxutf8f32(uni8, wc, n);
 
 	return stxins_mem(sp, pos, uni8, n);
 }

@@ -26,7 +26,7 @@ FUN =\
 	stxswap\
 	stxterm\
 	stxtrunc\
-	stxuni8f32\
+	stxutf\
 	stxvalid\
 
 MAN3 = ${FUN:=.3}

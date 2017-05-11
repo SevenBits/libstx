@@ -101,13 +101,13 @@ stx *stxcpy_spx(stx *sp, const spx src);
 // Insert bytes into the middle of stx without overwriting any data.
 stx *stxins_mem(stx *sp, size_t pos, const void *src, size_t n);
 stx *stxins_str(stx *sp, size_t pos, const char *src);
-stx *stxins_u32(stx *sp, size_t pos, uint32_t wc);
+stx *stxins_utf8f32(stx *sp, size_t pos, uint32_t wc);
 stx *stxins_spx(stx *sp, size_t pos, const spx src);
 
 // Append bytes to a stx.
 stx *stxapp_mem(stx *sp, const void *src, size_t n);
 stx *stxapp_str(stx *sp, const char *src);
-stx *stxapp_u32(stx *sp, uint32_t wc);
+stx *stxapp_utf8f32(stx *sp, uint32_t wc);
 stx *stxapp_spx(stx *sp, const spx src);
 
 // Find a substring inside a stx and return it as a spx referring to it.
@@ -123,7 +123,14 @@ stx *stxrstrip(stx *sp, const char *chs, size_t n);
 stx *stxlstrip(stx *sp, const char *chs, size_t n);
 stx *stxstrip(stx *sp, const char *chs, size_t n);
 
-// Convert a utf32 codepoint to a utf8 byte-sequence and place it in "dst"
-int stxuni8f32(char *dst, uint32_t wc);
+// Tokenize a spx.
+spx stxtok(spx *sp, const char *chs, size_t n);
+
+// Calculate the number of utf8 encodings in a spx.
+size_t stxutf8len(const spx sp);
+// Calculate the number of bytes for a utf8 encoding of a utf32 code point.
+size_t stxutf8n32(uint32_t wc);
+// Convert a "wc" into a utf8 encoding "n" bytes long and store it in "dst".
+size_t stxutf8f32(void *dst, uint32_t wc, size_t n);
 
 #endif
