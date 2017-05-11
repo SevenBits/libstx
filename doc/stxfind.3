@@ -1,0 +1,41 @@
+.TH STXFIND 3 libstx
+.SH NAME
+stxfind_mem, stxfind_str, stxfind_spx - Find a sub-spx within a spx.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B spx stxfind_mem(const spx \fIhaystack\fP, const void *\fIneedle\fP, size_t \fIn\fP);
+
+.B spx stxfind_str(const spx \fIhaystack\fP, const char *\fIneedle\fP);
+
+.B spx stxfind_spx(const spx \fIhaystack\fP, const spx \fIneedle\fP);
+.SH DESCRIPTION
+.BR stxfind_mem ()
+finds the first occurance of the first
+.I n
+bytes of
+.I needle
+within
+.IR haystack .
+.P
+.BR stxapp_str ()
+finds the first occurance of the null-teminated (Not including the
+null-terminator) string
+.I needle
+within
+.IR haystack .
+.P
+.BR stxfind_spx ()
+finds the first occurance of the contents of the spx
+.I needle
+within
+.IR haystack .
+.SH RETURN VALUE
+.BR stxfind_mem (),
+.BR stxfind_str (),
+and
+.BR stxfind_spx ()
+return a spx pointing to the found substring. If no substring was found, the
+returned spx will be zero-initialized.
+.SH SEE ALSO
+.BR libstx (7)

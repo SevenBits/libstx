@@ -1,0 +1,22 @@
+.TH STXTRUNC 3 libstx
+.SH NAME
+ stxtrunc - Truncate the contents of a stx.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B void stxtrunc(stx *\fIsp\fP, size_t \fIn\fP);
+.SH DESCRIPTION
+.BR stxtrunc ()
+Truncates
+.I sp
+by
+.I n
+bytes.
+.P
+The actualy contents of the memory of
+.I sp->mem
+are unchanged, only
+.I sp->len
+is modified.
+.SH SEE ALSO
+.B libstx (7)

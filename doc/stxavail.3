@@ -1,0 +1,18 @@
+.TH STXAVAIL 3 libstx
+.SH NAME
+ stxavail - Get the remaining unused bytes of a stx.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B size_t stxavail(stx *\fIsp\fP);
+.SH DESCRIPTION
+Calculate the remaining unused bytes of
+.IR sp .
+.SH RETURN
+.BR stxavail ()
+Returns the remaining unused bytes of
+.IR sp .
+That is the value of
+.IR sp->size\  -\  sp->len .
+.SH SEE ALSO
+.B libstx (7)

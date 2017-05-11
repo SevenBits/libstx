@@ -1,0 +1,19 @@
+.TH STXTERM 3 libstx
+.SH NAME
+ stxterm - Null terminate a stx.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B void stxterm(stx *\fIsp\fP);
+.SH DESCRIPTION
+.BR stxterm ()
+terminates
+.I s1->mem
+with the '\0' character at index
+.IR s1->len -\ 1.
+.P
+This function is useful if null-terminating bytes are required to inter-op with
+traditional C functions that require strings to be null-terminated character
+arrays.
+.SH SEE ALSO
+.B libstx (7)
