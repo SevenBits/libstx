@@ -1,8 +1,8 @@
 libstx is a simple C string library focused on being easy to use, fast, and
-compatible with standard C-style strings. This is accomplished by fully exposing the
-libstx struct, and allowing both stack allocated and dynamically allocated
-libstx objects to work for any function provided by the library (with some
-caveats).
+compatible with standard C-style strings when necessary. This is accomplished
+by fully exposing the libstx struct, and allowing both stack allocated and
+dynamically allocated libstx objects to work for any function provided by the
+library (with some caveats).
 
 The library aims to be simple and optimized for statically linking, as each
 function is compiled to seperate object files which then compose the library
@@ -10,3 +10,9 @@ archive.
 
 Further documentation can be found in the man-pages found in this repository
 under "doc/".
+
+To install the library, it is as simple as running:
+
+	make install
+
+in the project's root.
