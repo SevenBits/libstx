@@ -4,5 +4,5 @@
 size_t
 stxavail(stx *sp)
 {
-	return sp->size ? sp->size - sp->len : 0;
+	return sp->size - sp->len;
 }
