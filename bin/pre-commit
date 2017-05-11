@@ -1,0 +1,15 @@
+#!/bin/sh
+
+remote="$1"
+url="$2"
+
+make check
+
+if ! [ $? -eq 0 ]; then
+	printf -- \
+"Error: Not all tests passed successfully. Please make sure all commits made
+can pass all the tests before pushing to branch %s.\n" "$branch"
+	exit -1
+fi
+
+exit 0
