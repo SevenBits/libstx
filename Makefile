@@ -25,6 +25,7 @@ FUN =\
 	stxstrip\
 	stxswap\
 	stxterm\
+	stxtok\
 	stxtrunc\
 	stxutf\
 	stxvalid\
