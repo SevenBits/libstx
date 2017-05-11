@@ -16,13 +16,13 @@
 #define stxins(sp, src) _Generic((src), \
 		const char *: stxins_str, \
 		char *: stxins_str, \
-		uint32_t: stxins_uni, \
+		uint32_t: stxins_utf8f32, \
 		spx: stxins_spx)(sp, src)
 
 #define stxapp(sp, src) _Generic((src), \
 		const char *: stxapp_str, \
 		char *: stxapp_str, \
-		uint32_t: stxapp_uni, \
+		uint32_t: stxapp_utf8f32, \
 		spx: stxapp_spx)(sp, src)
 
 #define stxfind(sp, src) _Generic((src), \
