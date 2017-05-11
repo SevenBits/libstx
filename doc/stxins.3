@@ -1,0 +1,71 @@
+.TH STXINS 3 libstx
+.SH NAME
+stxins_mem, stxins_str, stxins_uni, stxins_spx - insert bytes into a stx.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B stx *stxins_mem(stx *\fIsp\fP, size_t \fIpos\fP, const char *\fIsrc\fP, size_t \fIn\fP);
+
+.B stx *stxins_str(stx *\fIsp\fP, size_t \fIpos\fP, const char *\fIsrc\fP);
+
+.B stx *stxins_utf8f32(stx *\fIsp\fP, size_t \fIpos\fP, uint32_t \fIwc\fP);
+
+.B stx *stxins_spx(stx *\fIsp\fP, size_t \fIpos\fP, const spx \fIsrc\fP);
+.SH DESCRIPTION
+.BR stxins_mem ()
+inserts
+.I n
+bytes from
+.I src
+at index
+.I pos
+in
+.IR sp->mem .
+.P
+.BR stxins_str ()
+inserts bytes from
+.I src
+at index
+.I pos
+in
+.I sp->mem
+until a null byte is reached.
+.P
+.BR stxins_utf8f32 ()
+converts
+.I wc
+from a utf32 unicode code point character to it's corresponding utf8 byte
+sequence, then inserts that utf8 byte sequence at index
+.I pos
+in
+.IR sp->mem .
+.P
+.BR stxins_spx ()
+inserts
+.I src.len
+bytes from
+.I src.mem 
+at index
+.I pos
+in
+.IR sp->mem .
+.P
+If
+.I src
+is NULL or
+.I n
+is 0, then
+.IR sp
+is zero initialized. This is considered a successful insertion.
+.SH RETURN VALUE
+.BR stxins_mem (),
+.BR stxins_str (),
+.BR stxins_utf8f32 (),
+and
+.BR stxins_spx ()
+always return a pointer to
+.I sp
+to allow for function composition.
+.SH SEE ALSO
+.BR libstx (7),
+.BR stxutf (3)

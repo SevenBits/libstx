@@ -1,0 +1,56 @@
+.TH STXCPY 3 libstx
+.SH NAME
+stxcpy_mem, stxcpy_str, stxcpy_spx - copy bytes into a stx.
+.SH SYNOPSIS
+.B #include <libstx.h>
+
+.B stx *stxcpy_mem(stx *\fIsp\fP, const char *\fIsrc\fP, size_t \fIn\fP);
+
+.B stx *stxcpy_str(stx *\fIsp\fP, const char *\fIsrc\fP);
+
+.B stx *stxcpy_spx(stx *\fIsp\fP, const spx \fIsrc\fP);
+.SH DESCRIPTION
+.BR stxcpy_mem ()
+copies
+.I n
+bytes from
+.I src
+to
+.IR sp->mem .
+.P
+.BR stxcpy_str ()
+copies
+.I src
+to
+.IR sp->mem .
+until a null byte is reached.
+.P
+.BR stxcpy_spx ()
+copies
+.I src.len
+bytes from
+.I src.mem
+to
+.I sp->mem
+and sets
+.I sp->len
+to
+.IR src.len .
+.P
+If
+.I src
+is NULL or
+.I n
+is 0, then
+.IR sp
+is zero initialized. This is considered a successful copy.
+.SH RETURN VALUE
+.BR stxcpy_mem (),
+.BR stxcpy_str (),
+and
+.BR stxcpy_spx ()
+always return a pointer to
+.I sp
+to allow for function composition.
+.SH SEE ALSO
+.BR libstx (7)
