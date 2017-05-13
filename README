@@ -5,7 +5,7 @@ dynamically allocated libstx objects to work for any function provided by the
 library (with some caveats).
 
 The library aims to be simple and optimized for statically linking, as each
-function is compiled to seperate object files which then compose the library
+function is compiled to separate object files which then compose the library
 archive.
 
 Further documentation can be found in the man-pages found in this repository
