@@ -7,7 +7,7 @@ LIBPREFIX = ${PREFIX}/lib
 INCLUDEPREFIX = ${PREFIX}/include
 
 # Linking flags
-LDFLAGS = -s
+LDFLAGS =
 
 # C Compiler settings
 CC = cc
